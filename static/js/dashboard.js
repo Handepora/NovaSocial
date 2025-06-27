@@ -46,6 +46,9 @@ function showView(viewName) {
         targetView.classList.add('active');
         currentView = viewName;
         
+        // Update sidebar navigation active state
+        updateSidebarActive(viewName);
+        
         // Load view-specific data
         switch(viewName) {
             case 'dashboard':
@@ -61,6 +64,19 @@ function showView(viewName) {
                 loadAnalyticsData();
                 break;
         }
+    }
+}
+
+function updateSidebarActive(viewName) {
+    // Remove active class from all nav links
+    document.querySelectorAll('.nav-link[data-view]').forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Add active class to the current view's nav link
+    const activeLink = document.querySelector(`.nav-link[data-view="${viewName}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
     }
 }
 
