@@ -141,6 +141,11 @@ The application is configured for deployment on Replit with the following setup:
   - Added real-time post tracking with engagement metrics and status monitoring
   - Integrated monitoring view with automatic data loading and refresh capabilities
   - Fixed session handling issues for proper post tracking and data persistence
+- June 27, 2025. Added confirmation popups for account and provider deletion:
+  - Implemented Bootstrap modals for confirming social media account deletion
+  - Added confirmation popup for disconnecting AI providers with credential warnings
+  - Enhanced user experience with detailed information display in confirmation dialogs
+  - Replaced basic JavaScript confirm() with professional modal interfaces
 
 ## User Preferences
 

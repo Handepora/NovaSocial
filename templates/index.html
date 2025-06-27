@@ -1481,6 +1481,76 @@
         </div>
     </div>
     
+    <!-- Delete Confirmation Modals -->
+    
+    <!-- Delete Social Account Modal -->
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-exclamation-triangle text-warning fa-3x"></i>
+                    </div>
+                    <p class="text-center mb-3">
+                        ¿Estás seguro de que quieres eliminar esta cuenta de red social?
+                    </p>
+                    <div class="alert alert-warning">
+                        <strong>Esta acción no se puede deshacer.</strong><br>
+                        Se perderá toda la configuración y el historial asociado a esta cuenta.
+                    </div>
+                    <div id="account-delete-info" class="text-center">
+                        <strong>Cuenta:</strong> <span id="account-delete-name"></span><br>
+                        <strong>Plataforma:</strong> <span id="account-delete-platform"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-account">
+                        <i class="fas fa-trash me-1"></i>Eliminar Cuenta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete AI Provider Modal -->
+    <div class="modal fade" id="deleteProviderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Desconexión</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-unlink text-warning fa-3x"></i>
+                    </div>
+                    <p class="text-center mb-3">
+                        ¿Estás seguro de que quieres desconectar este proveedor de IA?
+                    </p>
+                    <div class="alert alert-warning">
+                        <strong>Esta acción eliminará la API key guardada.</strong><br>
+                        Deberás volver a configurar las credenciales para usar este proveedor.
+                    </div>
+                    <div id="provider-delete-info" class="text-center">
+                        <strong>Proveedor:</strong> <span id="provider-delete-name"></span><br>
+                        <strong>Estado:</strong> <span id="provider-delete-status"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-provider">
+                        <i class="fas fa-unlink me-1"></i>Desconectar Proveedor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     

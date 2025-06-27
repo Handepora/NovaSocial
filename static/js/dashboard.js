@@ -1980,25 +1980,39 @@ async function testAIProvider(providerName) {
 }
 
 async function disconnectAIProvider(providerName) {
-    if (!confirm(`¿Estás seguro de que deseas desconectar ${providerName}? Tendrás que volver a configurar la API key.`)) {
+    const provider = mockData.ai_providers?.find(p => p.name === providerName);
+    if (!provider) {
+        showErrorMessage('Proveedor no encontrado');
         return;
     }
     
-    try {
-        const response = await fetchData(`/api/ai-providers/${providerName}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.status === 'success') {
-            showSuccessMessage(response.message);
+    // Populate modal with provider info
+    document.getElementById('provider-delete-name').textContent = provider.display_name || providerName;
+    document.getElementById('provider-delete-status').textContent = provider.status === 'connected' ? 'Conectado' : 'Desconectado';
+    
+    // Show confirmation modal
+    const modal = new bootstrap.Modal(document.getElementById('deleteProviderModal'));
+    modal.show();
+    
+    // Set up confirmation handler
+    document.getElementById('confirm-delete-provider').onclick = async function() {
+        try {
+            const response = await fetchData(`/api/ai-providers/${providerName}`, {
+                method: 'DELETE'
+            });
             
-            // Refresh provider list and stats
-            loadAIProviders();
-            loadAIProviderStats();
+            if (response.status === 'success') {
+                modal.hide();
+                showSuccessMessage(response.message);
+                
+                // Refresh provider list and stats
+                loadAIProviders();
+                loadAIProviderStats();
+            }
+        } catch (error) {
+            showErrorMessage('Error al desconectar el proveedor: ' + error.message);
         }
-    } catch (error) {
-        showErrorMessage('Error al desconectar el proveedor: ' + error.message);
-    }
+    };
 }
 
 async function setDefaultAIProvider(providerName) {
@@ -2053,25 +2067,39 @@ async function testConnection(accountId) {
 }
 
 async function deleteAccount(accountId) {
-    if (!confirm('¿Estás seguro de que deseas eliminar esta cuenta? Esta acción no se puede deshacer.')) {
+    const account = mockData.social_accounts?.find(acc => acc.id === accountId);
+    if (!account) {
+        showErrorMessage('Cuenta no encontrada');
         return;
     }
     
-    try {
-        const response = await fetchData(`/api/accounts/${accountId}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.status === 'success') {
-            showSuccessMessage(response.message);
+    // Populate modal with account info
+    document.getElementById('account-delete-name').textContent = account.username || account.name || 'Sin nombre';
+    document.getElementById('account-delete-platform').textContent = account.platform;
+    
+    // Show confirmation modal
+    const modal = new bootstrap.Modal(document.getElementById('deleteAccountModal'));
+    modal.show();
+    
+    // Set up confirmation handler
+    document.getElementById('confirm-delete-account').onclick = async function() {
+        try {
+            const response = await fetchData(`/api/accounts/${accountId}`, {
+                method: 'DELETE'
+            });
             
-            // Refresh account list and stats
-            loadSocialAccounts();
-            loadAccountStats();
+            if (response.status === 'success') {
+                modal.hide();
+                showSuccessMessage(response.message);
+                
+                // Refresh account list and stats
+                loadSocialAccounts();
+                loadAccountStats();
+            }
+        } catch (error) {
+            showErrorMessage('Error al eliminar la cuenta: ' + error.message);
         }
-    } catch (error) {
-        showErrorMessage('Error al eliminar la cuenta: ' + error.message);
-    }
+    };
 }
 
 function editAccount(accountId) {
