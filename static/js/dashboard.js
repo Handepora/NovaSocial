@@ -288,6 +288,7 @@ async function generateContent() {
     const topic = document.getElementById('main-topic').value;
     const tone = document.getElementById('tone-voice').value;
     const platforms = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+    const provider = document.getElementById('ai-provider')?.value || 'perplexity';
     
     if (!topic || platforms.length === 0) {
         showErrorMessage('Por favor completa el tema y selecciona al menos una plataforma');
@@ -298,16 +299,37 @@ async function generateContent() {
     resultContainer.innerHTML = '<div class="text-center"><div class="spinner"></div><p class="mt-2">Generando contenido...</p></div>';
     
     try {
-        const generatedContent = await fetchData('/api/posts/generate', {
+        console.log('Generating content with:', { topic, tone, platforms, provider });
+        
+        const response = await fetchData('/api/generate-content', {
             method: 'POST',
-            body: JSON.stringify({ topic, tone, platforms })
+            body: JSON.stringify({ 
+                topic: topic, 
+                platforms: platforms,
+                provider: provider
+            })
         });
         
-        displayGeneratedContent(generatedContent, platforms);
+        console.log('Generation response:', response);
+        
+        if (response && response.status === 'success') {
+            displayGeneratedContent(response.content, platforms);
+            showSuccessMessage('Contenido generado exitosamente');
+        } else if (response && response.status === 'error') {
+            if (response.requires_setup) {
+                showErrorMessage(`${response.error}. Configura las API keys en la sección de Configuración.`);
+            } else {
+                showErrorMessage(response.error || 'Error al generar contenido');
+            }
+        } else if (response && response.error) {
+            showErrorMessage(response.error);
+        } else {
+            showErrorMessage('Respuesta inesperada del servidor');
+        }
         
     } catch (error) {
         console.error('Error generating content:', error);
-        showErrorMessage('Error al generar contenido');
+        showErrorMessage('Error al generar contenido: ' + (error.message || 'Error desconocido'));
     }
 }
 

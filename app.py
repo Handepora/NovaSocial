@@ -244,9 +244,12 @@ def generate_content():
         
         for platform in platforms:
             prompt = f"Crea contenido sobre '{topic}' para {platform}"
-            result = content_generator.generate_content(prompt, platform, provider)
+            logging.debug(f"Generating content for {platform} with provider {provider}")
             
-            if result['success']:
+            result = content_generator.generate_content(prompt, platform, provider)
+            logging.debug(f"Generation result for {platform}: {result}")
+            
+            if result and result.get('success'):
                 content = result['content']
                 # Extract hashtags from content if present
                 if '#' in content:
@@ -264,9 +267,13 @@ def generate_content():
                 if provider == 'perplexity' and 'citations' in result:
                     response["citations"] = result['citations']
             else:
-                response["content"][platform] = f"Error generando contenido: {result['error']}"
+                error_msg = result.get('error', 'Error desconocido') if result else 'No se recibió respuesta'
+                logging.error(f"Content generation failed for {platform}: {error_msg}")
+                response["content"][platform] = f"Error generando contenido: {error_msg}"
                 response["hashtags"][platform] = []
+                response["status"] = "error"
         
+        logging.debug(f"Final response: {response}")
         return jsonify(response)
         
     except Exception as e:
