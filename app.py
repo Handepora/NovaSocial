@@ -1,9 +1,10 @@
 import os
 import logging
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 from datetime import datetime, timedelta
 import json
+import uuid
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -15,8 +16,8 @@ app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-prod
 # Enable CORS for API endpoints
 CORS(app)
 
-# Mock data for the application
-MOCK_POSTS = [
+# In-memory storage for scheduled posts (in production, use a database)
+SCHEDULED_POSTS = [
     {
         "id": 1,
         "title": "Anuncio de nuevo producto innovador",
@@ -25,7 +26,9 @@ MOCK_POSTS = [
         "scheduled_date": "2025-06-27T10:00:00",
         "status": "scheduled",
         "engagement": 245,
-        "reach": 1250
+        "reach": 1250,
+        "created_at": "2025-06-27T08:00:00",
+        "timezone": "UTC"
     },
     {
         "id": 2,
@@ -35,7 +38,9 @@ MOCK_POSTS = [
         "scheduled_date": "2025-06-27T14:30:00",
         "status": "scheduled",
         "engagement": 189,
-        "reach": 890
+        "reach": 890,
+        "created_at": "2025-06-27T09:15:00",
+        "timezone": "UTC"
     },
     {
         "id": 3,
@@ -45,7 +50,9 @@ MOCK_POSTS = [
         "scheduled_date": "2025-06-27T18:00:00",
         "status": "scheduled",
         "engagement": 312,
-        "reach": 1580
+        "reach": 1580,
+        "created_at": "2025-06-27T10:30:00",
+        "timezone": "UTC"
     }
 ]
 
@@ -92,14 +99,14 @@ def index():
 @app.route('/api/posts')
 def get_posts():
     """Get all scheduled posts"""
-    return jsonify(MOCK_POSTS)
+    return jsonify(SCHEDULED_POSTS)
 
 @app.route('/api/posts/today')
 def get_today_posts():
     """Get posts scheduled for today"""
     today = datetime.now().date()
     today_posts = [
-        post for post in MOCK_POSTS 
+        post for post in SCHEDULED_POSTS 
         if datetime.fromisoformat(post['scheduled_date'].replace('Z', '+00:00')).date() == today
     ]
     return jsonify(today_posts)
@@ -145,6 +152,149 @@ def reject_post(post_id):
     """Reject a pending post"""
     # In a real app, this would update the database
     return jsonify({"status": "rejected", "post_id": post_id})
+
+# Real-time scheduling endpoints
+@app.route('/api/posts/schedule', methods=['POST'])
+def schedule_post():
+    """Schedule a new post"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['title', 'content', 'platform', 'scheduled_date']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+        
+        # Create new post
+        new_post = {
+            "id": len(SCHEDULED_POSTS) + len(MOCK_PENDING_POSTS) + 1,
+            "title": data['title'],
+            "content": data['content'],
+            "platform": data['platform'],
+            "scheduled_date": data['scheduled_date'],
+            "status": "scheduled",
+            "engagement": 0,
+            "reach": 0,
+            "created_at": datetime.now().isoformat(),
+            "timezone": data.get('timezone', 'UTC')
+        }
+        
+        SCHEDULED_POSTS.append(new_post)
+        
+        return jsonify({
+            "status": "success", 
+            "message": "Post scheduled successfully",
+            "post": new_post
+        }), 201
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/posts/<int:post_id>', methods=['PUT'])
+def update_scheduled_post(post_id):
+    """Update a scheduled post"""
+    try:
+        data = request.get_json()
+        
+        # Find the post
+        post_index = None
+        for i, post in enumerate(SCHEDULED_POSTS):
+            if post['id'] == post_id:
+                post_index = i
+                break
+        
+        if post_index is None:
+            return jsonify({"error": "Post not found"}), 404
+        
+        # Update the post
+        post = SCHEDULED_POSTS[post_index]
+        for field in ['title', 'content', 'platform', 'scheduled_date', 'timezone']:
+            if field in data:
+                post[field] = data[field]
+        
+        post['updated_at'] = datetime.now().isoformat()
+        
+        return jsonify({
+            "status": "success",
+            "message": "Post updated successfully",
+            "post": post
+        })
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/posts/<int:post_id>', methods=['DELETE'])
+def delete_scheduled_post(post_id):
+    """Delete a scheduled post"""
+    try:
+        # Find and remove the post
+        for i, post in enumerate(SCHEDULED_POSTS):
+            if post['id'] == post_id:
+                deleted_post = SCHEDULED_POSTS.pop(i)
+                return jsonify({
+                    "status": "success",
+                    "message": "Post deleted successfully",
+                    "post": deleted_post
+                })
+        
+        return jsonify({"error": "Post not found"}), 404
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/posts/calendar/<int:year>/<int:month>')
+def get_calendar_posts(year, month):
+    """Get posts for a specific month for calendar view"""
+    try:
+        # Filter posts for the specified month
+        start_date = datetime(year, month, 1)
+        if month == 12:
+            end_date = datetime(year + 1, 1, 1)
+        else:
+            end_date = datetime(year, month + 1, 1)
+        
+        calendar_posts = []
+        for post in SCHEDULED_POSTS:
+            post_date = datetime.fromisoformat(post['scheduled_date'].replace('Z', '+00:00'))
+            if start_date <= post_date < end_date:
+                calendar_posts.append({
+                    "id": post['id'],
+                    "title": post['title'],
+                    "platform": post['platform'],
+                    "scheduled_date": post['scheduled_date'],
+                    "status": post['status']
+                })
+        
+        return jsonify({
+            "year": year,
+            "month": month,
+            "posts": calendar_posts
+        })
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/posts/upcoming')
+def get_upcoming_posts():
+    """Get posts scheduled for the next 7 days"""
+    try:
+        now = datetime.now()
+        week_later = now + timedelta(days=7)
+        
+        upcoming_posts = []
+        for post in SCHEDULED_POSTS:
+            post_date = datetime.fromisoformat(post['scheduled_date'].replace('Z', '+00:00'))
+            if now <= post_date <= week_later:
+                upcoming_posts.append(post)
+        
+        # Sort by scheduled date
+        upcoming_posts.sort(key=lambda x: x['scheduled_date'])
+        
+        return jsonify(upcoming_posts)
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

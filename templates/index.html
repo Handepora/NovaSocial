@@ -165,17 +165,70 @@
                 <div id="calendario-view" class="view">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2">Calendario</h1>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-outline-primary active" data-calendar-view="month">Mes</button>
-                            <button type="button" class="btn btn-outline-primary" data-calendar-view="week">Semana</button>
-                            <button type="button" class="btn btn-outline-primary" data-calendar-view="day">Día</button>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                                <i class="fas fa-plus me-2"></i>Programar Post
+                            </button>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary active" data-calendar-view="month">Mes</button>
+                                <button type="button" class="btn btn-outline-primary" data-calendar-view="week">Semana</button>
+                                <button type="button" class="btn btn-outline-primary" data-calendar-view="day">Día</button>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="card">
-                        <div class="card-body">
-                            <div id="calendar-container">
-                                <!-- Calendar will be rendered here -->
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0" id="calendar-title">Junio 2025</h5>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-secondary" id="prev-month">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" id="next-month">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="calendar-container">
+                                        <!-- Calendar will be rendered here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Próximas Publicaciones</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="upcoming-posts">
+                                        <!-- Upcoming posts will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Estadísticas del Mes</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Publicaciones programadas:</span>
+                                        <span class="badge bg-primary" id="scheduled-count">0</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Publicaciones enviadas:</span>
+                                        <span class="badge bg-success" id="sent-count">0</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Pendientes:</span>
+                                        <span class="badge bg-warning" id="pending-count">0</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -405,6 +458,144 @@
     <button class="theme-toggle" id="themeToggle" title="Cambiar tema">
         <i class="fas fa-moon" id="themeIcon"></i>
     </button>
+    
+    <!-- Schedule Post Modal -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="scheduleModalLabel">Programar Nueva Publicación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="scheduleForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="postTitle" class="form-label">Título</label>
+                                    <input type="text" class="form-control" id="postTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="postPlatform" class="form-label">Plataforma</label>
+                                    <select class="form-select" id="postPlatform" required>
+                                        <option value="">Seleccionar plataforma</option>
+                                        <option value="linkedin">LinkedIn</option>
+                                        <option value="twitter">Twitter</option>
+                                        <option value="instagram">Instagram</option>
+                                        <option value="facebook">Facebook</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="postContent" class="form-label">Contenido</label>
+                            <textarea class="form-control" id="postContent" rows="4" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="postDate" class="form-label">Fecha</label>
+                                    <input type="date" class="form-control" id="postDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="postTime" class="form-label">Hora</label>
+                                    <input type="time" class="form-control" id="postTime" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="postTimezone" class="form-label">Zona Horaria</label>
+                            <select class="form-select" id="postTimezone">
+                                <option value="UTC">UTC</option>
+                                <option value="America/New_York">EST (Nueva York)</option>
+                                <option value="America/Los_Angeles">PST (Los Ángeles)</option>
+                                <option value="Europe/Madrid">CET (Madrid)</option>
+                                <option value="America/Mexico_City">CST (Ciudad de México)</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveScheduledPost">
+                        <i class="fas fa-calendar-plus me-2"></i>Programar Publicación
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Post Modal -->
+    <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPostModalLabel">Editar Publicación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editPostForm">
+                        <input type="hidden" id="editPostId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editPostTitle" class="form-label">Título</label>
+                                    <input type="text" class="form-control" id="editPostTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editPostPlatform" class="form-label">Plataforma</label>
+                                    <select class="form-select" id="editPostPlatform" required>
+                                        <option value="linkedin">LinkedIn</option>
+                                        <option value="twitter">Twitter</option>
+                                        <option value="instagram">Instagram</option>
+                                        <option value="facebook">Facebook</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="editPostContent" class="form-label">Contenido</label>
+                            <textarea class="form-control" id="editPostContent" rows="4" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editPostDate" class="form-label">Fecha</label>
+                                    <input type="date" class="form-control" id="editPostDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editPostTime" class="form-label">Hora</label>
+                                    <input type="time" class="form-control" id="editPostTime" required>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="deleteScheduledPost">
+                        <i class="fas fa-trash me-2"></i>Eliminar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="updateScheduledPost">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -9,11 +9,13 @@ let mockData = {};
 document.addEventListener('DOMContentLoaded', function() {
     initializeNavigation();
     setupEventListeners();
+    setupSchedulingEventListeners();
     initializeTheme();
     // Load dashboard data after a short delay to ensure DOM is fully ready
     setTimeout(() => {
         loadDashboardData();
         initializeCharts();
+        setDefaultScheduleDateTime();
     }, 100);
 });
 
@@ -56,6 +58,7 @@ function showView(viewName) {
                 break;
             case 'calendario':
                 loadCalendarData();
+                loadUpcomingPosts();
                 break;
             case 'validacion':
                 loadValidationData();
@@ -167,47 +170,68 @@ function loadCalendarData() {
 function generateCalendarHTML(year, month) {
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const today = new Date();
     
     let html = `
-        <div class="calendar-header mb-3">
-            <h4>${monthNames[month]} ${year}</h4>
-        </div>
         <div class="calendar-grid">
-            <div class="row">
-                <div class="col text-center fw-bold">Dom</div>
-                <div class="col text-center fw-bold">Lun</div>
-                <div class="col text-center fw-bold">Mar</div>
-                <div class="col text-center fw-bold">Mié</div>
-                <div class="col text-center fw-bold">Jue</div>
-                <div class="col text-center fw-bold">Vie</div>
-                <div class="col text-center fw-bold">Sáb</div>
-            </div>
+            <div class="calendar-header">Dom</div>
+            <div class="calendar-header">Lun</div>
+            <div class="calendar-header">Mar</div>
+            <div class="calendar-header">Mié</div>
+            <div class="calendar-header">Jue</div>
+            <div class="calendar-header">Vie</div>
+            <div class="calendar-header">Sáb</div>
     `;
     
-    let date = 1;
-    for (let i = 0; i < 6; i++) {
-        html += '<div class="row">';
-        for (let j = 0; j < 7; j++) {
-            if (i === 0 && j < firstDay) {
-                html += '<div class="col calendar-day"></div>';
-            } else if (date > daysInMonth) {
-                html += '<div class="col calendar-day"></div>';
-            } else {
-                html += `<div class="col calendar-day" data-date="${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}">
-                    <div class="day-number">${date}</div>
-                    <div class="day-events"></div>
-                </div>`;
-                date++;
-            }
-        }
-        html += '</div>';
-        if (date > daysInMonth) break;
+    // Previous month days
+    const prevMonth = month === 0 ? 11 : month - 1;
+    const prevYear = month === 0 ? year - 1 : year;
+    const daysInPrevMonth = new Date(prevYear, prevMonth + 1, 0).getDate();
+    
+    for (let i = firstDay - 1; i >= 0; i--) {
+        const day = daysInPrevMonth - i;
+        html += `
+            <div class="calendar-day other-month" data-date="${prevYear}-${String(prevMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}">
+                <span class="calendar-day-number">${day}</span>
+                <div class="day-events"></div>
+            </div>
+        `;
+    }
+    
+    // Current month days
+    for (let date = 1; date <= daysInMonth; date++) {
+        const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === date;
+        const todayClass = isToday ? ' today' : '';
+        
+        html += `
+            <div class="calendar-day${todayClass}" data-date="${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}">
+                <span class="calendar-day-number">${date}</span>
+                <div class="day-events"></div>
+            </div>
+        `;
+    }
+    
+    // Next month days to fill the grid
+    const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+    const remainingCells = totalCells - (firstDay + daysInMonth);
+    const nextMonth = month === 11 ? 0 : month + 1;
+    const nextYear = month === 11 ? year + 1 : year;
+    
+    for (let date = 1; date <= remainingCells; date++) {
+        html += `
+            <div class="calendar-day other-month" data-date="${nextYear}-${String(nextMonth + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}">
+                <span class="calendar-day-number">${date}</span>
+                <div class="day-events"></div>
+            </div>
+        `;
     }
     
     html += '</div>';
-    return html;
+    
+    const calendarContainer = document.getElementById('calendar-container');
+    if (calendarContainer) {
+        calendarContainer.innerHTML = html;
+    }
 }
 
 function addCalendarEvents(posts) {
@@ -217,12 +241,13 @@ function addCalendarEvents(posts) {
         
         if (dayElement) {
             const eventElement = document.createElement('div');
-            eventElement.className = `calendar-post ${post.platform}`;
-            eventElement.innerHTML = `
-                <i class="fab fa-${post.platform} me-1"></i>
-                <span class="small">${post.title.substring(0, 20)}...</span>
-            `;
-            eventElement.addEventListener('click', () => showPostDetails(post));
+            eventElement.className = `calendar-event ${post.platform}`;
+            eventElement.innerHTML = post.title.length > 15 ? post.title.substring(0, 15) + '...' : post.title;
+            eventElement.title = `${post.title} - ${formatTime(post.scheduled_date)}`;
+            eventElement.addEventListener('click', (e) => {
+                e.stopPropagation();
+                editPost(post.id);
+            });
             dayElement.appendChild(eventElement);
         }
     });
@@ -882,6 +907,298 @@ function updateChartsTheme(theme) {
     });
 }
 
+// Real-time Scheduling Functionality
+let currentCalendarDate = new Date();
+let currentEditingPostId = null;
+let scheduledPosts = [];
+
+// Setup scheduling event listeners
+function setupSchedulingEventListeners() {
+    // Schedule new post modal
+    const saveButton = document.getElementById('saveScheduledPost');
+    if (saveButton) {
+        saveButton.addEventListener('click', handleSchedulePost);
+    }
+    
+    // Edit post modal
+    const updateButton = document.getElementById('updateScheduledPost');
+    if (updateButton) {
+        updateButton.addEventListener('click', handleUpdatePost);
+    }
+    
+    const deleteButton = document.getElementById('deleteScheduledPost');
+    if (deleteButton) {
+        deleteButton.addEventListener('click', handleDeletePost);
+    }
+    
+    // Calendar navigation
+    const prevButton = document.getElementById('prev-month');
+    if (prevButton) {
+        prevButton.addEventListener('click', () => navigateCalendar(-1));
+    }
+    
+    const nextButton = document.getElementById('next-month');
+    if (nextButton) {
+        nextButton.addEventListener('click', () => navigateCalendar(1));
+    }
+    
+    // Modal events
+    const scheduleModal = document.getElementById('scheduleModal');
+    if (scheduleModal) {
+        scheduleModal.addEventListener('show.bs.modal', setDefaultScheduleDateTime);
+    }
+}
+
+// Set default date and time for scheduling
+function setDefaultScheduleDateTime() {
+    const now = new Date();
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    
+    const dateInput = document.getElementById('postDate');
+    const timeInput = document.getElementById('postTime');
+    
+    if (dateInput) {
+        dateInput.value = tomorrow.toISOString().split('T')[0];
+    }
+    
+    if (timeInput) {
+        timeInput.value = '10:00';
+    }
+}
+
+// Handle scheduling a new post
+async function handleSchedulePost() {
+    try {
+        const formData = {
+            title: document.getElementById('postTitle').value,
+            content: document.getElementById('postContent').value,
+            platform: document.getElementById('postPlatform').value,
+            scheduled_date: `${document.getElementById('postDate').value}T${document.getElementById('postTime').value}:00`,
+            timezone: document.getElementById('postTimezone').value
+        };
+        
+        // Validate form
+        if (!formData.title || !formData.content || !formData.platform || !formData.scheduled_date) {
+            showErrorMessage('Por favor completa todos los campos requeridos');
+            return;
+        }
+        
+        const response = await fetchData('/api/posts/schedule', {
+            method: 'POST',
+            body: JSON.stringify(formData)
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage('Publicación programada exitosamente');
+            
+            // Close modal and reset form
+            const modal = bootstrap.Modal.getInstance(document.getElementById('scheduleModal'));
+            modal.hide();
+            document.getElementById('scheduleForm').reset();
+            
+            // Refresh calendar and upcoming posts
+            loadCalendarData();
+            loadUpcomingPosts();
+            
+            // Update dashboard if on dashboard view
+            if (currentView === 'dashboard') {
+                loadDashboardData();
+            }
+        }
+    } catch (error) {
+        showErrorMessage('Error al programar la publicación: ' + error.message);
+    }
+}
+
+// Handle updating an existing post
+async function handleUpdatePost() {
+    try {
+        const postId = document.getElementById('editPostId').value;
+        const formData = {
+            title: document.getElementById('editPostTitle').value,
+            content: document.getElementById('editPostContent').value,
+            platform: document.getElementById('editPostPlatform').value,
+            scheduled_date: `${document.getElementById('editPostDate').value}T${document.getElementById('editPostTime').value}:00`
+        };
+        
+        const response = await fetchData(`/api/posts/${postId}`, {
+            method: 'PUT',
+            body: JSON.stringify(formData)
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage('Publicación actualizada exitosamente');
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editPostModal'));
+            modal.hide();
+            
+            // Refresh views
+            loadCalendarData();
+            loadUpcomingPosts();
+        }
+    } catch (error) {
+        showErrorMessage('Error al actualizar la publicación: ' + error.message);
+    }
+}
+
+// Handle deleting a post
+async function handleDeletePost() {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta publicación?')) {
+        return;
+    }
+    
+    try {
+        const postId = document.getElementById('editPostId').value;
+        
+        const response = await fetchData(`/api/posts/${postId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage('Publicación eliminada exitosamente');
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editPostModal'));
+            modal.hide();
+            
+            // Refresh views
+            loadCalendarData();
+            loadUpcomingPosts();
+        }
+    } catch (error) {
+        showErrorMessage('Error al eliminar la publicación: ' + error.message);
+    }
+}
+
+// Enhanced calendar loading with real data
+async function loadCalendarData() {
+    try {
+        const year = currentCalendarDate.getFullYear();
+        const month = currentCalendarDate.getMonth() + 1;
+        
+        // Update calendar title
+        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const calendarTitle = document.getElementById('calendar-title');
+        if (calendarTitle) {
+            calendarTitle.textContent = `${months[month - 1]} ${year}`;
+        }
+        
+        // Load posts for the month
+        const calendarData = await fetchData(`/api/posts/calendar/${year}/${month}`);
+        scheduledPosts = calendarData.posts || [];
+        
+        // Generate calendar HTML
+        generateCalendarHTML(year, month);
+        
+        // Add events to calendar
+        addCalendarEvents(scheduledPosts);
+        
+        // Update statistics
+        updateCalendarStats();
+        
+    } catch (error) {
+        console.error('Error loading calendar data:', error);
+        showErrorMessage('Error al cargar el calendario');
+    }
+}
+
+// Load upcoming posts
+async function loadUpcomingPosts() {
+    try {
+        const upcomingPosts = await fetchData('/api/posts/upcoming');
+        displayUpcomingPosts(upcomingPosts);
+    } catch (error) {
+        console.error('Error loading upcoming posts:', error);
+    }
+}
+
+// Display upcoming posts in sidebar
+function displayUpcomingPosts(posts) {
+    const container = document.getElementById('upcoming-posts');
+    if (!container) return;
+    
+    if (posts.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-3">
+                <i class="fas fa-calendar-alt fa-2x mb-2"></i>
+                <p>No hay publicaciones próximas</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = posts.map(post => {
+        const date = new Date(post.scheduled_date);
+        const platformIcon = getPlatformIcon(post.platform);
+        
+        return `
+            <div class="upcoming-post-item mb-3 p-2 border rounded cursor-pointer" onclick="editPost(${post.id})">
+                <div class="d-flex align-items-center mb-1">
+                    <i class="${platformIcon} platform-${post.platform} me-2"></i>
+                    <small class="text-muted">${formatDate(post.scheduled_date)} - ${formatTime(post.scheduled_date)}</small>
+                </div>
+                <div class="fw-bold text-truncate">${post.title}</div>
+                <div class="text-muted small text-truncate">${post.content}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Navigate calendar months
+function navigateCalendar(direction) {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+    loadCalendarData();
+}
+
+// Edit post function
+function editPost(postId) {
+    // Find the post
+    const post = scheduledPosts.find(p => p.id === postId);
+    if (!post) return;
+    
+    // Populate edit form
+    document.getElementById('editPostId').value = post.id;
+    document.getElementById('editPostTitle').value = post.title;
+    document.getElementById('editPostContent').value = post.content;
+    document.getElementById('editPostPlatform').value = post.platform;
+    
+    const dateTime = new Date(post.scheduled_date);
+    document.getElementById('editPostDate').value = dateTime.toISOString().split('T')[0];
+    document.getElementById('editPostTime').value = dateTime.toTimeString().slice(0, 5);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('editPostModal'));
+    modal.show();
+}
+
+// Update calendar statistics
+function updateCalendarStats() {
+    const scheduled = scheduledPosts.filter(p => p.status === 'scheduled').length;
+    const sent = scheduledPosts.filter(p => p.status === 'sent').length;
+    const pending = scheduledPosts.filter(p => p.status === 'pending').length;
+    
+    const scheduledCount = document.getElementById('scheduled-count');
+    const sentCount = document.getElementById('sent-count');
+    const pendingCount = document.getElementById('pending-count');
+    
+    if (scheduledCount) scheduledCount.textContent = scheduled;
+    if (sentCount) sentCount.textContent = sent;
+    if (pendingCount) pendingCount.textContent = pending;
+}
+
+// Get platform icon
+function getPlatformIcon(platform) {
+    const icons = {
+        linkedin: 'fab fa-linkedin',
+        twitter: 'fab fa-twitter',
+        instagram: 'fab fa-instagram',
+        facebook: 'fab fa-facebook'
+    };
+    return icons[platform] || 'fas fa-globe';
+}
+
 // Add CSS for toast notifications
 const toastStyles = `
     .toast-notification {
@@ -898,6 +1215,43 @@ const toastStyles = `
         transition: all 0.3s ease;
         border-left: 4px solid var(--accent-color);
     }
+    
+    .upcoming-post-item {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .upcoming-post-item:hover {
+        background-color: var(--hover-bg);
+        transform: translateY(-1px);
+    }
+    
+    .calendar-day {
+        position: relative;
+        min-height: 100px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .calendar-day:hover {
+        background-color: var(--hover-bg);
+    }
+    
+    .calendar-event {
+        font-size: 0.75rem;
+        padding: 1px 4px;
+        margin: 1px 0;
+        border-radius: 2px;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .calendar-event.linkedin { background-color: #0077b5; color: white; }
+    .calendar-event.twitter { background-color: #1da1f2; color: white; }
+    .calendar-event.instagram { background-color: #e4405f; color: white; }
+    .calendar-event.facebook { background-color: #1877f2; color: white; }
     
     .toast-notification.success {
         border-left-color: var(--success-color);
