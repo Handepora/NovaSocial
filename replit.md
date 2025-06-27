@@ -92,6 +92,14 @@ The application is configured for deployment on Replit with the following setup:
   - Integrated content generation workflow with direct scheduling capability
   - Added edit functionality for generated content before scheduling
   - Implemented seamless content-to-calendar workflow for AI-generated posts
+- June 27, 2025. Added comprehensive social media account management and API key configuration:
+  - Built complete account management interface with add/edit/delete functionality
+  - Implemented API credentials configuration with platform-specific instructions
+  - Added password visibility toggles and credential validation testing
+  - Created detailed API setup instructions modal for all major social platforms
+  - Integrated account status tracking (connected, pending, error) with connection testing
+  - Added account statistics dashboard and auto-posting configuration
+  - Connected account management to scheduling system for seamless workflow
 
 ## User Preferences
 

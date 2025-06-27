@@ -729,28 +729,71 @@
                         </div>
                         
                         <!-- API Credentials Section -->
-                        <div class="card bg-light mt-3" id="apiCredentialsSection" style="display: none;">
-                            <div class="card-header">
+                        <div class="card bg-light mt-3" id="apiCredentialsSection">
+                            <div class="card-header d-flex justify-content-between align-items-center">
                                 <h6 class="mb-0">Credenciales de API</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="enableAPIConfig">
+                                    <label class="form-check-label" for="enableAPIConfig">
+                                        Configurar API
+                                    </label>
+                                </div>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body" id="apiCredentialsContent" style="display: none;">
+                                <div class="alert alert-warning" id="platformApiHelp">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Instrucciones:</strong> Selecciona una plataforma arriba para ver las instrucciones específicas de configuración de API.
+                                </div>
+                                
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="apiKey" class="form-label">API Key / Client ID</label>
-                                            <input type="password" class="form-control" id="apiKey" placeholder="Tu API Key">
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" id="apiKey" placeholder="Tu API Key">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('apiKey')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="apiSecret" class="form-label">API Secret / Client Secret</label>
-                                            <input type="password" class="form-control" id="apiSecret" placeholder="Tu API Secret">
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" id="apiSecret" placeholder="Tu API Secret">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('apiSecret')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                
                                 <div class="mb-3">
                                     <label for="accessToken" class="form-label">Access Token (opcional)</label>
-                                    <input type="password" class="form-control" id="accessToken" placeholder="Access Token si ya lo tienes">
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="accessToken" placeholder="Access Token si ya lo tienes">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('accessToken')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">Solo necesario si ya tienes un token válido</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="webhookUrl" class="form-label">Webhook URL (opcional)</label>
+                                    <input type="url" class="form-control" id="webhookUrl" placeholder="https://tu-dominio.com/webhook">
+                                    <div class="form-text">Para recibir notificaciones de la plataforma</div>
+                                </div>
+                                
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-primary" onclick="testApiCredentials()">
+                                        <i class="fas fa-vial me-1"></i>Probar Credenciales
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info" onclick="showApiInstructions()">
+                                        <i class="fas fa-question-circle me-1"></i>¿Cómo obtener las claves?
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -763,6 +806,179 @@
                     </button>
                     <button type="button" class="btn btn-primary" id="saveAccountWithAPI">
                         <i class="fas fa-link me-2"></i>Conectar con API
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- API Instructions Modal -->
+    <div class="modal fade" id="apiInstructionsModal" tabindex="-1" aria-labelledby="apiInstructionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="apiInstructionsModalLabel">Configuración de API Keys por Plataforma</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
+                                <button class="nav-link active" id="v-pills-linkedin-tab" data-bs-toggle="pill" data-bs-target="#v-pills-linkedin" type="button">
+                                    <i class="fab fa-linkedin me-2"></i>LinkedIn
+                                </button>
+                                <button class="nav-link" id="v-pills-twitter-tab" data-bs-toggle="pill" data-bs-target="#v-pills-twitter" type="button">
+                                    <i class="fab fa-twitter me-2"></i>Twitter
+                                </button>
+                                <button class="nav-link" id="v-pills-instagram-tab" data-bs-toggle="pill" data-bs-target="#v-pills-instagram" type="button">
+                                    <i class="fab fa-instagram me-2"></i>Instagram
+                                </button>
+                                <button class="nav-link" id="v-pills-facebook-tab" data-bs-toggle="pill" data-bs-target="#v-pills-facebook" type="button">
+                                    <i class="fab fa-facebook me-2"></i>Facebook
+                                </button>
+                                <button class="nav-link" id="v-pills-youtube-tab" data-bs-toggle="pill" data-bs-target="#v-pills-youtube" type="button">
+                                    <i class="fab fa-youtube me-2"></i>YouTube
+                                </button>
+                                <button class="nav-link" id="v-pills-tiktok-tab" data-bs-toggle="pill" data-bs-target="#v-pills-tiktok" type="button">
+                                    <i class="fab fa-tiktok me-2"></i>TikTok
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="tab-content" id="v-pills-tabContent">
+                                <!-- LinkedIn Instructions -->
+                                <div class="tab-pane fade show active" id="v-pills-linkedin">
+                                    <h6>LinkedIn API Configuration</h6>
+                                    <div class="alert alert-info">
+                                        <strong>Nota:</strong> LinkedIn requiere autorización para aplicaciones corporativas
+                                    </div>
+                                    <ol class="mb-3">
+                                        <li>Ve a <a href="https://www.linkedin.com/developers/" target="_blank">LinkedIn Developers</a></li>
+                                        <li>Crea una nueva aplicación</li>
+                                        <li>Copia el <strong>Client ID</strong> y <strong>Client Secret</strong></li>
+                                        <li>Configura las URLs de redirección</li>
+                                        <li>Solicita acceso a la Marketing Developer Platform</li>
+                                    </ol>
+                                    <div class="bg-light p-3 rounded">
+                                        <strong>Permisos necesarios:</strong>
+                                        <ul class="mb-0">
+                                            <li>w_member_social</li>
+                                            <li>r_liteprofile</li>
+                                            <li>w_organization_social</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Twitter Instructions -->
+                                <div class="tab-pane fade" id="v-pills-twitter">
+                                    <h6>Twitter API Configuration</h6>
+                                    <div class="alert alert-warning">
+                                        <strong>Importante:</strong> Twitter API v2 requiere suscripción pagada
+                                    </div>
+                                    <ol class="mb-3">
+                                        <li>Ve a <a href="https://developer.twitter.com/" target="_blank">Twitter Developer Portal</a></li>
+                                        <li>Crea un proyecto y una aplicación</li>
+                                        <li>Genera las claves API y tokens</li>
+                                        <li>Configura OAuth 2.0</li>
+                                    </ol>
+                                    <div class="bg-light p-3 rounded">
+                                        <strong>Claves necesarias:</strong>
+                                        <ul class="mb-0">
+                                            <li>API Key (Consumer Key)</li>
+                                            <li>API Secret (Consumer Secret)</li>
+                                            <li>Bearer Token</li>
+                                            <li>Access Token y Access Token Secret</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Instagram Instructions -->
+                                <div class="tab-pane fade" id="v-pills-instagram">
+                                    <h6>Instagram API Configuration</h6>
+                                    <div class="alert alert-info">
+                                        <strong>Nota:</strong> Usa Instagram Basic Display API o Instagram Graph API
+                                    </div>
+                                    <ol class="mb-3">
+                                        <li>Ve a <a href="https://developers.facebook.com/" target="_blank">Facebook Developers</a></li>
+                                        <li>Crea una aplicación</li>
+                                        <li>Agrega el producto Instagram Basic Display</li>
+                                        <li>Configura OAuth redirect URIs</li>
+                                        <li>Obtén el App ID y App Secret</li>
+                                    </ol>
+                                    <div class="bg-light p-3 rounded">
+                                        <strong>Permisos necesarios:</strong>
+                                        <ul class="mb-0">
+                                            <li>instagram_basic</li>
+                                            <li>pages_show_list</li>
+                                            <li>pages_read_engagement</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Facebook Instructions -->
+                                <div class="tab-pane fade" id="v-pills-facebook">
+                                    <h6>Facebook API Configuration</h6>
+                                    <ol class="mb-3">
+                                        <li>Ve a <a href="https://developers.facebook.com/" target="_blank">Facebook Developers</a></li>
+                                        <li>Crea una nueva aplicación</li>
+                                        <li>Agrega el producto Facebook Login</li>
+                                        <li>Configura las URLs válidas de OAuth</li>
+                                        <li>Obtén el App ID y App Secret</li>
+                                    </ol>
+                                    <div class="bg-light p-3 rounded">
+                                        <strong>Permisos necesarios:</strong>
+                                        <ul class="mb-0">
+                                            <li>pages_manage_posts</li>
+                                            <li>pages_read_engagement</li>
+                                            <li>publish_to_groups</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- YouTube Instructions -->
+                                <div class="tab-pane fade" id="v-pills-youtube">
+                                    <h6>YouTube API Configuration</h6>
+                                    <ol class="mb-3">
+                                        <li>Ve a <a href="https://console.developers.google.com/" target="_blank">Google Cloud Console</a></li>
+                                        <li>Crea un nuevo proyecto</li>
+                                        <li>Habilita YouTube Data API v3</li>
+                                        <li>Crea credenciales OAuth 2.0</li>
+                                        <li>Descarga el archivo de credenciales</li>
+                                    </ol>
+                                    <div class="bg-light p-3 rounded">
+                                        <strong>Scopes necesarios:</strong>
+                                        <ul class="mb-0">
+                                            <li>youtube.upload</li>
+                                            <li>youtube.readonly</li>
+                                            <li>youtube.force-ssl</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- TikTok Instructions -->
+                                <div class="tab-pane fade" id="v-pills-tiktok">
+                                    <h6>TikTok API Configuration</h6>
+                                    <div class="alert alert-warning">
+                                        <strong>Beta:</strong> TikTok API está en desarrollo limitado
+                                    </div>
+                                    <ol class="mb-3">
+                                        <li>Ve a <a href="https://developers.tiktok.com/" target="_blank">TikTok Developers</a></li>
+                                        <li>Solicita acceso a la API</li>
+                                        <li>Crea una aplicación</li>
+                                        <li>Configura los endpoints de callback</li>
+                                    </ol>
+                                    <div class="bg-light p-3 rounded">
+                                        <strong>Nota:</strong> El acceso a TikTok API es limitado y requiere aprobación especial.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="openDeveloperConsole()">
+                        <i class="fas fa-external-link-alt me-1"></i>Abrir Console de Desarrollador
                     </button>
                 </div>
             </div>

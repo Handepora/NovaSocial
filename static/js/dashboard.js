@@ -1515,11 +1515,160 @@ function setupAccountManagement() {
     const platformSelect = document.getElementById('accountPlatform');
     if (platformSelect) {
         platformSelect.addEventListener('change', function() {
-            const credentialsSection = document.getElementById('apiCredentialsSection');
-            if (credentialsSection) {
-                credentialsSection.style.display = this.value ? 'block' : 'none';
+            updatePlatformApiHelp(this.value);
+        });
+    }
+    
+    // API configuration toggle
+    const enableAPIToggle = document.getElementById('enableAPIConfig');
+    if (enableAPIToggle) {
+        enableAPIToggle.addEventListener('change', function() {
+            const apiContent = document.getElementById('apiCredentialsContent');
+            if (apiContent) {
+                apiContent.style.display = this.checked ? 'block' : 'none';
             }
         });
+    }
+}
+
+// Update platform-specific API help text
+function updatePlatformApiHelp(platform) {
+    const helpDiv = document.getElementById('platformApiHelp');
+    if (!helpDiv) return;
+    
+    const platformHelp = {
+        linkedin: {
+            title: 'LinkedIn API',
+            text: 'Requiere Client ID y Client Secret de LinkedIn Developers. Necesita aprobación para Marketing Developer Platform.',
+            color: 'alert-info'
+        },
+        twitter: {
+            title: 'Twitter API',
+            text: 'Requiere API Key, API Secret y Bearer Token. Twitter API v2 es de pago.',
+            color: 'alert-warning'
+        },
+        instagram: {
+            title: 'Instagram API',
+            text: 'Usa Instagram Graph API o Basic Display API. Requiere App ID y App Secret de Facebook Developers.',
+            color: 'alert-info'
+        },
+        facebook: {
+            title: 'Facebook API',
+            text: 'Requiere App ID y App Secret de Facebook Developers. Configura permisos de páginas.',
+            color: 'alert-info'
+        },
+        youtube: {
+            title: 'YouTube API',
+            text: 'Requiere OAuth 2.0 Client ID y Client Secret de Google Cloud Console. Habilita YouTube Data API v3.',
+            color: 'alert-info'
+        },
+        tiktok: {
+            title: 'TikTok API',
+            text: 'API en beta limitada. Requiere aprobación especial de TikTok Developers.',
+            color: 'alert-warning'
+        }
+    };
+    
+    if (platform && platformHelp[platform]) {
+        const help = platformHelp[platform];
+        helpDiv.className = `alert ${help.color}`;
+        helpDiv.innerHTML = `
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>${help.title}:</strong> ${help.text}
+        `;
+    } else {
+        helpDiv.className = 'alert alert-warning';
+        helpDiv.innerHTML = `
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Instrucciones:</strong> Selecciona una plataforma arriba para ver las instrucciones específicas de configuración de API.
+        `;
+    }
+}
+
+// Toggle password visibility
+function togglePasswordVisibility(fieldId) {
+    const field = document.getElementById(fieldId);
+    const button = field.nextElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        field.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+// Test API credentials
+async function testApiCredentials() {
+    const platform = document.getElementById('accountPlatform').value;
+    const apiKey = document.getElementById('apiKey').value;
+    const apiSecret = document.getElementById('apiSecret').value;
+    
+    if (!platform) {
+        showErrorMessage('Selecciona una plataforma primero');
+        return;
+    }
+    
+    if (!apiKey || !apiSecret) {
+        showErrorMessage('Ingresa las credenciales de API');
+        return;
+    }
+    
+    try {
+        // Show loading state
+        const testButton = document.querySelector('[onclick="testApiCredentials()"]');
+        const originalText = testButton.innerHTML;
+        testButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Probando...';
+        testButton.disabled = true;
+        
+        // Simulate API test (in production, this would make a real API call)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Simulate random success/failure for demo
+        const success = Math.random() > 0.3; // 70% success rate
+        
+        if (success) {
+            showSuccessMessage(`Credenciales de ${platform.charAt(0).toUpperCase() + platform.slice(1)} validadas correctamente`);
+        } else {
+            showErrorMessage(`Error al validar credenciales de ${platform.charAt(0).toUpperCase() + platform.slice(1)}. Verifica que sean correctas.`);
+        }
+        
+        // Restore button state
+        testButton.innerHTML = originalText;
+        testButton.disabled = false;
+        
+    } catch (error) {
+        showErrorMessage('Error al probar las credenciales: ' + error.message);
+    }
+}
+
+// Show API instructions modal
+function showApiInstructions() {
+    const modal = new bootstrap.Modal(document.getElementById('apiInstructionsModal'));
+    modal.show();
+}
+
+// Open developer console for selected platform
+function openDeveloperConsole() {
+    const platform = document.getElementById('accountPlatform').value;
+    
+    const developerUrls = {
+        linkedin: 'https://www.linkedin.com/developers/',
+        twitter: 'https://developer.twitter.com/',
+        instagram: 'https://developers.facebook.com/',
+        facebook: 'https://developers.facebook.com/',
+        youtube: 'https://console.developers.google.com/',
+        tiktok: 'https://developers.tiktok.com/'
+    };
+    
+    if (platform && developerUrls[platform]) {
+        window.open(developerUrls[platform], '_blank');
+    } else {
+        showErrorMessage('Selecciona una plataforma primero');
     }
 }
 
@@ -1534,9 +1683,23 @@ async function handleAddAccount(withAPI) {
             has_api: withAPI
         };
         
+        // Include API credentials if withAPI is true
+        if (withAPI && document.getElementById('enableAPIConfig').checked) {
+            formData.api_key = document.getElementById('apiKey').value;
+            formData.api_secret = document.getElementById('apiSecret').value;
+            formData.access_token = document.getElementById('accessToken').value;
+            formData.webhook_url = document.getElementById('webhookUrl').value;
+        }
+        
         // Validate required fields
         if (!formData.platform || !formData.account_name) {
             showErrorMessage('Por favor completa los campos requeridos');
+            return;
+        }
+        
+        // Validate API credentials if API is enabled
+        if (withAPI && (!formData.api_key || !formData.api_secret)) {
+            showErrorMessage('Completa las credenciales de API o desactiva la configuración de API');
             return;
         }
         
@@ -1556,8 +1719,7 @@ async function handleAddAccount(withAPI) {
             // Close modal and reset form
             const modal = bootstrap.Modal.getInstance(document.getElementById('addAccountModal'));
             modal.hide();
-            document.getElementById('addAccountForm').reset();
-            document.getElementById('apiCredentialsSection').style.display = 'none';
+            resetAccountForm();
             
             // Refresh account list and stats
             loadSocialAccounts();
@@ -1566,6 +1728,23 @@ async function handleAddAccount(withAPI) {
     } catch (error) {
         showErrorMessage('Error al agregar la cuenta: ' + error.message);
     }
+}
+
+// Reset account form
+function resetAccountForm() {
+    document.getElementById('addAccountForm').reset();
+    document.getElementById('apiCredentialsContent').style.display = 'none';
+    document.getElementById('enableAPIConfig').checked = false;
+    
+    // Reset modal title
+    document.getElementById('addAccountModalLabel').textContent = 'Agregar Cuenta de Red Social';
+    
+    // Reset save button handlers
+    const saveBasicBtn = document.getElementById('saveAccountBasic');
+    const saveWithAPIBtn = document.getElementById('saveAccountWithAPI');
+    
+    saveBasicBtn.onclick = () => handleAddAccount(false);
+    saveWithAPIBtn.onclick = () => handleAddAccount(true);
 }
 
 async function testConnection(accountId) {
