@@ -1904,9 +1904,10 @@ async function saveAIProvider(providerName) {
 }
 
 async function testAIProvider(providerName) {
+    const testButton = document.querySelector(`[onclick="testAIProvider('${providerName}')"]`);
+    const originalContent = testButton.innerHTML;
+    
     try {
-        const testButton = document.querySelector(`[onclick="testAIProvider('${providerName}')"]`);
-        const originalContent = testButton.innerHTML;
         testButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         testButton.disabled = true;
         
@@ -1914,25 +1915,30 @@ async function testAIProvider(providerName) {
             method: 'POST'
         });
         
-        if (response.status === 'success') {
-            showSuccessMessage(response.message);
+        console.log('Test response:', response); // Debug log
+        
+        if (response && response.status === 'success') {
+            showSuccessMessage(response.message || 'Conexión exitosa');
             if (response.test_content) {
                 showSuccessMessage('Contenido de prueba: ' + response.test_content);
             }
+        } else if (response && response.status === 'error') {
+            showErrorMessage(response.message || 'Error al probar el proveedor');
         } else {
-            showErrorMessage(response.message);
+            showErrorMessage('Respuesta inesperada del servidor');
         }
         
         // Refresh provider list and stats
-        loadAIProviders();
-        loadAIProviderStats();
-        
-        // Restore button
-        testButton.innerHTML = originalContent;
-        testButton.disabled = false;
+        await loadAIProviders();
+        await loadAIProviderStats();
         
     } catch (error) {
+        console.error('Error testing AI provider:', error);
         showErrorMessage('Error al probar el proveedor: ' + error.message);
+    } finally {
+        // Always restore button
+        testButton.innerHTML = originalContent;
+        testButton.disabled = false;
     }
 }
 

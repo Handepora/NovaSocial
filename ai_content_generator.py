@@ -222,47 +222,77 @@ Genera el contenido optimizado para {platform} con hashtags apropiados al final.
     
     def _generate_with_perplexity(self, prompt: str, api_key: str) -> Dict:
         """Generate content using Perplexity API"""
-        config = self.provider_configs['perplexity']
-        headers = {
-            'Authorization': f'Bearer {api_key}',
-            'Content-Type': 'application/json'
-        }
-        
-        payload = {
-            'model': config['model'],
-            'messages': [
-                {
-                    'role': 'system',
-                    'content': 'Eres un experto en marketing de redes sociales. Crea contenido atractivo basado en información actualizada.'
-                },
-                {
-                    'role': 'user',
-                    'content': prompt
-                }
-            ],
-            'max_tokens': 1500,
-            'temperature': 0.7,
-            'search_recency_filter': 'month'
-        }
-        
-        response = requests.post(config['api_url'], headers=headers, json=payload)
-        
-        if response.status_code == 200:
-            data = response.json()
-            content = data['choices'][0]['message']['content']
-            
-            return {
-                'success': True,
-                'content': content,
-                'provider': 'perplexity',
-                'model': config['model'],
-                'citations': data.get('citations', [])
+        try:
+            config = self.provider_configs['perplexity']
+            headers = {
+                'Authorization': f'Bearer {api_key}',
+                'Content-Type': 'application/json'
             }
-        else:
+            
+            payload = {
+                'model': config['model'],
+                'messages': [
+                    {
+                        'role': 'system',
+                        'content': 'Eres un experto en marketing de redes sociales. Crea contenido atractivo basado en información actualizada.'
+                    },
+                    {
+                        'role': 'user',
+                        'content': prompt
+                    }
+                ],
+                'max_tokens': 1500,
+                'temperature': 0.7,
+                'search_recency_filter': 'month'
+            }
+            
+            logging.debug(f"Perplexity request payload: {payload}")
+            response = requests.post(config['api_url'], headers=headers, json=payload, timeout=30)
+            logging.debug(f"Perplexity response status: {response.status_code}")
+            logging.debug(f"Perplexity response text: {response.text[:500]}...")
+            
+            if response.status_code == 200:
+                data = response.json()
+                if 'choices' in data and len(data['choices']) > 0:
+                    content = data['choices'][0]['message']['content']
+                    
+                    return {
+                        'success': True,
+                        'content': content,
+                        'provider': 'perplexity',
+                        'model': config['model'],
+                        'citations': data.get('citations', [])
+                    }
+                else:
+                    return {
+                        'success': False,
+                        'error': 'Respuesta de Perplexity sin contenido válido',
+                        'details': str(data)
+                    }
+            else:
+                return {
+                    'success': False,
+                    'error': f'Error de Perplexity API: {response.status_code}',
+                    'details': response.text
+                }
+        except requests.exceptions.Timeout:
             return {
                 'success': False,
-                'error': f'Error de Perplexity API: {response.status_code}',
-                'details': response.text
+                'error': 'Timeout al conectar con Perplexity API',
+                'details': 'La solicitud tardó más de 30 segundos'
+            }
+        except requests.exceptions.RequestException as e:
+            return {
+                'success': False,
+                'error': f'Error de conexión con Perplexity: {str(e)}',
+                'details': str(e)
+            }
+        except Exception as e:
+            logging.error(f"Unexpected error in Perplexity generation: {e}")
+            return {
+                'success': False,
+                'error': f'Error inesperado: {str(e)}',
+                'details': str(e)
             }
     
     def get_available_providers(self) -> List[str]:

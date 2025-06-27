@@ -677,30 +677,48 @@ def test_ai_provider(provider_name):
         # Find the provider
         provider = next((p for p in AI_PROVIDERS if p['name'] == provider_name), None)
         if not provider:
-            return jsonify({"error": "Provider not found"}), 404
+            return jsonify({
+                "status": "error",
+                "message": "Proveedor no encontrado"
+            }), 404
+        
+        # Check if provider has API key configured
+        if provider['status'] == 'disconnected':
+            return jsonify({
+                "status": "error",
+                "message": f"API key no configurada para {provider['display_name']}"
+            }), 400
         
         # Test with a simple content generation
         test_prompt = "Genera un saludo breve y profesional"
-        result = content_generator.generate_content(test_prompt, 'linkedin', provider_name)
+        logging.debug(f"Testing {provider_name} with prompt: {test_prompt}")
         
-        if result['success']:
+        result = content_generator.generate_content(test_prompt, 'linkedin', provider_name)
+        logging.debug(f"Test result for {provider_name}: {result}")
+        
+        if result and result.get('success'):
             provider['status'] = 'connected'
             provider['last_tested'] = datetime.now().isoformat()
             return jsonify({
                 "status": "success",
                 "message": f"Conexión exitosa con {provider['display_name']}",
-                "test_content": result['content'][:100] + "..." if len(result['content']) > 100 else result['content']
+                "test_content": result['content'][:100] + "..." if len(result.get('content', '')) > 100 else result.get('content', '')
             })
         else:
             provider['status'] = 'error'
             provider['last_tested'] = datetime.now().isoformat()
+            error_msg = result.get('error', 'Error desconocido') if result else 'No se recibió respuesta'
             return jsonify({
                 "status": "error",
-                "message": f"Error al conectar con {provider['display_name']}: {result['error']}"
+                "message": f"Error al conectar con {provider['display_name']}: {error_msg}"
             }), 400
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error(f"Exception testing AI provider {provider_name}: {str(e)}")
+        return jsonify({
+            "status": "error", 
+            "message": f"Error interno del servidor: {str(e)}"
+        }), 500
 
 @app.route('/api/ai-providers/<provider_name>', methods=['DELETE'])
 def disconnect_ai_provider(provider_name):
