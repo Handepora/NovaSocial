@@ -117,12 +117,32 @@ class AIContentGenerator:
                 'tone': 'trending y divertido',
                 'hashtags': 5,
                 'features': 'trends, challenges'
+            },
+            'web': {
+                'max_chars': 5000,
+                'tone': 'informativo y detallado',
+                'hashtags': 3,
+                'features': 'artículos, blogs, contenido extenso'
             }
         }
         
         spec = platform_specs.get(platform, platform_specs['linkedin'])
         
-        enhanced = f"""
+        if platform == 'twitter':
+            enhanced = f"""
+Crea un tweet atractivo sobre: {prompt}
+
+Requisitos específicos:
+- Máximo 280 caracteres INCLUYENDO hashtags
+- Tono: {spec['tone']}
+- Incluir exactamente {spec['hashtags']} hashtags relevantes al final
+- Contenido directo, sin meta-texto ni explicaciones
+- No incluyas frases como "Aquí tienes" o "¡Claro!"
+
+Genera ÚNICAMENTE el contenido del tweet listo para publicar.
+"""
+        else:
+            enhanced = f"""
 Crea contenido para {platform.upper()} con estas especificaciones:
 - Máximo {spec['max_chars']} caracteres
 - Tono: {spec['tone']}

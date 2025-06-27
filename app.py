@@ -1,5 +1,6 @@
 import os
 import logging
+import re
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 from datetime import datetime, timedelta
@@ -10,6 +11,40 @@ from ai_content_generator import content_generator
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
+
+def process_twitter_content(content):
+    """Process Twitter content to extract clean text and hashtags"""
+    # Remove meta-text like "¡Claro Aquí tienes" or "Here's a tweet"
+    meta_phrases = [
+        r'¡claro[^"]*"',
+        r'aquí tienes[^"]*"',
+        r'here\'s[^"]*:',
+        r'here is[^"]*:',
+        r'"[^"]*puedes hacerme[^"]*"',
+        r'tweet sobre[^"]*:',
+        r'contenido[^"]*para twitter[^"]*:'
+    ]
+    
+    cleaned_content = content
+    for phrase in meta_phrases:
+        cleaned_content = re.sub(phrase, '', cleaned_content, flags=re.IGNORECASE)
+    
+    # Extract hashtags
+    hashtag_pattern = r'#\w+'
+    hashtags = re.findall(hashtag_pattern, cleaned_content)
+    
+    # Remove hashtags from main content for cleaner display
+    main_content = re.sub(hashtag_pattern, '', cleaned_content).strip()
+    
+    # Clean up extra quotes and formatting
+    main_content = re.sub(r'^["\'"]*|["\'"]*$', '', main_content).strip()
+    main_content = re.sub(r'\n+', ' ', main_content).strip()
+    
+    # If content is still too meta or empty, create a simple fallback
+    if not main_content or len(main_content) < 10 or 'puedes hacerme' in main_content.lower():
+        main_content = "Contenido generado automáticamente"
+    
+    return main_content, hashtags
 
 # Create Flask app
 app = Flask(__name__)
@@ -261,14 +296,19 @@ def generate_content():
             
             if result and result.get('success'):
                 content = result['content']
-                # Extract hashtags from content if present
-                if '#' in content:
-                    parts = content.split('#')
-                    main_content = parts[0].strip()
-                    hashtags_found = ['#' + tag.split()[0] for tag in parts[1:] if tag.strip()]
+                
+                # Special processing for Twitter
+                if platform == 'twitter':
+                    main_content, hashtags_found = process_twitter_content(content)
                 else:
-                    main_content = content
-                    hashtags_found = []
+                    # Extract hashtags from content if present
+                    if '#' in content:
+                        parts = content.split('#')
+                        main_content = parts[0].strip()
+                        hashtags_found = ['#' + tag.split()[0] for tag in parts[1:] if tag.strip()]
+                    else:
+                        main_content = content
+                        hashtags_found = []
                 
                 response["content"][platform] = main_content
                 response["hashtags"][platform] = hashtags_found
