@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media AI Dashboard</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky pt-3">
+                    <!-- User Info -->
+                    <div class="user-info mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-circle me-3">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Empresa X</h6>
+                                <small class="text-muted">Admin</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#dashboard" data-view="dashboard">
+                                <i class="fas fa-home me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#calendario" data-view="calendario">
+                                <i class="fas fa-calendar me-2"></i>
+                                Calendario
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#crear-contenido" data-view="crear-contenido">
+                                <i class="fas fa-sparkles me-2"></i>
+                                Crear Contenido
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#validacion" data-view="validacion">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Validación
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#analiticas" data-view="analiticas">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Analíticas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#configuracion" data-view="configuracion">
+                                <i class="fas fa-cog me-2"></i>
+                                Configuración
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Dashboard View -->
+                <div id="dashboard-view" class="view active">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Dashboard</h1>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <!-- Today's Posts Card -->
+                        <div class="col-md-6">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h5 class="card-title">Publicaciones Programadas para Hoy</h5>
+                                        <i class="fas fa-calendar-day text-primary"></i>
+                                    </div>
+                                    <div class="metric-number" id="today-posts-count">0</div>
+                                    <div id="today-posts-list" class="mt-3">
+                                        <!-- Posts will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pending Approval Card -->
+                        <div class="col-md-6">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h5 class="card-title">Pendientes de Aprobación</h5>
+                                        <i class="fas fa-clock text-warning"></i>
+                                    </div>
+                                    <div class="metric-number" id="pending-posts-count">0</div>
+                                    <button class="btn btn-outline-primary mt-3" onclick="showView('validacion')">
+                                        Ir a Validación
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Performance Chart -->
+                        <div class="col-md-6">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h5 class="card-title">Rendimiento General (Últimos 7 días)</h5>
+                                        <i class="fas fa-chart-line text-success"></i>
+                                    </div>
+                                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Creation -->
+                        <div class="col-md-6">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h5 class="card-title">Creación Rápida</h5>
+                                        <i class="fas fa-plus-circle text-primary"></i>
+                                    </div>
+                                    <form id="quick-create-form">
+                                        <div class="mb-3">
+                                            <label for="quick-topic" class="form-label">Tema del post</label>
+                                            <input type="text" class="form-control" id="quick-topic" placeholder="Ej: Nuevo producto, tips, noticias...">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-sparkles me-2"></i>
+                                            Generar Borrador
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Calendar View -->
+                <div id="calendario-view" class="view">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Calendario</h1>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary active" data-calendar-view="month">Mes</button>
+                            <button type="button" class="btn btn-outline-primary" data-calendar-view="week">Semana</button>
+                            <button type="button" class="btn btn-outline-primary" data-calendar-view="day">Día</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="calendar-container">
+                                <!-- Calendar will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Create Content View -->
+                <div id="crear-contenido-view" class="view">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Crear Contenido</h1>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Formulario de Entrada</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="content-creation-form">
+                                        <div class="mb-3">
+                                            <label for="main-topic" class="form-label">Tema Principal</label>
+                                            <textarea class="form-control" id="main-topic" rows="3" placeholder="Describe el tema o idea para tu contenido..."></textarea>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="tone-voice" class="form-label">Tono de Voz</label>
+                                            <select class="form-select" id="tone-voice">
+                                                <option value="profesional">Profesional</option>
+                                                <option value="ingenioso">Ingenioso</option>
+                                                <option value="inspirador">Inspirador</option>
+                                                <option value="casual">Casual</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Plataformas</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="linkedin" id="platform-linkedin">
+                                                <label class="form-check-label" for="platform-linkedin">
+                                                    <i class="fab fa-linkedin text-primary me-2"></i>LinkedIn
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="twitter" id="platform-twitter">
+                                                <label class="form-check-label" for="platform-twitter">
+                                                    <i class="fab fa-twitter text-info me-2"></i>Twitter
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="instagram" id="platform-instagram">
+                                                <label class="form-check-label" for="platform-instagram">
+                                                    <i class="fab fa-instagram text-danger me-2"></i>Instagram
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="web" id="platform-web">
+                                                <label class="form-check-label" for="platform-web">
+                                                    <i class="fas fa-globe text-success me-2"></i>Web
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-sparkles me-2"></i>
+                                            Generar Contenido
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Área de Resultados</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="generated-content">
+                                        <div class="text-center text-muted py-5">
+                                            <i class="fas fa-robot fa-3x mb-3"></i>
+                                            <p>Completa el formulario y haz clic en "Generar Contenido" para ver los resultados</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Validation View -->
+                <div id="validacion-view" class="view">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Validación</h1>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-warning">
+                                    <h5 class="mb-0">Pendiente de Aprobación</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="pending-approval-list">
+                                        <!-- Pending posts will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-danger">
+                                    <h5 class="mb-0">Rechazado</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="rejected-list">
+                                        <div class="text-center text-muted py-4">
+                                            <i class="fas fa-times-circle fa-2x mb-2"></i>
+                                            <p>No hay posts rechazados</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analytics View -->
+                <div id="analiticas-view" class="view">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Analíticas</h1>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Crecimiento de Seguidores</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="followersChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Tasa de Interacción por Plataforma</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="engagementChart" width="400" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Publicaciones con Mejor Rendimiento</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-dark table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Publicación</th>
+                                                    <th>Plataforma</th>
+                                                    <th>Interacciones</th>
+                                                    <th>Alcance</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="top-posts-table">
+                                                <!-- Top posts will be loaded here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Configuration View -->
+                <div id="configuracion-view" class="view">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Configuración</h1>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-cogs fa-3x mb-3"></i>
+                                <h4>Configuración</h4>
+                                <p>Panel de configuración - Próximamente</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Post Detail Modal -->
+    <div class="modal fade" id="postDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles del Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="post-detail-content">
+                        <!-- Post details will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-warning">Editar</button>
+                    <button type="button" class="btn btn-danger">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
