@@ -213,7 +213,7 @@ def get_analytics():
     """Get analytics data"""
     return jsonify(MOCK_ANALYTICS)
 
-@app.route('/api/posts/generate', methods=['POST'])
+@app.route('/api/generate-content', methods=['POST'])
 def generate_content():
     """Generate content using AI providers"""
     try:

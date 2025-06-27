@@ -287,7 +287,7 @@ function setupEventListeners() {
 async function generateContent() {
     const topic = document.getElementById('main-topic').value;
     const tone = document.getElementById('tone-voice').value;
-    const platforms = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+    const platforms = Array.from(document.querySelectorAll('#content-creation-form input[type="checkbox"]:checked')).map(cb => cb.value);
     const provider = document.getElementById('ai-provider')?.value || 'perplexity';
     
     if (!topic || platforms.length === 0) {
