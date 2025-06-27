@@ -5,6 +5,8 @@ from flask_cors import CORS
 from datetime import datetime, timedelta
 import json
 import uuid
+from encryption import encryption_service
+from ai_content_generator import content_generator
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -16,7 +18,37 @@ app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-prod
 # Enable CORS for API endpoints
 CORS(app)
 
-# In-memory storage for social media accounts and scheduled posts
+# In-memory storage for social media accounts, AI providers, and scheduled posts
+AI_PROVIDERS = [
+    {
+        "id": 1,
+        "name": "openai",
+        "display_name": "OpenAI GPT-4o",
+        "api_key": None,
+        "status": "disconnected",
+        "is_default": True,
+        "model": "gpt-4o"
+    },
+    {
+        "id": 2,
+        "name": "gemini",
+        "display_name": "Google Gemini 2.5 Flash",
+        "api_key": None,
+        "status": "disconnected",
+        "is_default": False,
+        "model": "gemini-2.5-flash"
+    },
+    {
+        "id": 3,
+        "name": "perplexity",
+        "display_name": "Perplexity Sonar",
+        "api_key": None,
+        "status": "disconnected",
+        "is_default": False,
+        "model": "llama-3.1-sonar-small-128k-online"
+    }
+]
+
 SOCIAL_ACCOUNTS = [
     {
         "id": 1,
@@ -27,7 +59,8 @@ SOCIAL_ACCOUNTS = [
         "auto_posting": True,
         "is_default": True,
         "connected_date": "2025-06-20T10:00:00",
-        "has_api": True
+        "has_api": True,
+        "encrypted_credentials": None
     },
     {
         "id": 2,
@@ -38,7 +71,8 @@ SOCIAL_ACCOUNTS = [
         "auto_posting": True,
         "is_default": True,
         "connected_date": "2025-06-21T14:30:00",
-        "has_api": True
+        "has_api": True,
+        "encrypted_credentials": None
     },
     {
         "id": 3,
@@ -49,7 +83,8 @@ SOCIAL_ACCOUNTS = [
         "auto_posting": False,
         "is_default": False,
         "connected_date": "2025-06-27T09:00:00",
-        "has_api": False
+        "has_api": False,
+        "encrypted_credentials": None
     }
 ]
 
@@ -159,23 +194,62 @@ def get_analytics():
 
 @app.route('/api/posts/generate', methods=['POST'])
 def generate_content():
-    """Mock content generation endpoint"""
-    # In a real app, this would use AI to generate content
-    mock_generated = {
-        "linkedin": {
-            "content": "Contenido profesional generado para LinkedIn con enfoque en networking y crecimiento profesional.",
-            "hashtags": ["#LinkedIn", "#Profesional", "#Networking"]
-        },
-        "twitter": {
-            "content": "Tweet conciso y atractivo con llamada a la acción efectiva.",
-            "hashtags": ["#Twitter", "#SocialMedia", "#Marketing"]
-        },
-        "instagram": {
-            "content": "Post visual atractivo para Instagram con descripción engaging y hashtags relevantes.",
-            "hashtags": ["#Instagram", "#Visual", "#Content"]
+    """Generate content using AI providers"""
+    try:
+        data = request.get_json()
+        topic = data.get('topic', 'tecnología')
+        platforms = data.get('platforms', ['linkedin'])
+        provider = data.get('provider', 'openai')
+        
+        # Check if provider has API key configured
+        ai_provider = next((p for p in AI_PROVIDERS if p['name'] == provider), None)
+        if not ai_provider or ai_provider['status'] != 'connected':
+            return jsonify({
+                "status": "error",
+                "error": f"Proveedor {provider} no configurado",
+                "requires_setup": True,
+                "available_providers": [p['name'] for p in AI_PROVIDERS if p['status'] == 'connected']
+            }), 400
+        
+        # Generate content for each platform
+        response = {
+            "status": "success",
+            "topic": topic,
+            "provider": provider,
+            "content": {},
+            "hashtags": {},
+            "generated_at": datetime.now().isoformat()
         }
-    }
-    return jsonify(mock_generated)
+        
+        for platform in platforms:
+            prompt = f"Crea contenido sobre '{topic}' para {platform}"
+            result = content_generator.generate_content(prompt, platform, provider)
+            
+            if result['success']:
+                content = result['content']
+                # Extract hashtags from content if present
+                if '#' in content:
+                    parts = content.split('#')
+                    main_content = parts[0].strip()
+                    hashtags_found = ['#' + tag.split()[0] for tag in parts[1:] if tag.strip()]
+                else:
+                    main_content = content
+                    hashtags_found = []
+                
+                response["content"][platform] = main_content
+                response["hashtags"][platform] = hashtags_found
+                
+                # Add citations if from Perplexity
+                if provider == 'perplexity' and 'citations' in result:
+                    response["citations"] = result['citations']
+            else:
+                response["content"][platform] = f"Error generando contenido: {result['error']}"
+                response["hashtags"][platform] = []
+        
+        return jsonify(response)
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/posts/approve/<int:post_id>', methods=['POST'])
 def approve_post(post_id):
@@ -360,8 +434,19 @@ def add_account():
             "auto_posting": data.get('auto_posting', False),
             "is_default": data.get('is_default', False),
             "connected_date": datetime.now().isoformat(),
-            "has_api": data.get('has_api', False)
+            "has_api": data.get('has_api', False),
+            "encrypted_credentials": None
         }
+        
+        # Encrypt and store API credentials if provided
+        if data.get('api_key') or data.get('api_secret'):
+            credentials = {
+                'api_key': data.get('api_key'),
+                'api_secret': data.get('api_secret'),
+                'access_token': data.get('access_token'),
+                'webhook_url': data.get('webhook_url')
+            }
+            new_account['encrypted_credentials'] = encryption_service.encrypt_credentials(credentials)
         
         # If this is set as default, remove default from other accounts of same platform
         if new_account['is_default']:
@@ -491,6 +576,115 @@ def get_accounts_stats():
             "pending": pending,
             "error": error,
             "total": len(SOCIAL_ACCOUNTS)
+        })
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# AI Provider Management Endpoints
+@app.route('/api/ai-providers')
+def get_ai_providers():
+    """Get all AI providers"""
+    # Check environment variables and update status
+    for provider in AI_PROVIDERS:
+        env_key = f"{provider['name'].upper()}_API_KEY"
+        has_key = os.environ.get(env_key) is not None
+        provider['status'] = 'connected' if has_key else 'disconnected'
+    
+    return jsonify(AI_PROVIDERS)
+
+@app.route('/api/ai-providers/<provider_name>', methods=['PUT'])
+def update_ai_provider(provider_name):
+    """Update AI provider credentials"""
+    try:
+        data = request.get_json()
+        api_key = data.get('api_key')
+        
+        if not api_key:
+            return jsonify({"error": "API key is required"}), 400
+        
+        # Find the provider
+        provider = next((p for p in AI_PROVIDERS if p['name'] == provider_name), None)
+        if not provider:
+            return jsonify({"error": "Provider not found"}), 404
+        
+        # Set environment variable (in production, this would be stored securely)
+        env_key = f"{provider_name.upper()}_API_KEY"
+        os.environ[env_key] = api_key
+        
+        # Update provider status
+        provider['status'] = 'connected'
+        provider['updated_at'] = datetime.now().isoformat()
+        
+        # If this is set as default, remove default from others
+        if data.get('is_default'):
+            for p in AI_PROVIDERS:
+                p['is_default'] = False
+            provider['is_default'] = True
+        
+        return jsonify({
+            "status": "success",
+            "message": f"API key para {provider['display_name']} configurada exitosamente",
+            "provider": provider
+        })
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/ai-providers/<provider_name>/test', methods=['POST'])
+def test_ai_provider(provider_name):
+    """Test AI provider connection"""
+    try:
+        # Find the provider
+        provider = next((p for p in AI_PROVIDERS if p['name'] == provider_name), None)
+        if not provider:
+            return jsonify({"error": "Provider not found"}), 404
+        
+        # Test with a simple content generation
+        test_prompt = "Genera un saludo breve y profesional"
+        result = content_generator.generate_content(test_prompt, 'linkedin', provider_name)
+        
+        if result['success']:
+            provider['status'] = 'connected'
+            provider['last_tested'] = datetime.now().isoformat()
+            return jsonify({
+                "status": "success",
+                "message": f"Conexión exitosa con {provider['display_name']}",
+                "test_content": result['content'][:100] + "..." if len(result['content']) > 100 else result['content']
+            })
+        else:
+            provider['status'] = 'error'
+            provider['last_tested'] = datetime.now().isoformat()
+            return jsonify({
+                "status": "error",
+                "message": f"Error al conectar con {provider['display_name']}: {result['error']}"
+            }), 400
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/ai-providers/<provider_name>', methods=['DELETE'])
+def disconnect_ai_provider(provider_name):
+    """Disconnect AI provider by removing API key"""
+    try:
+        # Find the provider
+        provider = next((p for p in AI_PROVIDERS if p['name'] == provider_name), None)
+        if not provider:
+            return jsonify({"error": "Provider not found"}), 404
+        
+        # Remove environment variable
+        env_key = f"{provider_name.upper()}_API_KEY"
+        if env_key in os.environ:
+            del os.environ[env_key]
+        
+        # Update provider status
+        provider['status'] = 'disconnected'
+        provider['is_default'] = False
+        provider['disconnected_at'] = datetime.now().isoformat()
+        
+        return jsonify({
+            "status": "success",
+            "message": f"API key para {provider['display_name']} eliminada exitosamente"
         })
         
     except Exception as e:

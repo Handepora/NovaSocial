@@ -1366,7 +1366,9 @@ async function loadConfigurationData() {
     try {
         await Promise.all([
             loadSocialAccounts(),
-            loadAccountStats()
+            loadAccountStats(),
+            loadAIProviders(),
+            loadAIProviderStats()
         ]);
     } catch (error) {
         console.error('Error loading configuration data:', error);
@@ -1745,6 +1747,245 @@ function resetAccountForm() {
     
     saveBasicBtn.onclick = () => handleAddAccount(false);
     saveWithAPIBtn.onclick = () => handleAddAccount(true);
+}
+
+// AI Provider Management
+async function loadAIProviders() {
+    try {
+        const providers = await fetchData('/api/ai-providers');
+        displayAIProviders(providers);
+        updateAIProviderStatus(providers);
+    } catch (error) {
+        console.error('Error loading AI providers:', error);
+    }
+}
+
+async function loadAIProviderStats() {
+    try {
+        const providers = await fetchData('/api/ai-providers');
+        updateAIProviderStats(providers);
+    } catch (error) {
+        console.error('Error loading AI provider stats:', error);
+    }
+}
+
+function displayAIProviders(providers) {
+    const container = document.getElementById('ai-providers-list');
+    if (!container) return;
+    
+    if (providers.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="fas fa-robot fa-3x mb-3"></i>
+                <h6>No hay proveedores de IA configurados</h6>
+                <p>Configura al menos un proveedor para generar contenido automáticamente</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = providers.map(provider => {
+        const statusBadge = getAIProviderStatusBadge(provider.status);
+        const providerIcon = getAIProviderIcon(provider.name);
+        
+        return `
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <i class="${providerIcon} me-3 fa-2x"></i>
+                            <div>
+                                <h6 class="mb-1">${provider.display_name}</h6>
+                                <div class="text-muted small">
+                                    Modelo: ${provider.model}
+                                    ${provider.is_default ? '<span class="badge bg-primary ms-2">Predeterminado</span>' : ''}
+                                </div>
+                                ${provider.last_tested ? 
+                                    `<div class="text-muted small mt-1">Última prueba: ${formatDate(provider.last_tested)}</div>` : ''
+                                }
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            ${statusBadge}
+                            <div class="btn-group btn-group-sm">
+                                ${provider.status === 'connected' ? 
+                                    `<button class="btn btn-outline-success" onclick="testAIProvider('${provider.name}')" title="Probar conexión">
+                                        <i class="fas fa-vial"></i>
+                                    </button>` : 
+                                    `<button class="btn btn-outline-warning" onclick="openAIProviderModal('${provider.name}')" title="Configurar">
+                                        <i class="fas fa-key"></i>
+                                    </button>`
+                                }
+                                <button class="btn btn-outline-primary" onclick="setDefaultAIProvider('${provider.name}')" title="Establecer como predeterminado">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                ${provider.status === 'connected' ? 
+                                    `<button class="btn btn-outline-danger" onclick="disconnectAIProvider('${provider.name}')" title="Desconectar">
+                                        <i class="fas fa-unlink"></i>
+                                    </button>` : ''
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function getAIProviderStatusBadge(status) {
+    const badges = {
+        connected: '<span class="badge bg-success">Conectado</span>',
+        disconnected: '<span class="badge bg-secondary">Desconectado</span>',
+        error: '<span class="badge bg-danger">Error</span>'
+    };
+    return badges[status] || badges.disconnected;
+}
+
+function getAIProviderIcon(provider) {
+    const icons = {
+        openai: 'fas fa-brain text-success',
+        gemini: 'fas fa-gem text-primary',
+        perplexity: 'fas fa-search text-warning'
+    };
+    return icons[provider] || 'fas fa-robot';
+}
+
+function updateAIProviderStatus(providers) {
+    providers.forEach(provider => {
+        const statusElement = document.getElementById(`${provider.name}-status`);
+        if (statusElement) {
+            statusElement.className = `badge bg-${provider.status === 'connected' ? 'success' : 'secondary'}`;
+            statusElement.textContent = provider.status === 'connected' ? 'Conectado' : 'Desconectado';
+        }
+    });
+}
+
+function updateAIProviderStats(providers) {
+    const connected = providers.filter(p => p.status === 'connected').length;
+    const defaultProvider = providers.find(p => p.is_default);
+    
+    const connectedElement = document.getElementById('connected-ai-providers');
+    if (connectedElement) connectedElement.textContent = connected;
+    
+    const defaultElement = document.getElementById('default-ai-provider');
+    if (defaultElement) {
+        defaultElement.textContent = defaultProvider ? defaultProvider.display_name : 'No configurado';
+    }
+}
+
+async function saveAIProvider(providerName) {
+    try {
+        const apiKey = document.getElementById(`${providerName}-api-key`).value;
+        
+        if (!apiKey) {
+            showErrorMessage('Por favor ingresa la API key');
+            return;
+        }
+        
+        const response = await fetchData(`/api/ai-providers/${providerName}`, {
+            method: 'PUT',
+            body: JSON.stringify({ api_key: apiKey })
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage(response.message);
+            
+            // Clear the input field
+            document.getElementById(`${providerName}-api-key`).value = '';
+            
+            // Refresh provider list and stats
+            loadAIProviders();
+            loadAIProviderStats();
+        }
+    } catch (error) {
+        showErrorMessage('Error al guardar la API key: ' + error.message);
+    }
+}
+
+async function testAIProvider(providerName) {
+    try {
+        const testButton = document.querySelector(`[onclick="testAIProvider('${providerName}')"]`);
+        const originalContent = testButton.innerHTML;
+        testButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        testButton.disabled = true;
+        
+        const response = await fetchData(`/api/ai-providers/${providerName}/test`, {
+            method: 'POST'
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage(response.message);
+            if (response.test_content) {
+                showSuccessMessage('Contenido de prueba: ' + response.test_content);
+            }
+        } else {
+            showErrorMessage(response.message);
+        }
+        
+        // Refresh provider list and stats
+        loadAIProviders();
+        loadAIProviderStats();
+        
+        // Restore button
+        testButton.innerHTML = originalContent;
+        testButton.disabled = false;
+        
+    } catch (error) {
+        showErrorMessage('Error al probar el proveedor: ' + error.message);
+    }
+}
+
+async function disconnectAIProvider(providerName) {
+    if (!confirm(`¿Estás seguro de que deseas desconectar ${providerName}? Tendrás que volver a configurar la API key.`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetchData(`/api/ai-providers/${providerName}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage(response.message);
+            
+            // Refresh provider list and stats
+            loadAIProviders();
+            loadAIProviderStats();
+        }
+    } catch (error) {
+        showErrorMessage('Error al desconectar el proveedor: ' + error.message);
+    }
+}
+
+async function setDefaultAIProvider(providerName) {
+    try {
+        const response = await fetchData(`/api/ai-providers/${providerName}`, {
+            method: 'PUT',
+            body: JSON.stringify({ is_default: true })
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage(`${providerName} establecido como proveedor predeterminado`);
+            
+            // Refresh provider list and stats
+            loadAIProviders();
+            loadAIProviderStats();
+        }
+    } catch (error) {
+        showErrorMessage('Error al establecer proveedor predeterminado: ' + error.message);
+    }
+}
+
+function openAIProviderModal(providerName) {
+    const modal = new bootstrap.Modal(document.getElementById('aiProviderModal'));
+    modal.show();
+    
+    // Focus on the specific provider's input
+    setTimeout(() => {
+        const input = document.getElementById(`${providerName}-api-key`);
+        if (input) input.focus();
+    }, 500);
 }
 
 async function testConnection(accountId) {
