@@ -79,6 +79,11 @@ The application is configured for deployment on Replit with the following setup:
 
 - June 27, 2025. Initial setup
 - June 27, 2025. Added dark/light theme toggle functionality with Nova Praxis-inspired light theme design
+- June 27, 2025. Fixed theme-specific styling issues:
+  - Improved calendar button group visibility in light mode
+  - Fixed analytics table contrast and readability
+  - Corrected button hover effects for better text visibility
+  - Fixed sidebar navigation highlighting for programmatic navigation
 
 ## User Preferences
 
