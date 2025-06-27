@@ -24,30 +24,51 @@ AI_PROVIDERS = [
         "id": 1,
         "name": "openai",
         "display_name": "OpenAI GPT-4o",
-        "api_key": None,
+        "encrypted_api_key": None,
         "status": "disconnected",
         "is_default": True,
-        "model": "gpt-4o"
+        "model": "gpt-4o",
+        "last_tested": None
     },
     {
         "id": 2,
         "name": "gemini",
         "display_name": "Google Gemini 2.5 Flash",
-        "api_key": None,
+        "encrypted_api_key": None,
         "status": "disconnected",
         "is_default": False,
-        "model": "gemini-2.5-flash"
+        "model": "gemini-2.5-flash",
+        "last_tested": None
     },
     {
         "id": 3,
         "name": "perplexity",
         "display_name": "Perplexity Sonar",
-        "api_key": None,
+        "encrypted_api_key": None,
         "status": "disconnected",
         "is_default": False,
-        "model": "llama-3.1-sonar-small-128k-online"
+        "model": "llama-3.1-sonar-small-128k-online",
+        "last_tested": None
     }
 ]
+
+def initialize_ai_providers():
+    """Initialize AI providers by decrypting stored API keys"""
+    for provider in AI_PROVIDERS:
+        if provider.get('encrypted_api_key'):
+            try:
+                # Decrypt the API key and set environment variable
+                decrypted_key = encryption_service.decrypt_api_key(provider['encrypted_api_key'])
+                if decrypted_key:  # Check if decryption was successful
+                    env_key = f"{provider['name'].upper()}_API_KEY"
+                    os.environ[env_key] = decrypted_key
+                    provider['status'] = 'connected'
+            except Exception as e:
+                logging.error(f"Failed to decrypt API key for {provider['name']}: {e}")
+                provider['status'] = 'error'
+
+# Initialize AI providers on startup
+initialize_ai_providers()
 
 SOCIAL_ACCOUNTS = [
     {
@@ -608,24 +629,42 @@ def update_ai_provider(provider_name):
         if not provider:
             return jsonify({"error": "Provider not found"}), 404
         
-        # Set environment variable (in production, this would be stored securely)
+        # Encrypt and store the API key securely
+        provider['encrypted_api_key'] = encryption_service.encrypt_api_key(api_key)
+        
+        # Set environment variable for immediate use
         env_key = f"{provider_name.upper()}_API_KEY"
         os.environ[env_key] = api_key
         
         # Update provider status
         provider['status'] = 'connected'
-        provider['updated_at'] = datetime.now().isoformat()
+        provider['last_tested'] = datetime.now().isoformat()
         
-        # If this is set as default, remove default from others
+        # Handle setting as default provider
         if data.get('is_default'):
+            # Only allow setting as default if provider is connected
+            if provider['status'] != 'connected':
+                return jsonify({
+                    "status": "error",
+                    "message": "No se puede establecer como predeterminado un proveedor desconectado"
+                }), 400
+            
+            # Remove default from all providers
             for p in AI_PROVIDERS:
                 p['is_default'] = False
             provider['is_default'] = True
         
         return jsonify({
             "status": "success",
-            "message": f"API key para {provider['display_name']} configurada exitosamente",
-            "provider": provider
+            "message": f"API key para {provider['display_name']} configurada y encriptada exitosamente",
+            "provider": {
+                "name": provider['name'],
+                "display_name": provider['display_name'],
+                "status": provider['status'],
+                "is_default": provider['is_default'],
+                "model": provider['model'],
+                "last_tested": provider['last_tested']
+            }
         })
         
     except Exception as e:
@@ -672,6 +711,9 @@ def disconnect_ai_provider(provider_name):
         if not provider:
             return jsonify({"error": "Provider not found"}), 404
         
+        # Remove encrypted API key
+        provider['encrypted_api_key'] = None
+        
         # Remove environment variable
         env_key = f"{provider_name.upper()}_API_KEY"
         if env_key in os.environ:
@@ -679,8 +721,16 @@ def disconnect_ai_provider(provider_name):
         
         # Update provider status
         provider['status'] = 'disconnected'
-        provider['is_default'] = False
-        provider['disconnected_at'] = datetime.now().isoformat()
+        provider['last_tested'] = None
+        
+        # If this was the default provider, find another connected one
+        if provider.get('is_default', False):
+            provider['is_default'] = False
+            # Set another connected provider as default
+            for other_provider in AI_PROVIDERS:
+                if other_provider['status'] == 'connected' and other_provider['name'] != provider_name:
+                    other_provider['is_default'] = True
+                    break
         
         return jsonify({
             "status": "success",
