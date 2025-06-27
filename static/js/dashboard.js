@@ -8,9 +8,12 @@ let mockData = {};
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     initializeNavigation();
-    loadDashboardData();
-    initializeCharts();
     setupEventListeners();
+    // Load dashboard data after a short delay to ensure DOM is fully ready
+    setTimeout(() => {
+        loadDashboardData();
+        initializeCharts();
+    }, 100);
 });
 
 // Navigation Management
@@ -111,55 +114,20 @@ function updatePendingCount(count) {
 }
 
 function updatePerformanceChart(data) {
-    const ctx = document.getElementById('performanceChart').getContext('2d');
-    
-    if (analyticsCharts.performance) {
-        analyticsCharts.performance.destroy();
+    // Ensure data is valid
+    if (!data || !Array.isArray(data) || data.length === 0) {
+        console.error('Invalid chart data:', data);
+        return;
     }
     
-    analyticsCharts.performance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-            datasets: [{
-                label: 'Interacciones',
-                data: data,
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#374151'
-                    },
-                    ticks: {
-                        color: '#9ca3af'
-                    }
-                },
-                x: {
-                    grid: {
-                        color: '#374151'
-                    },
-                    ticks: {
-                        color: '#9ca3af'
-                    }
-                }
-            }
-        }
-    });
+    // If chart exists, update its data
+    if (analyticsCharts.performance) {
+        analyticsCharts.performance.data.datasets[0].data = data;
+        analyticsCharts.performance.update('active');
+    } else {
+        // If chart doesn't exist, it will be created by initializeCharts
+        console.log('Performance chart not initialized yet');
+    }
 }
 
 // Calendar Management
@@ -725,6 +693,75 @@ function initializeCharts() {
     Chart.defaults.color = '#9ca3af';
     Chart.defaults.borderColor = '#374151';
     Chart.defaults.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+    
+    // Initialize performance chart with empty data first
+    const performanceCanvas = document.getElementById('performanceChart');
+    if (performanceCanvas) {
+        const ctx = performanceCanvas.getContext('2d');
+        analyticsCharts.performance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                datasets: [{
+                    label: 'Interacciones',
+                    data: [0, 0, 0, 0, 0, 0, 0],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#3b82f6',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#374151',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#9ca3af',
+                            padding: 10
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: '#374151',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#9ca3af',
+                            padding: 10
+                        }
+                    }
+                }
+            }
+        });
+    }
 }
 
 // Add CSS for toast notifications
