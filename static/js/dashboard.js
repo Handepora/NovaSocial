@@ -9,6 +9,7 @@ let mockData = {};
 document.addEventListener('DOMContentLoaded', function() {
     initializeNavigation();
     setupEventListeners();
+    initializeTheme();
     // Load dashboard data after a short delay to ensure DOM is fully ready
     setTimeout(() => {
         loadDashboardData();
@@ -689,10 +690,22 @@ function showPostDetails(post) {
 }
 
 function initializeCharts() {
-    // Set Chart.js defaults for dark theme
-    Chart.defaults.color = '#9ca3af';
-    Chart.defaults.borderColor = '#374151';
-    Chart.defaults.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+    // Get current theme
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const isDark = currentTheme === 'dark';
+    
+    // Set theme-appropriate colors
+    const textColor = isDark ? '#9ca3af' : '#718096';
+    const gridColor = isDark ? '#374151' : '#e2e8f0';
+    const accentColor = isDark ? '#3b82f6' : '#ff6b47';
+    const bgColor = isDark ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 107, 71, 0.1)';
+    const tooltipBg = isDark ? 'rgba(17, 24, 39, 0.9)' : 'rgba(255, 255, 255, 0.95)';
+    const tooltipText = isDark ? '#ffffff' : '#2d3748';
+    
+    // Set Chart.js defaults
+    Chart.defaults.color = textColor;
+    Chart.defaults.borderColor = gridColor;
+    Chart.defaults.backgroundColor = bgColor;
     
     // Initialize performance chart with empty data first
     const performanceCanvas = document.getElementById('performanceChart');
@@ -705,13 +718,13 @@ function initializeCharts() {
                 datasets: [{
                     label: 'Interacciones',
                     data: [0, 0, 0, 0, 0, 0, 0],
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderColor: accentColor,
+                    backgroundColor: bgColor,
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4,
-                    pointBackgroundColor: '#3b82f6',
-                    pointBorderColor: '#ffffff',
+                    pointBackgroundColor: accentColor,
+                    pointBorderColor: isDark ? '#ffffff' : '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 5,
                     pointHoverRadius: 7
@@ -729,10 +742,10 @@ function initializeCharts() {
                         display: false
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
-                        titleColor: '#ffffff',
-                        bodyColor: '#ffffff',
-                        borderColor: '#3b82f6',
+                        backgroundColor: tooltipBg,
+                        titleColor: tooltipText,
+                        bodyColor: tooltipText,
+                        borderColor: accentColor,
                         borderWidth: 1
                     }
                 },
@@ -740,21 +753,21 @@ function initializeCharts() {
                     y: {
                         beginAtZero: true,
                         grid: {
-                            color: '#374151',
+                            color: gridColor,
                             drawBorder: false
                         },
                         ticks: {
-                            color: '#9ca3af',
+                            color: textColor,
                             padding: 10
                         }
                     },
                     x: {
                         grid: {
-                            color: '#374151',
+                            color: gridColor,
                             drawBorder: false
                         },
                         ticks: {
-                            color: '#9ca3af',
+                            color: textColor,
                             padding: 10
                         }
                     }
@@ -762,6 +775,95 @@ function initializeCharts() {
             }
         });
     }
+}
+
+// Theme Management
+function initializeTheme() {
+    // Get saved theme preference or default to dark
+    const savedTheme = localStorage.getItem('dashboard-theme') || 'dark';
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    // Apply saved theme
+    setTheme(savedTheme);
+    
+    // Set up theme toggle event listener
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+            localStorage.setItem('dashboard-theme', newTheme);
+        });
+    }
+}
+
+function setTheme(theme) {
+    const themeIcon = document.getElementById('themeIcon');
+    
+    if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        if (themeIcon) {
+            themeIcon.className = 'fas fa-sun';
+        }
+    } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        if (themeIcon) {
+            themeIcon.className = 'fas fa-moon';
+        }
+    }
+    
+    // Update charts with new theme colors
+    updateChartsTheme(theme);
+}
+
+function updateChartsTheme(theme) {
+    const isDark = theme === 'dark';
+    const textColor = isDark ? '#9ca3af' : '#718096';
+    const gridColor = isDark ? '#374151' : '#e2e8f0';
+    const accentColor = isDark ? '#3b82f6' : '#ff6b47';
+    
+    // Update Chart.js defaults
+    Chart.defaults.color = textColor;
+    Chart.defaults.borderColor = gridColor;
+    
+    // Update existing charts
+    Object.keys(analyticsCharts).forEach(chartKey => {
+        const chart = analyticsCharts[chartKey];
+        if (chart && chart.options) {
+            // Update scales colors
+            if (chart.options.scales) {
+                if (chart.options.scales.y) {
+                    chart.options.scales.y.grid.color = gridColor;
+                    chart.options.scales.y.ticks.color = textColor;
+                }
+                if (chart.options.scales.x) {
+                    chart.options.scales.x.grid.color = gridColor;
+                    chart.options.scales.x.ticks.color = textColor;
+                }
+            }
+            
+            // Update dataset colors for certain charts
+            if (chart.data && chart.data.datasets) {
+                chart.data.datasets.forEach(dataset => {
+                    if (dataset.borderColor === '#3b82f6' || dataset.borderColor === '#ff6b47') {
+                        dataset.borderColor = accentColor;
+                    }
+                    if (dataset.backgroundColor && (
+                        dataset.backgroundColor === 'rgba(59, 130, 246, 0.1)' || 
+                        dataset.backgroundColor === 'rgba(255, 107, 71, 0.1)'
+                    )) {
+                        dataset.backgroundColor = isDark ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 107, 71, 0.1)';
+                    }
+                    if (dataset.pointBackgroundColor === '#3b82f6' || dataset.pointBackgroundColor === '#ff6b47') {
+                        dataset.pointBackgroundColor = accentColor;
+                    }
+                });
+            }
+            
+            chart.update('none');
+        }
+    });
 }
 
 // Add CSS for toast notifications

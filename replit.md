@@ -78,7 +78,9 @@ The application is configured for deployment on Replit with the following setup:
 ## Changelog
 
 - June 27, 2025. Initial setup
+- June 27, 2025. Added dark/light theme toggle functionality with Nova Praxis-inspired light theme design
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Design preferences: Light theme should match Nova Praxis website design (coral/orange accents, clean professional styling).
