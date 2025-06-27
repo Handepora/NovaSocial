@@ -823,3 +823,136 @@ main {
         padding: 1px 2px;
     }
 }
+
+/* Social Media Account Management Styles */
+.account-card {
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color) !important;
+    transition: all 0.2s ease;
+}
+
+.account-card:hover {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.account-card h6 {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.account-card .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.account-card .text-small {
+    font-size: 0.875rem;
+}
+
+/* Platform icons with specific colors */
+.platform-linkedin { color: #0077b5 !important; }
+.platform-twitter { color: #1da1f2 !important; }
+.platform-instagram { color: #e4405f !important; }
+.platform-facebook { color: #1877f2 !important; }
+.platform-youtube { color: #ff0000 !important; }
+.platform-tiktok { color: #000000 !important; }
+
+[data-theme="light"] .platform-tiktok { color: #ff0050 !important; }
+
+/* Account status badges */
+.badge.bg-success { background-color: #28a745 !important; }
+.badge.bg-warning { background-color: #ffc107 !important; color: #212529 !important; }
+.badge.bg-danger { background-color: #dc3545 !important; }
+.badge.bg-secondary { background-color: #6c757d !important; }
+.badge.bg-primary { background-color: var(--accent-color) !important; }
+
+/* Button groups in account cards */
+.account-card .btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.2rem;
+}
+
+.account-card .btn-outline-success:hover {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white !important;
+}
+
+.account-card .btn-outline-warning:hover {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529 !important;
+}
+
+.account-card .btn-outline-primary:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white !important;
+}
+
+.account-card .btn-outline-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white !important;
+}
+
+/* Configuration form styling */
+.card .form-select {
+    background-color: var(--primary-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.card .form-select:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(var(--accent-rgb), 0.25);
+    background-color: var(--primary-bg);
+    color: var(--text-primary);
+}
+
+.card .form-check-input {
+    background-color: var(--primary-bg);
+    border-color: var(--border-color);
+}
+
+.card .form-check-input:checked {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.card .form-check-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.2rem rgba(var(--accent-rgb), 0.25);
+}
+
+/* API credentials section */
+.card.bg-light {
+    background-color: var(--hover-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="light"] .card.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+/* Alert styling */
+.alert-info {
+    background-color: rgba(var(--accent-rgb), 0.1);
+    border-color: var(--accent-color);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .alert-info {
+    background-color: rgba(255, 107, 71, 0.1);
+    border-color: #ff6b47;
+}
+
+/* Statistics cards in configuration */
+.configuration-stats .badge {
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
+    min-width: 2rem;
+    text-align: center;
+}

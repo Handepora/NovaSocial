@@ -16,7 +16,43 @@ app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-prod
 # Enable CORS for API endpoints
 CORS(app)
 
-# In-memory storage for scheduled posts (in production, use a database)
+# In-memory storage for social media accounts and scheduled posts
+SOCIAL_ACCOUNTS = [
+    {
+        "id": 1,
+        "platform": "linkedin",
+        "account_name": "@mi-empresa",
+        "display_name": "Mi Empresa - LinkedIn",
+        "status": "connected",
+        "auto_posting": True,
+        "is_default": True,
+        "connected_date": "2025-06-20T10:00:00",
+        "has_api": True
+    },
+    {
+        "id": 2,
+        "platform": "twitter",
+        "account_name": "@mi_empresa",
+        "display_name": "Mi Empresa - Twitter",
+        "status": "connected",
+        "auto_posting": True,
+        "is_default": True,
+        "connected_date": "2025-06-21T14:30:00",
+        "has_api": True
+    },
+    {
+        "id": 3,
+        "platform": "instagram",
+        "account_name": "@mi.empresa",
+        "display_name": "Mi Empresa - Instagram",
+        "status": "pending",
+        "auto_posting": False,
+        "is_default": False,
+        "connected_date": "2025-06-27T09:00:00",
+        "has_api": False
+    }
+]
+
 SCHEDULED_POSTS = [
     {
         "id": 1,
@@ -292,6 +328,170 @@ def get_upcoming_posts():
         upcoming_posts.sort(key=lambda x: x['scheduled_date'])
         
         return jsonify(upcoming_posts)
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Social Media Account Management Endpoints
+@app.route('/api/accounts')
+def get_accounts():
+    """Get all social media accounts"""
+    return jsonify(SOCIAL_ACCOUNTS)
+
+@app.route('/api/accounts', methods=['POST'])
+def add_account():
+    """Add a new social media account"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['platform', 'account_name']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+        
+        # Create new account
+        new_account = {
+            "id": len(SOCIAL_ACCOUNTS) + 1,
+            "platform": data['platform'],
+            "account_name": data['account_name'],
+            "display_name": data.get('display_name', f"{data['account_name']} - {data['platform'].title()}"),
+            "status": "connected" if data.get('has_api', False) else "pending",
+            "auto_posting": data.get('auto_posting', False),
+            "is_default": data.get('is_default', False),
+            "connected_date": datetime.now().isoformat(),
+            "has_api": data.get('has_api', False)
+        }
+        
+        # If this is set as default, remove default from other accounts of same platform
+        if new_account['is_default']:
+            for account in SOCIAL_ACCOUNTS:
+                if account['platform'] == new_account['platform']:
+                    account['is_default'] = False
+        
+        SOCIAL_ACCOUNTS.append(new_account)
+        
+        return jsonify({
+            "status": "success",
+            "message": "Cuenta agregada exitosamente",
+            "account": new_account
+        }), 201
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/accounts/<int:account_id>', methods=['PUT'])
+def update_account(account_id):
+    """Update a social media account"""
+    try:
+        data = request.get_json()
+        
+        # Find the account
+        account_index = None
+        for i, account in enumerate(SOCIAL_ACCOUNTS):
+            if account['id'] == account_id:
+                account_index = i
+                break
+        
+        if account_index is None:
+            return jsonify({"error": "Account not found"}), 404
+        
+        account = SOCIAL_ACCOUNTS[account_index]
+        
+        # Update account fields
+        updatable_fields = ['account_name', 'display_name', 'auto_posting', 'is_default', 'status']
+        for field in updatable_fields:
+            if field in data:
+                account[field] = data[field]
+        
+        # Handle default account logic
+        if account.get('is_default'):
+            for other_account in SOCIAL_ACCOUNTS:
+                if other_account['platform'] == account['platform'] and other_account['id'] != account_id:
+                    other_account['is_default'] = False
+        
+        account['updated_at'] = datetime.now().isoformat()
+        
+        return jsonify({
+            "status": "success",
+            "message": "Cuenta actualizada exitosamente",
+            "account": account
+        })
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/accounts/<int:account_id>', methods=['DELETE'])
+def delete_account(account_id):
+    """Delete a social media account"""
+    try:
+        # Find and remove the account
+        for i, account in enumerate(SOCIAL_ACCOUNTS):
+            if account['id'] == account_id:
+                deleted_account = SOCIAL_ACCOUNTS.pop(i)
+                return jsonify({
+                    "status": "success",
+                    "message": "Cuenta eliminada exitosamente",
+                    "account": deleted_account
+                })
+        
+        return jsonify({"error": "Account not found"}), 404
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/accounts/<int:account_id>/test', methods=['POST'])
+def test_account_connection(account_id):
+    """Test connection to a social media account"""
+    try:
+        # Find the account
+        account = None
+        for acc in SOCIAL_ACCOUNTS:
+            if acc['id'] == account_id:
+                account = acc
+                break
+        
+        if not account:
+            return jsonify({"error": "Account not found"}), 404
+        
+        # Simulate API connection test
+        import random
+        success = random.choice([True, True, True, False])  # 75% success rate for demo
+        
+        if success:
+            account['status'] = 'connected'
+            account['last_tested'] = datetime.now().isoformat()
+            return jsonify({
+                "status": "success",
+                "message": f"Conexión exitosa con {account['platform']}",
+                "account": account
+            })
+        else:
+            account['status'] = 'error'
+            account['last_tested'] = datetime.now().isoformat()
+            return jsonify({
+                "status": "error",
+                "message": f"Error al conectar con {account['platform']}. Verifica las credenciales.",
+                "account": account
+            }), 400
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/accounts/stats')
+def get_accounts_stats():
+    """Get account statistics"""
+    try:
+        connected = len([acc for acc in SOCIAL_ACCOUNTS if acc['status'] == 'connected'])
+        pending = len([acc for acc in SOCIAL_ACCOUNTS if acc['status'] == 'pending'])
+        error = len([acc for acc in SOCIAL_ACCOUNTS if acc['status'] == 'error'])
+        
+        return jsonify({
+            "connected": connected,
+            "pending": pending,
+            "error": error,
+            "total": len(SOCIAL_ACCOUNTS)
+        })
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500

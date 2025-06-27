@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     setupSchedulingEventListeners();
     setupContentGenerationWorkflow();
+    setupAccountManagement();
     initializeTheme();
     // Load dashboard data after a short delay to ensure DOM is fully ready
     setTimeout(() => {
@@ -66,6 +67,9 @@ function showView(viewName) {
                 break;
             case 'analiticas':
                 loadAnalyticsData();
+                break;
+            case 'configuracion':
+                loadConfigurationData();
                 break;
         }
     }
@@ -1354,6 +1358,318 @@ async function approveAndSchedulePost(postId) {
         }
     } catch (error) {
         showErrorMessage('Error al aprobar el post: ' + error.message);
+    }
+}
+
+// Social Media Account Management
+async function loadConfigurationData() {
+    try {
+        await Promise.all([
+            loadSocialAccounts(),
+            loadAccountStats()
+        ]);
+    } catch (error) {
+        console.error('Error loading configuration data:', error);
+        showErrorMessage('Error al cargar la configuración');
+    }
+}
+
+async function loadSocialAccounts() {
+    try {
+        const accounts = await fetchData('/api/accounts');
+        displaySocialAccounts(accounts);
+    } catch (error) {
+        console.error('Error loading social accounts:', error);
+    }
+}
+
+async function loadAccountStats() {
+    try {
+        const stats = await fetchData('/api/accounts/stats');
+        updateAccountStats(stats);
+    } catch (error) {
+        console.error('Error loading account stats:', error);
+    }
+}
+
+function displaySocialAccounts(accounts) {
+    const container = document.getElementById('social-accounts-list');
+    if (!container) return;
+    
+    if (accounts.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="fas fa-users fa-3x mb-3"></i>
+                <h6>No hay cuentas configuradas</h6>
+                <p>Agrega tu primera cuenta de red social para empezar a publicar</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAccountModal">
+                    <i class="fas fa-plus me-1"></i>Agregar Primera Cuenta
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = accounts.map(account => {
+        const statusBadge = getStatusBadge(account.status);
+        const platformIcon = getPlatformIcon(account.platform);
+        
+        return `
+            <div class="account-card mb-3 p-3 border rounded" data-account-id="${account.id}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i class="${platformIcon} platform-${account.platform} me-3 fa-2x"></i>
+                        <div>
+                            <h6 class="mb-1">${account.display_name}</h6>
+                            <div class="text-muted small">
+                                ${account.account_name}
+                                ${account.is_default ? '<span class="badge bg-primary ms-2">Predeterminada</span>' : ''}
+                            </div>
+                            <div class="text-muted small mt-1">
+                                Conectada: ${formatDate(account.connected_date)}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        ${statusBadge}
+                        <div class="btn-group btn-group-sm">
+                            ${account.status === 'connected' ? 
+                                `<button class="btn btn-outline-success" onclick="testConnection(${account.id})" title="Probar conexión">
+                                    <i class="fas fa-wifi"></i>
+                                </button>` : 
+                                `<button class="btn btn-outline-warning" onclick="testConnection(${account.id})" title="Conectar">
+                                    <i class="fas fa-link"></i>
+                                </button>`
+                            }
+                            <button class="btn btn-outline-primary" onclick="editAccount(${account.id})" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteAccount(${account.id})" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-2">
+                    <div class="d-flex gap-3 text-small">
+                        <span>
+                            <i class="fas fa-robot me-1"></i>
+                            Auto-posting: ${account.auto_posting ? 
+                                '<span class="text-success">Habilitado</span>' : 
+                                '<span class="text-muted">Deshabilitado</span>'
+                            }
+                        </span>
+                        <span>
+                            <i class="fas fa-key me-1"></i>
+                            API: ${account.has_api ? 
+                                '<span class="text-success">Configurada</span>' : 
+                                '<span class="text-warning">Sin configurar</span>'
+                            }
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function getStatusBadge(status) {
+    const badges = {
+        connected: '<span class="badge bg-success">Conectada</span>',
+        pending: '<span class="badge bg-warning">Pendiente</span>',
+        error: '<span class="badge bg-danger">Error</span>',
+        disconnected: '<span class="badge bg-secondary">Desconectada</span>'
+    };
+    return badges[status] || badges.pending;
+}
+
+function updateAccountStats(stats) {
+    const elements = {
+        'connected-accounts': stats.connected,
+        'pending-accounts': stats.pending,
+        'error-accounts': stats.error
+    };
+    
+    Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
+    });
+}
+
+// Setup account management event listeners
+function setupAccountManagement() {
+    // Add account modal event listeners
+    const saveBasicBtn = document.getElementById('saveAccountBasic');
+    const saveWithAPIBtn = document.getElementById('saveAccountWithAPI');
+    
+    if (saveBasicBtn) {
+        saveBasicBtn.addEventListener('click', () => handleAddAccount(false));
+    }
+    
+    if (saveWithAPIBtn) {
+        saveWithAPIBtn.addEventListener('click', () => handleAddAccount(true));
+    }
+    
+    // Platform selection change handler
+    const platformSelect = document.getElementById('accountPlatform');
+    if (platformSelect) {
+        platformSelect.addEventListener('change', function() {
+            const credentialsSection = document.getElementById('apiCredentialsSection');
+            if (credentialsSection) {
+                credentialsSection.style.display = this.value ? 'block' : 'none';
+            }
+        });
+    }
+}
+
+async function handleAddAccount(withAPI) {
+    try {
+        const formData = {
+            platform: document.getElementById('accountPlatform').value,
+            account_name: document.getElementById('accountName').value,
+            display_name: document.getElementById('accountDisplayName').value,
+            auto_posting: document.getElementById('enableAutoPosting').checked,
+            is_default: document.getElementById('isDefaultAccount').checked,
+            has_api: withAPI
+        };
+        
+        // Validate required fields
+        if (!formData.platform || !formData.account_name) {
+            showErrorMessage('Por favor completa los campos requeridos');
+            return;
+        }
+        
+        // Set display name if not provided
+        if (!formData.display_name) {
+            formData.display_name = `${formData.account_name} - ${formData.platform.charAt(0).toUpperCase() + formData.platform.slice(1)}`;
+        }
+        
+        const response = await fetchData('/api/accounts', {
+            method: 'POST',
+            body: JSON.stringify(formData)
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage(response.message);
+            
+            // Close modal and reset form
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addAccountModal'));
+            modal.hide();
+            document.getElementById('addAccountForm').reset();
+            document.getElementById('apiCredentialsSection').style.display = 'none';
+            
+            // Refresh account list and stats
+            loadSocialAccounts();
+            loadAccountStats();
+        }
+    } catch (error) {
+        showErrorMessage('Error al agregar la cuenta: ' + error.message);
+    }
+}
+
+async function testConnection(accountId) {
+    try {
+        const response = await fetchData(`/api/accounts/${accountId}/test`, {
+            method: 'POST'
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage(response.message);
+        } else {
+            showErrorMessage(response.message);
+        }
+        
+        // Refresh account list and stats
+        loadSocialAccounts();
+        loadAccountStats();
+        
+    } catch (error) {
+        showErrorMessage('Error al probar la conexión: ' + error.message);
+    }
+}
+
+async function deleteAccount(accountId) {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta cuenta? Esta acción no se puede deshacer.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetchData(`/api/accounts/${accountId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage(response.message);
+            
+            // Refresh account list and stats
+            loadSocialAccounts();
+            loadAccountStats();
+        }
+    } catch (error) {
+        showErrorMessage('Error al eliminar la cuenta: ' + error.message);
+    }
+}
+
+function editAccount(accountId) {
+    // Find the account data
+    fetchData('/api/accounts').then(accounts => {
+        const account = accounts.find(acc => acc.id === accountId);
+        if (!account) return;
+        
+        // Pre-populate edit form (you can create a separate edit modal or reuse add modal)
+        document.getElementById('accountPlatform').value = account.platform;
+        document.getElementById('accountName').value = account.account_name;
+        document.getElementById('accountDisplayName').value = account.display_name;
+        document.getElementById('enableAutoPosting').checked = account.auto_posting;
+        document.getElementById('isDefaultAccount').checked = account.is_default;
+        
+        // Show modal in edit mode
+        const modal = new bootstrap.Modal(document.getElementById('addAccountModal'));
+        document.getElementById('addAccountModalLabel').textContent = 'Editar Cuenta de Red Social';
+        
+        // Update save buttons to handle edit
+        const saveBasicBtn = document.getElementById('saveAccountBasic');
+        const saveWithAPIBtn = document.getElementById('saveAccountWithAPI');
+        
+        saveBasicBtn.onclick = () => handleUpdateAccount(accountId, false);
+        saveWithAPIBtn.onclick = () => handleUpdateAccount(accountId, true);
+        
+        modal.show();
+    });
+}
+
+async function handleUpdateAccount(accountId, withAPI) {
+    try {
+        const formData = {
+            account_name: document.getElementById('accountName').value,
+            display_name: document.getElementById('accountDisplayName').value,
+            auto_posting: document.getElementById('enableAutoPosting').checked,
+            is_default: document.getElementById('isDefaultAccount').checked
+        };
+        
+        const response = await fetchData(`/api/accounts/${accountId}`, {
+            method: 'PUT',
+            body: JSON.stringify(formData)
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage(response.message);
+            
+            // Close modal and reset
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addAccountModal'));
+            modal.hide();
+            
+            // Reset modal to add mode
+            document.getElementById('addAccountModalLabel').textContent = 'Agregar Cuenta de Red Social';
+            document.getElementById('addAccountForm').reset();
+            
+            // Refresh account list and stats
+            loadSocialAccounts();
+            loadAccountStats();
+        }
+    } catch (error) {
+        showErrorMessage('Error al actualizar la cuenta: ' + error.message);
     }
 }
 

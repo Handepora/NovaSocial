@@ -418,12 +418,81 @@
                         <h1 class="h2">Configuración</h1>
                     </div>
                     
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="text-center text-muted py-5">
-                                <i class="fas fa-cogs fa-3x mb-3"></i>
-                                <h4>Configuración</h4>
-                                <p>Panel de configuración - Próximamente</p>
+                    <div class="row g-4">
+                        <!-- Social Media Accounts -->
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Cuentas de Redes Sociales</h5>
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAccountModal">
+                                        <i class="fas fa-plus me-1"></i>Agregar Cuenta
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div id="social-accounts-list">
+                                        <!-- Social accounts will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Account Statistics -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Resumen de Cuentas</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <span>Cuentas conectadas:</span>
+                                        <span class="badge bg-success" id="connected-accounts">0</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <span>Cuentas pendientes:</span>
+                                        <span class="badge bg-warning" id="pending-accounts">0</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Con errores:</span>
+                                        <span class="badge bg-danger" id="error-accounts">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Configuración General</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Zona Horaria por Defecto</label>
+                                        <select class="form-select" id="default-timezone">
+                                            <option value="UTC">UTC</option>
+                                            <option value="America/New_York">EST (Nueva York)</option>
+                                            <option value="America/Los_Angeles">PST (Los Ángeles)</option>
+                                            <option value="Europe/Madrid">CET (Madrid)</option>
+                                            <option value="America/Mexico_City">CST (Ciudad de México)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="auto-post" checked>
+                                            <label class="form-check-label" for="auto-post">
+                                                Publicación automática habilitada
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="notifications" checked>
+                                            <label class="form-check-label" for="notifications">
+                                                Notificaciones por email
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-save me-1"></i>Guardar Configuración
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -591,6 +660,109 @@
                     </button>
                     <button type="button" class="btn btn-primary" id="updateScheduledPost">
                         <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Social Media Account Modal -->
+    <div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAccountModalLabel">Agregar Cuenta de Red Social</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addAccountForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="accountPlatform" class="form-label">Plataforma</label>
+                                    <select class="form-select" id="accountPlatform" required>
+                                        <option value="">Seleccionar plataforma</option>
+                                        <option value="linkedin">LinkedIn</option>
+                                        <option value="twitter">Twitter</option>
+                                        <option value="instagram">Instagram</option>
+                                        <option value="facebook">Facebook</option>
+                                        <option value="youtube">YouTube</option>
+                                        <option value="tiktok">TikTok</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="accountName" class="form-label">Nombre de la Cuenta</label>
+                                    <input type="text" class="form-control" id="accountName" placeholder="@usuario o nombre de perfil" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="accountDisplayName" class="form-label">Nombre para Mostrar</label>
+                            <input type="text" class="form-control" id="accountDisplayName" placeholder="Nombre descriptivo para identificar la cuenta">
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Conexión de API:</strong> Para conectar completamente tu cuenta, necesitarás proporcionar las credenciales de API de la plataforma. 
+                            Esto te permitirá publicar automáticamente desde el dashboard.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="enableAutoPosting">
+                                <label class="form-check-label" for="enableAutoPosting">
+                                    Habilitar publicación automática para esta cuenta
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isDefaultAccount">
+                                <label class="form-check-label" for="isDefaultAccount">
+                                    Usar como cuenta predeterminada para esta plataforma
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- API Credentials Section -->
+                        <div class="card bg-light mt-3" id="apiCredentialsSection" style="display: none;">
+                            <div class="card-header">
+                                <h6 class="mb-0">Credenciales de API</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="apiKey" class="form-label">API Key / Client ID</label>
+                                            <input type="password" class="form-control" id="apiKey" placeholder="Tu API Key">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="apiSecret" class="form-label">API Secret / Client Secret</label>
+                                            <input type="password" class="form-control" id="apiSecret" placeholder="Tu API Secret">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="accessToken" class="form-label">Access Token (opcional)</label>
+                                    <input type="password" class="form-control" id="accessToken" placeholder="Access Token si ya lo tienes">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-outline-primary" id="saveAccountBasic">
+                        <i class="fas fa-save me-2"></i>Guardar sin API
+                    </button>
+                    <button type="button" class="btn btn-primary" id="saveAccountWithAPI">
+                        <i class="fas fa-link me-2"></i>Conectar con API
                     </button>
                 </div>
             </div>
