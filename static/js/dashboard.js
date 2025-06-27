@@ -1416,6 +1416,7 @@ async function loadConfigurationData() {
 async function loadSocialAccounts() {
     try {
         const accounts = await fetchData('/api/accounts');
+        mockData.social_accounts = accounts; // Store accounts for later use
         displaySocialAccounts(accounts);
     } catch (error) {
         console.error('Error loading social accounts:', error);
@@ -1790,6 +1791,7 @@ function resetAccountForm() {
 async function loadAIProviders() {
     try {
         const providers = await fetchData('/api/ai-providers');
+        mockData.ai_providers = providers; // Store providers for later use
         displayAIProviders(providers);
         updateAIProviderStatus(providers);
     } catch (error) {
