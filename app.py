@@ -224,10 +224,20 @@ def generate_content():
         
         # Check if provider has API key configured
         ai_provider = next((p for p in AI_PROVIDERS if p['name'] == provider), None)
-        if not ai_provider or ai_provider['status'] != 'connected':
+        logging.debug(f"AI Provider found: {ai_provider}")
+        
+        if not ai_provider:
             return jsonify({
                 "status": "error",
-                "error": f"Proveedor {provider} no configurado",
+                "error": f"Proveedor {provider} no encontrado",
+                "requires_setup": True,
+                "available_providers": [p['name'] for p in AI_PROVIDERS]
+            }), 400
+            
+        if ai_provider['status'] != 'connected':
+            return jsonify({
+                "status": "error",
+                "error": f"Proveedor {provider} no configurado. Estado actual: {ai_provider['status']}",
                 "requires_setup": True,
                 "available_providers": [p['name'] for p in AI_PROVIDERS if p['status'] == 'connected']
             }), 400
@@ -277,7 +287,23 @@ def generate_content():
         return jsonify(response)
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error(f"Exception in generate_content: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "error": f"Error interno del servidor: {str(e)}"
+        }), 500
+
+@app.route('/api/ai-providers/status', methods=['GET'])
+def get_ai_providers_status():
+    """Get current status of all AI providers"""
+    return jsonify({
+        "providers": AI_PROVIDERS,
+        "environment_keys": {
+            "openai": bool(os.environ.get('OPENAI_API_KEY')),
+            "gemini": bool(os.environ.get('GEMINI_API_KEY')),
+            "perplexity": bool(os.environ.get('PERPLEXITY_API_KEY'))
+        }
+    })
 
 @app.route('/api/posts/approve/<int:post_id>', methods=['POST'])
 def approve_post(post_id):

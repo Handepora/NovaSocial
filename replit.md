@@ -108,6 +108,8 @@ The application is configured for deployment on Replit with the following setup:
   - Added real-time content generation with provider selection and error handling
   - Integrated AI provider testing, connection status tracking, and default provider management
   - Enhanced content generation endpoint to use real AI providers instead of mock data
+  - Fixed endpoint routing and platform selection issues for content generation
+  - Added diagnostic tools and improved error messages for easier troubleshooting
 
 ## User Preferences
 
