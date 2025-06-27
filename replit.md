@@ -133,6 +133,7 @@ The application is configured for deployment on Replit with the following setup:
   - Integrated Nova logo as icon for "Crear Contenido" navigation item
   - Fixed dark mode contrast issues for content preview areas
   - Enhanced styling for better text visibility in both light and dark themes
+  - Updated "Crear Contenido" button to use "+" icon instead of Nova logo per user preference
 
 ## User Preferences
 
