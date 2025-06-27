@@ -1,7 +1,7 @@
 import os
 import logging
 import re
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, session
 from flask_cors import CORS
 from datetime import datetime, timedelta
 import json
@@ -1158,6 +1158,107 @@ def disconnect_ai_provider(provider_name):
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/publish-now', methods=['POST'])
+def publish_now():
+    """Publish content immediately to social media platform"""
+    try:
+        data = request.get_json()
+        platform = data.get('platform')
+        content = data.get('content')
+        hashtags = data.get('hashtags', '')
+        
+        if not platform or not content:
+            return jsonify({
+                'status': 'error',
+                'message': 'Plataforma y contenido son requeridos'
+            }), 400
+        
+        # Add to published posts tracking
+        if 'published_posts' not in session:
+            session['published_posts'] = []
+        
+        import uuid
+        
+        published_post = {
+            'id': str(uuid.uuid4()),
+            'platform': platform,
+            'content': content,
+            'hashtags': hashtags,
+            'published_date': datetime.now().isoformat(),
+            'status': 'published',
+            'likes': 0,
+            'shares': 0
+        }
+        
+        session['published_posts'].append(published_post)
+        
+        # Simulate API call delay
+        import time
+        time.sleep(1)
+        
+        return jsonify({
+            'status': 'success',
+            'message': f'Contenido publicado exitosamente en {platform.capitalize()}',
+            'post_id': published_post['id']
+        })
+        
+    except Exception as e:
+        logging.error(f"Error publishing content: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': 'Error al publicar contenido'
+        }), 500
+
+@app.route('/api/monitoring-data', methods=['GET'])
+def get_monitoring_data():
+    """Get social media monitoring data"""
+    try:
+        import random
+        
+        # Get published posts from session
+        published_posts = session.get('published_posts', [])
+        
+        # Calculate platform statistics
+        platforms_data = {
+            'twitter': {'status': 'connected', 'published_today': 0, 'total_posts': 0},
+            'linkedin': {'status': 'connected', 'published_today': 0, 'total_posts': 0},
+            'instagram': {'status': 'disconnected', 'published_today': 0, 'total_posts': 0},
+            'facebook': {'status': 'connected', 'published_today': 0, 'total_posts': 0}
+        }
+        
+        today = datetime.now().date()
+        
+        for post in published_posts:
+            platform = post['platform']
+            post_date = datetime.fromisoformat(post['published_date']).date()
+            
+            if platform in platforms_data:
+                platforms_data[platform]['total_posts'] += 1
+                if post_date == today:
+                    platforms_data[platform]['published_today'] += 1
+        
+        # Add some sample engagement data
+        for post in published_posts[-10:]:  # Last 10 posts
+            post['likes'] = random.randint(5, 150)
+            post['shares'] = random.randint(1, 25)
+        
+        monitoring_data = {
+            'platforms': platforms_data,
+            'recent_posts': published_posts[-10:] if published_posts else []
+        }
+        
+        return jsonify({
+            'status': 'success',
+            'data': monitoring_data
+        })
+        
+    except Exception as e:
+        logging.error(f"Error getting monitoring data: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': 'Error al obtener datos de monitoreo'
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

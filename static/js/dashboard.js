@@ -71,6 +71,9 @@ function showView(viewName) {
             case 'configuracion':
                 loadConfigurationData();
                 break;
+            case 'monitoreo':
+                loadMonitoringData();
+                break;
         }
     }
 }
@@ -375,6 +378,9 @@ function displayGeneratedContent(content, platforms) {
                             <span class="text-muted">${platformContent.hashtags.join(' ')}</span>
                         </div>
                         <div class="d-flex gap-2">
+                            <button class="btn btn-success" onclick="publishNow('${platform}', \`${platformContent.content}\`, '${platformContent.hashtags.join(' ')}')">
+                                <i class="fas fa-rocket me-1"></i>Publicar Ahora
+                            </button>
                             <button class="btn btn-primary" onclick="scheduleGeneratedContent('${platform}', \`${platformContent.content}\`, '${platformContent.hashtags.join(' ')}')">
                                 <i class="fas fa-calendar-plus me-1"></i>Programar Publicación
                             </button>

@@ -121,6 +121,9 @@ function displayAdaptedContent(adaptedContent, platforms) {
                                 </div>
                             ` : ''}
                             <div class="d-flex gap-2">
+                                <button class="btn btn-success" onclick="publishNow('${platform}', '${safeContent}', '${safeHashtags}')">
+                                    <i class="fas fa-rocket me-1"></i>Publicar Ahora
+                                </button>
                                 <button class="btn btn-primary" onclick="scheduleAdaptedContent('${platform}', '${safeContent}', '${safeHashtags}')">
                                     <i class="fas fa-calendar-plus me-1"></i>Programar
                                 </button>

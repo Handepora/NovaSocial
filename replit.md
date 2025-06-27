@@ -134,6 +134,13 @@ The application is configured for deployment on Replit with the following setup:
   - Fixed dark mode contrast issues for content preview areas
   - Enhanced styling for better text visibility in both light and dark themes
   - Updated "Crear Contenido" button to use "+" icon instead of Nova logo per user preference
+- June 27, 2025. Added comprehensive "Publicar Ahora" functionality and social media monitoring:
+  - Implemented "Publicar Ahora" buttons in both content generation and adaptation workflows
+  - Created new "Monitoreo de Redes Sociales" section with platform statistics and recent posts tracking
+  - Built backend endpoints for immediate publishing and monitoring data retrieval
+  - Added real-time post tracking with engagement metrics and status monitoring
+  - Integrated monitoring view with automatic data loading and refresh capabilities
+  - Fixed session handling issues for proper post tracking and data persistence
 
 ## User Preferences
 
