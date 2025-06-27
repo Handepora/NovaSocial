@@ -563,19 +563,33 @@ def adapt_content():
             
             if result and result.get('success'):
                 content = result['content']
+                logging.debug(f"Raw content for {platform}: {content}")
                 
                 # Special processing for Twitter
                 if platform == 'twitter':
                     main_content, hashtags_found = process_twitter_content(content)
                 else:
-                    # Extract hashtags from content if present
+                    # Simplified hashtag extraction - preserve content integrity
+                    main_content = content
+                    hashtags_found = []
+                    
+                    # Extract hashtags from the end of content or separate lines
                     if '#' in content:
-                        parts = content.split('#')
-                        main_content = parts[0].strip()
-                        hashtags_found = ['#' + tag.split()[0] for tag in parts[1:] if tag.strip()]
-                    else:
-                        main_content = content
-                        hashtags_found = []
+                        lines = content.split('\n')
+                        # Check last few lines for hashtags
+                        for i in range(len(lines)-1, -1, -1):
+                            line = lines[i].strip()
+                            if line and all(word.startswith('#') or not word for word in line.split()):
+                                # This line contains only hashtags
+                                hashtags_found.extend([tag for tag in line.split() if tag.startswith('#')])
+                                lines.pop(i)
+                            elif line:
+                                break
+                        
+                        # Rebuild main content without hashtag-only lines
+                        main_content = '\n'.join(lines).strip()
+                
+                logging.debug(f"Processed for {platform}: content length={len(main_content)}, hashtags={len(hashtags_found)}")
                 
                 response["adapted_content"][platform] = {
                     "content": main_content,
