@@ -223,7 +223,7 @@ main {
 .btn-outline-primary:hover {
     background-color: var(--accent-color);
     border-color: var(--accent-color);
-    color: white;
+    color: white !important;
 }
 
 /* Cards */
@@ -557,6 +557,7 @@ main {
 [data-theme="light"] .btn-outline-primary:hover {
     background-color: var(--accent-color);
     border-color: var(--accent-color);
+    color: white !important;
 }
 
 /* Light theme chart styles */
