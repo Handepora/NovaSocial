@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeNavigation();
     setupEventListeners();
     setupSchedulingEventListeners();
+    setupContentGenerationWorkflow();
     initializeTheme();
     // Load dashboard data after a short delay to ensure DOM is fully ready
     setTimeout(() => {
@@ -322,6 +323,8 @@ function displayGeneratedContent(content, platforms) {
     html += '<div class="tab-content">';
     platforms.forEach((platform, index) => {
         const platformContent = content[platform];
+        const fullContent = `${platformContent.content}\n\n${platformContent.hashtags.join(' ')}`;
+        
         html += `
             <div class="tab-pane fade ${index === 0 ? 'show active' : ''}" id="tab-${platform}">
                 <div class="card">
@@ -330,19 +333,22 @@ function displayGeneratedContent(content, platforms) {
                         Vista previa para ${platform.charAt(0).toUpperCase() + platform.slice(1)}
                     </div>
                     <div class="card-body">
-                        <p>${platformContent.content}</p>
-                        <div class="mt-3">
-                            <strong>Hashtags:</strong> ${platformContent.hashtags.join(' ')}
+                        <div class="generated-text mb-3">
+                            <p>${platformContent.content}</p>
                         </div>
-                        <div class="mt-3">
-                            <button class="btn btn-success me-2">
-                                <i class="fas fa-check me-1"></i>Aprobar y Programar
+                        <div class="hashtags mb-3">
+                            <strong>Hashtags:</strong> 
+                            <span class="text-muted">${platformContent.hashtags.join(' ')}</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary" onclick="scheduleGeneratedContent('${platform}', \`${platformContent.content}\`, '${platformContent.hashtags.join(' ')}')">
+                                <i class="fas fa-calendar-plus me-1"></i>Programar Publicación
                             </button>
-                            <button class="btn btn-outline-primary me-2">
+                            <button class="btn btn-outline-secondary" onclick="editGeneratedContent('${platform}', \`${platformContent.content}\`, '${platformContent.hashtags.join(' ')}')">
                                 <i class="fas fa-edit me-1"></i>Editar
                             </button>
-                            <button class="btn btn-outline-danger">
-                                <i class="fas fa-trash me-1"></i>Descartar
+                            <button class="btn btn-outline-warning" onclick="copyToClipboard(\`${fullContent}\`)">
+                                <i class="fas fa-copy me-1"></i>Copiar
                             </button>
                         </div>
                     </div>
@@ -1197,6 +1203,158 @@ function getPlatformIcon(platform) {
         facebook: 'fab fa-facebook'
     };
     return icons[platform] || 'fas fa-globe';
+}
+
+// Content-to-Scheduling Integration Functions
+function scheduleGeneratedContent(platform, content, hashtags) {
+    // Create a title from the first part of the content
+    const title = content.length > 50 ? content.substring(0, 50) + '...' : content;
+    const fullContent = `${content}\n\n${hashtags}`;
+    
+    // Pre-populate the scheduling modal
+    document.getElementById('postTitle').value = title;
+    document.getElementById('postContent').value = fullContent;
+    document.getElementById('postPlatform').value = platform;
+    
+    // Set default scheduling time (tomorrow at 10 AM)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('postDate').value = tomorrow.toISOString().split('T')[0];
+    document.getElementById('postTime').value = '10:00';
+    
+    // Show the scheduling modal
+    const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+    modal.show();
+    
+    showSuccessMessage('Contenido listo para programar');
+}
+
+function editGeneratedContent(platform, content, hashtags) {
+    // Create an editable version of the content
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Contenido - ${platform.charAt(0).toUpperCase() + platform.slice(1)}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Contenido</label>
+                        <textarea class="form-control" id="editContent" rows="4">${content}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Hashtags</label>
+                        <input type="text" class="form-control" id="editHashtags" value="${hashtags}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEditedContent('${platform}')">
+                        <i class="fas fa-save me-1"></i>Guardar y Continuar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    const editModal = new bootstrap.Modal(modal);
+    editModal.show();
+    
+    // Clean up modal when hidden
+    modal.addEventListener('hidden.bs.modal', () => {
+        document.body.removeChild(modal);
+    });
+}
+
+function saveEditedContent(platform) {
+    const editedContent = document.getElementById('editContent').value;
+    const editedHashtags = document.getElementById('editHashtags').value;
+    
+    // Close edit modal
+    const editModal = bootstrap.Modal.getInstance(document.querySelector('.modal.show'));
+    editModal.hide();
+    
+    // Update the display with edited content
+    setTimeout(() => {
+        const activeTab = document.querySelector(`#tab-${platform}`);
+        if (activeTab) {
+            const contentDiv = activeTab.querySelector('.generated-text p');
+            const hashtagsSpan = activeTab.querySelector('.hashtags .text-muted');
+            
+            if (contentDiv) contentDiv.textContent = editedContent;
+            if (hashtagsSpan) hashtagsSpan.textContent = editedHashtags;
+            
+            // Update the scheduling button with new content
+            const scheduleBtn = activeTab.querySelector('.btn-primary');
+            if (scheduleBtn) {
+                scheduleBtn.setAttribute('onclick', `scheduleGeneratedContent('${platform}', \`${editedContent}\`, '${editedHashtags}')`);
+            }
+        }
+        
+        showSuccessMessage('Contenido actualizado exitosamente');
+    }, 300);
+}
+
+function copyToClipboard(content) {
+    navigator.clipboard.writeText(content).then(() => {
+        showSuccessMessage('Contenido copiado al portapapeles');
+    }).catch(err => {
+        showErrorMessage('Error al copiar contenido');
+    });
+}
+
+// Enhanced content generation workflow
+function setupContentGenerationWorkflow() {
+    // Add event listeners for validation actions
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.btn-success[onclick*="approvePost"]')) {
+            const postId = e.target.closest('[onclick*="approvePost"]').getAttribute('onclick').match(/\d+/)[0];
+            approveAndSchedulePost(postId);
+        }
+    });
+}
+
+async function approveAndSchedulePost(postId) {
+    try {
+        // First approve the post
+        const response = await fetchData(`/api/posts/approve/${postId}`, {
+            method: 'POST'
+        });
+        
+        if (response.status === 'approved') {
+            // Find the post in pending posts to get its content
+            const pendingPosts = await fetchData('/api/posts/pending');
+            const post = pendingPosts.find(p => p.id == postId);
+            
+            if (post) {
+                // Pre-populate scheduling modal with approved content
+                document.getElementById('postTitle').value = post.title;
+                document.getElementById('postContent').value = post.content;
+                document.getElementById('postPlatform').value = post.platform;
+                
+                // Set default scheduling time
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                document.getElementById('postDate').value = tomorrow.toISOString().split('T')[0];
+                document.getElementById('postTime').value = '10:00';
+                
+                // Show scheduling modal
+                const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+                modal.show();
+                
+                showSuccessMessage('Post aprobado - Listo para programar');
+                
+                // Refresh validation view
+                loadValidationData();
+            }
+        }
+    } catch (error) {
+        showErrorMessage('Error al aprobar el post: ' + error.message);
+    }
 }
 
 // Add CSS for toast notifications
