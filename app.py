@@ -345,6 +345,157 @@ def get_ai_providers_status():
         }
     })
 
+# Default prompt configurations
+DEFAULT_PROMPTS = {
+    "system_prompt": "Eres un experto en marketing de redes sociales. Crea contenido atractivo basado en información actualizada.",
+    "platform_prompts": {
+        "twitter": "Máximo 280 caracteres INCLUYENDO hashtags. Tono conciso y engaging. Contenido directo, sin meta-texto ni explicaciones. No incluyas frases como 'Aquí tienes' o '¡Claro!'.",
+        "linkedin": "Máximo 3000 caracteres. Tono profesional. Incluir enlaces y menciones profesionales cuando sea apropiado.",
+        "instagram": "Máximo 2200 caracteres. Tono visual y atractivo. Incluir llamadas a la acción. Usar hasta 10 hashtags relevantes.",
+        "web": "Contenido informativo y detallado. Estructura con títulos y subtítulos. Incluir introducción, desarrollo y conclusión."
+    },
+    "tone_prompts": {
+        "professional": "Formal, informativo, con terminología especializada cuando sea apropiado. Evitar jerga coloquial.",
+        "casual": "Conversacional, amigable, cercano. Usar lenguaje cotidiano y expresiones naturales.",
+        "humorous": "Divertido, con humor apropiado. Incluir elementos que generen sonrisas sin ofender.",
+        "inspirational": "Motivador, positivo, que impulse a la acción. Usar mensajes de empoderamiento y crecimiento."
+    }
+}
+
+# Store prompt settings in memory (in production, use database)
+PROMPT_SETTINGS = DEFAULT_PROMPTS.copy()
+
+@app.route('/api/prompt-settings', methods=['GET'])
+def get_prompt_settings():
+    """Get current prompt settings"""
+    return jsonify({
+        "success": True,
+        "settings": PROMPT_SETTINGS
+    })
+
+@app.route('/api/prompt-settings/system', methods=['POST'])
+def update_system_prompt():
+    """Update system prompt"""
+    try:
+        data = request.get_json()
+        system_prompt = data.get('system_prompt', '').strip()
+        
+        if not system_prompt:
+            return jsonify({
+                "success": False,
+                "error": "El prompt del sistema no puede estar vacío"
+            }), 400
+        
+        PROMPT_SETTINGS['system_prompt'] = system_prompt
+        logging.info(f"System prompt updated: {system_prompt[:100]}...")
+        
+        return jsonify({
+            "success": True,
+            "message": "Prompt del sistema actualizado correctamente"
+        })
+        
+    except Exception as e:
+        logging.error(f"Error updating system prompt: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Error interno del servidor"
+        }), 500
+
+@app.route('/api/prompt-settings/platforms', methods=['POST'])
+def update_platform_prompts():
+    """Update platform-specific prompts"""
+    try:
+        data = request.get_json()
+        platform_prompts = data.get('platform_prompts', {})
+        
+        # Validate platform prompts
+        valid_platforms = ['twitter', 'linkedin', 'instagram', 'web']
+        for platform, prompt in platform_prompts.items():
+            if platform not in valid_platforms:
+                return jsonify({
+                    "success": False,
+                    "error": f"Plataforma no válida: {platform}"
+                }), 400
+            
+            if not prompt.strip():
+                return jsonify({
+                    "success": False,
+                    "error": f"El prompt para {platform} no puede estar vacío"
+                }), 400
+        
+        PROMPT_SETTINGS['platform_prompts'].update(platform_prompts)
+        logging.info(f"Platform prompts updated for: {list(platform_prompts.keys())}")
+        
+        return jsonify({
+            "success": True,
+            "message": "Prompts de plataforma actualizados correctamente"
+        })
+        
+    except Exception as e:
+        logging.error(f"Error updating platform prompts: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Error interno del servidor"
+        }), 500
+
+@app.route('/api/prompt-settings/tones', methods=['POST'])
+def update_tone_prompts():
+    """Update tone-specific prompts"""
+    try:
+        data = request.get_json()
+        tone_prompts = data.get('tone_prompts', {})
+        
+        # Validate tone prompts
+        valid_tones = ['professional', 'casual', 'humorous', 'inspirational']
+        for tone, prompt in tone_prompts.items():
+            if tone not in valid_tones:
+                return jsonify({
+                    "success": False,
+                    "error": f"Tono no válido: {tone}"
+                }), 400
+            
+            if not prompt.strip():
+                return jsonify({
+                    "success": False,
+                    "error": f"El prompt para el tono {tone} no puede estar vacío"
+                }), 400
+        
+        PROMPT_SETTINGS['tone_prompts'].update(tone_prompts)
+        logging.info(f"Tone prompts updated for: {list(tone_prompts.keys())}")
+        
+        return jsonify({
+            "success": True,
+            "message": "Configuración de tonos actualizada correctamente"
+        })
+        
+    except Exception as e:
+        logging.error(f"Error updating tone prompts: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Error interno del servidor"
+        }), 500
+
+@app.route('/api/prompt-settings/reset', methods=['POST'])
+def reset_prompts_to_default():
+    """Reset all prompts to default values"""
+    try:
+        global PROMPT_SETTINGS
+        PROMPT_SETTINGS = DEFAULT_PROMPTS.copy()
+        logging.info("All prompts reset to default values")
+        
+        return jsonify({
+            "success": True,
+            "message": "Todos los prompts han sido restaurados a sus valores predeterminados",
+            "settings": PROMPT_SETTINGS
+        })
+        
+    except Exception as e:
+        logging.error(f"Error resetting prompts: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Error interno del servidor"
+        }), 500
+
 @app.route('/api/posts/approve/<int:post_id>', methods=['POST'])
 def approve_post(post_id):
     """Approve a pending post"""

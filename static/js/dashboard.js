@@ -1398,7 +1398,8 @@ async function loadConfigurationData() {
             loadSocialAccounts(),
             loadAccountStats(),
             loadAIProviders(),
-            loadAIProviderStats()
+            loadAIProviderStats(),
+            loadPromptSettings()
         ]);
     } catch (error) {
         console.error('Error loading configuration data:', error);
@@ -2233,3 +2234,139 @@ const toastStyles = `
 const styleSheet = document.createElement('style');
 styleSheet.textContent = toastStyles;
 document.head.appendChild(styleSheet);
+
+// Prompt Configuration Functions
+async function loadPromptSettings() {
+    try {
+        const response = await fetchData("/api/prompt-settings");
+        if (response.success) {
+            populatePromptFields(response.settings);
+        }
+    } catch (error) {
+        console.error("Error loading prompt settings:", error);
+    }
+}
+
+function populatePromptFields(settings) {
+    // System prompt
+    if (settings.system_prompt) {
+        document.getElementById("systemPrompt").value = settings.system_prompt;
+    }
+    
+    // Platform prompts
+    const platforms = ["twitter", "linkedin", "instagram", "web"];
+    platforms.forEach(platform => {
+        const element = document.getElementById(`${platform}Prompt`);
+        if (element && settings.platform_prompts && settings.platform_prompts[platform]) {
+            element.value = settings.platform_prompts[platform];
+        }
+    });
+    
+    // Tone prompts
+    const tones = ["professional", "casual", "humorous", "inspirational"];
+    tones.forEach(tone => {
+        const element = document.getElementById(`${tone}Tone`);
+        if (element && settings.tone_prompts && settings.tone_prompts[tone]) {
+            element.value = settings.tone_prompts[tone];
+        }
+    });
+}
+
+async function saveSystemPrompt() {
+    const systemPrompt = document.getElementById("systemPrompt").value;
+    
+    try {
+        const response = await fetchData("/api/prompt-settings/system", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ system_prompt: systemPrompt })
+        });
+        
+        if (response.success) {
+            showSuccessMessage("Prompt del sistema guardado correctamente");
+        } else {
+            showErrorMessage(response.error || "Error al guardar el prompt del sistema");
+        }
+    } catch (error) {
+        showErrorMessage("Error al guardar: " + error.message);
+    }
+}
+
+async function savePlatformPrompts() {
+    const platforms = ["twitter", "linkedin", "instagram", "web"];
+    const platformPrompts = {};
+    
+    platforms.forEach(platform => {
+        const element = document.getElementById(`${platform}Prompt`);
+        if (element) {
+            platformPrompts[platform] = element.value;
+        }
+    });
+    
+    try {
+        const response = await fetchData("/api/prompt-settings/platforms", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ platform_prompts: platformPrompts })
+        });
+        
+        if (response.success) {
+            showSuccessMessage("Prompts de plataforma guardados correctamente");
+        } else {
+            showErrorMessage(response.error || "Error al guardar los prompts de plataforma");
+        }
+    } catch (error) {
+        showErrorMessage("Error al guardar: " + error.message);
+    }
+}
+
+async function saveTonePrompts() {
+    const tones = ["professional", "casual", "humorous", "inspirational"];
+    const tonePrompts = {};
+    
+    tones.forEach(tone => {
+        const element = document.getElementById(`${tone}Tone`);
+        if (element) {
+            tonePrompts[tone] = element.value;
+        }
+    });
+    
+    try {
+        const response = await fetchData("/api/prompt-settings/tones", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tone_prompts: tonePrompts })
+        });
+        
+        if (response.success) {
+            showSuccessMessage("Configuración de tonos guardada correctamente");
+        } else {
+            showErrorMessage(response.error || "Error al guardar la configuración de tonos");
+        }
+    } catch (error) {
+        showErrorMessage("Error al guardar: " + error.message);
+    }
+}
+
+async function resetPromptsToDefault() {
+    if (!confirm("¿Estás seguro de que quieres restaurar todos los prompts a sus valores predeterminados?")) {
+        return;
+    }
+    
+    try {
+        const response = await fetchData("/api/prompt-settings/reset", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+        
+        if (response.success) {
+            populatePromptFields(response.settings);
+            showSuccessMessage("Prompts restaurados a valores predeterminados");
+        } else {
+            showErrorMessage(response.error || "Error al restaurar los prompts");
+        }
+    } catch (error) {
+        showErrorMessage("Error al restaurar: " + error.message);
+    }
+}
+

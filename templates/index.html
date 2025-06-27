@@ -468,6 +468,130 @@
                             </div>
                         </div>
                         
+                        <!-- AI Prompt Configuration -->
+                        <div class="col-md-12 mt-4">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Configuración de Prompts de IA</h5>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="resetPromptsToDefault()">
+                                        <i class="fas fa-undo me-1"></i>Restaurar Predeterminados
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Personaliza el comportamiento de la IA:</strong> Aquí puedes modificar los prompts que se envían a los proveedores de IA para personalizar el tono, estilo y comportamiento de la generación de contenido.
+                                    </div>
+                                    
+                                    <ul class="nav nav-tabs mb-3" id="promptTabs" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="system-prompt-tab" data-bs-toggle="tab" data-bs-target="#system-prompt" type="button" role="tab">
+                                                <i class="fas fa-cog me-1"></i>Prompt del Sistema
+                                            </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="platform-prompts-tab" data-bs-toggle="tab" data-bs-target="#platform-prompts" type="button" role="tab">
+                                                <i class="fas fa-share-alt me-1"></i>Prompts por Plataforma
+                                            </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="tone-prompts-tab" data-bs-toggle="tab" data-bs-target="#tone-prompts" type="button" role="tab">
+                                                <i class="fas fa-palette me-1"></i>Tonos de Voz
+                                            </button>
+                                        </li>
+                                    </ul>
+                                    
+                                    <div class="tab-content" id="promptTabsContent">
+                                        <!-- System Prompt Configuration -->
+                                        <div class="tab-pane fade show active" id="system-prompt" role="tabpanel">
+                                            <div class="mb-3">
+                                                <label for="systemPrompt" class="form-label">Prompt del Sistema</label>
+                                                <textarea class="form-control" id="systemPrompt" rows="4" placeholder="Eres un experto en marketing de redes sociales...">Eres un experto en marketing de redes sociales. Crea contenido atractivo basado en información actualizada.</textarea>
+                                                <div class="form-text">Este prompt se envía al inicio de cada conversación con la IA para establecer su rol y comportamiento general.</div>
+                                            </div>
+                                            <button type="button" class="btn btn-primary" onclick="saveSystemPrompt()">
+                                                <i class="fas fa-save me-1"></i>Guardar Prompt del Sistema
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Platform-specific Prompts -->
+                                        <div class="tab-pane fade" id="platform-prompts" role="tabpanel">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="twitterPrompt" class="form-label">
+                                                            <i class="fab fa-twitter me-1"></i>Twitter
+                                                        </label>
+                                                        <textarea class="form-control" id="twitterPrompt" rows="3" placeholder="Características específicas para Twitter...">Máximo 280 caracteres INCLUYENDO hashtags. Tono conciso y engaging. Contenido directo, sin meta-texto ni explicaciones. No incluyas frases como "Aquí tienes" o "¡Claro!".</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="linkedinPrompt" class="form-label">
+                                                            <i class="fab fa-linkedin me-1"></i>LinkedIn
+                                                        </label>
+                                                        <textarea class="form-control" id="linkedinPrompt" rows="3" placeholder="Características específicas para LinkedIn...">Máximo 3000 caracteres. Tono profesional. Incluir enlaces y menciones profesionales cuando sea apropiado.</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="instagramPrompt" class="form-label">
+                                                            <i class="fab fa-instagram me-1"></i>Instagram
+                                                        </label>
+                                                        <textarea class="form-control" id="instagramPrompt" rows="3" placeholder="Características específicas para Instagram...">Máximo 2200 caracteres. Tono visual y atractivo. Incluir llamadas a la acción. Usar hasta 10 hashtags relevantes.</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="webPrompt" class="form-label">
+                                                            <i class="fas fa-globe me-1"></i>Web/Blog
+                                                        </label>
+                                                        <textarea class="form-control" id="webPrompt" rows="3" placeholder="Características específicas para contenido web...">Contenido informativo y detallado. Estructura con títulos y subtítulos. Incluir introducción, desarrollo y conclusión.</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-primary" onclick="savePlatformPrompts()">
+                                                <i class="fas fa-save me-1"></i>Guardar Prompts de Plataforma
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Tone Configuration -->
+                                        <div class="tab-pane fade" id="tone-prompts" role="tabpanel">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="professionalTone" class="form-label">Tono Profesional</label>
+                                                        <textarea class="form-control" id="professionalTone" rows="2" placeholder="Descripción del tono profesional...">Formal, informativo, con terminología especializada cuando sea apropiado. Evitar jerga coloquial.</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="casualTone" class="form-label">Tono Casual</label>
+                                                        <textarea class="form-control" id="casualTone" rows="2" placeholder="Descripción del tono casual...">Conversacional, amigable, cercano. Usar lenguaje cotidiano y expresiones naturales.</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="humorousTone" class="form-label">Tono Humorístico</label>
+                                                        <textarea class="form-control" id="humorousTone" rows="2" placeholder="Descripción del tono humorístico...">Divertido, con humor apropiado. Incluir elementos que generen sonrisas sin ofender.</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="inspirationalTone" class="form-label">Tono Inspiracional</label>
+                                                        <textarea class="form-control" id="inspirationalTone" rows="2" placeholder="Descripción del tono inspiracional...">Motivador, positivo, que impulse a la acción. Usar mensajes de empoderamiento y crecimiento.</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-primary" onclick="saveTonePrompts()">
+                                                <i class="fas fa-save me-1"></i>Guardar Configuración de Tonos
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- AI Provider Statistics -->
                         <div class="col-md-4 mt-4">
                             <div class="card">
