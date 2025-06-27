@@ -496,6 +496,169 @@ def reset_prompts_to_default():
             "error": "Error interno del servidor"
         }), 500
 
+@app.route('/api/adapt-content', methods=['POST'])
+def adapt_content():
+    """Adapt existing content for different social media platforms"""
+    try:
+        data = request.get_json()
+        
+        original_content = data.get('original_content', '').strip()
+        style = data.get('style', 'summary')
+        tone = data.get('tone', 'professional')
+        platforms = data.get('platforms', [])
+        provider = data.get('provider', 'perplexity')
+        focus = data.get('focus', 'engagement')
+        
+        if not original_content:
+            return jsonify({
+                "status": "error",
+                "error": "El contenido original es requerido"
+            }), 400
+            
+        if not platforms:
+            return jsonify({
+                "status": "error", 
+                "error": "Selecciona al menos una plataforma"
+            }), 400
+        
+        # Check if provider has API key configured
+        ai_provider = next((p for p in AI_PROVIDERS if p['name'] == provider), None)
+        logging.debug(f"AI Provider found: {ai_provider}")
+        
+        if not ai_provider:
+            return jsonify({
+                "status": "error",
+                "error": f"Proveedor {provider} no encontrado",
+                "requires_setup": True,
+                "available_providers": [p['name'] for p in AI_PROVIDERS]
+            }), 400
+            
+        if ai_provider['status'] != 'connected':
+            return jsonify({
+                "status": "error",
+                "error": f"Proveedor {provider} no configurado. Estado actual: {ai_provider['status']}",
+                "requires_setup": True,
+                "available_providers": [p['name'] for p in AI_PROVIDERS if p['status'] == 'connected']
+            }), 400
+        
+        # Generate adapted content for each platform
+        response = {
+            "status": "success",
+            "original_content": original_content,
+            "style": style,
+            "tone": tone,
+            "provider": provider,
+            "adapted_content": {},
+            "generated_at": datetime.now().isoformat()
+        }
+        
+        for platform in platforms:
+            logging.debug(f"Adapting content for {platform} with provider {provider}")
+            
+            # Create adaptation prompt
+            adaptation_prompt = create_adaptation_prompt(original_content, platform, style, tone, focus)
+            
+            result = content_generator.generate_content(adaptation_prompt, platform, provider)
+            logging.debug(f"Adaptation result for {platform}: {result}")
+            
+            if result and result.get('success'):
+                content = result['content']
+                
+                # Special processing for Twitter
+                if platform == 'twitter':
+                    main_content, hashtags_found = process_twitter_content(content)
+                else:
+                    # Extract hashtags from content if present
+                    if '#' in content:
+                        parts = content.split('#')
+                        main_content = parts[0].strip()
+                        hashtags_found = ['#' + tag.split()[0] for tag in parts[1:] if tag.strip()]
+                    else:
+                        main_content = content
+                        hashtags_found = []
+                
+                response["adapted_content"][platform] = {
+                    "content": main_content,
+                    "hashtags": hashtags_found
+                }
+                
+                # Add citations if from Perplexity
+                if provider == 'perplexity' and 'citations' in result:
+                    response["citations"] = result['citations']
+            else:
+                error_msg = result.get('error', 'Error desconocido') if result else 'No se recibió respuesta'
+                logging.error(f"Content adaptation failed for {platform}: {error_msg}")
+                response["adapted_content"][platform] = {
+                    "content": f"Error adaptando contenido: {error_msg}",
+                    "hashtags": []
+                }
+                response["status"] = "error"
+        
+        logging.debug(f"Final adaptation response: {response}")
+        return jsonify(response)
+        
+    except Exception as e:
+        logging.error(f"Exception in adapt_content: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "error": f"Error interno del servidor: {str(e)}"
+        }), 500
+
+def create_adaptation_prompt(original_content, platform, style, tone, focus):
+    """Create a specific prompt for content adaptation"""
+    
+    # Style descriptions
+    style_descriptions = {
+        'summary': 'un resumen conciso y atractivo',
+        'highlights': 'los puntos clave más importantes',
+        'questions': 'preguntas engaging que generen interacción',
+        'story': 'formato de historia narrativa',
+        'tips': 'tips o consejos prácticos'
+    }
+    
+    # Focus descriptions
+    focus_descriptions = {
+        'engagement': 'máximo engagement e interacción',
+        'information': 'valor informativo y educativo',
+        'viral': 'potencial viral y compartible',
+        'educational': 'contenido educativo y formativo'
+    }
+    
+    style_desc = style_descriptions.get(style, 'contenido adaptado')
+    focus_desc = focus_descriptions.get(focus, 'engagement')
+    
+    # Platform-specific adaptations
+    platform_specs = {
+        'twitter': 'Tweet de máximo 280 caracteres con 2 hashtags relevantes',
+        'linkedin': 'Post profesional de LinkedIn (hasta 3000 caracteres) con 3 hashtags',
+        'instagram': 'Post de Instagram visual y atractivo (hasta 2200 caracteres) con 10 hashtags',
+        'facebook': 'Post de Facebook conversacional (hasta 63000 caracteres) con 2 hashtags',
+        'youtube': 'Descripción de YouTube detallada (hasta 5000 caracteres) con 5 hashtags',
+        'web': 'Artículo web estructurado con títulos y subtítulos (hasta 5000 caracteres)'
+    }
+    
+    platform_spec = platform_specs.get(platform, 'contenido para redes sociales')
+    
+    prompt = f"""
+Adapta el siguiente contenido original para crear {style_desc} optimizado para {platform_spec}.
+
+CONTENIDO ORIGINAL:
+{original_content}
+
+INSTRUCCIONES:
+- Crea {style_desc} del contenido original
+- Tono: {tone}
+- Enfoque: {focus_desc}
+- Plataforma: {platform}
+- Mantén la información clave y el valor del contenido original
+- Hazlo nativo y natural para {platform}
+- Incluye hashtags relevantes al final
+
+Genera ÚNICAMENTE el contenido adaptado listo para publicar.
+"""
+    
+    return prompt
+
 @app.route('/api/posts/approve/<int:post_id>', methods=['POST'])
 def approve_post(post_id):
     """Approve a pending post"""
