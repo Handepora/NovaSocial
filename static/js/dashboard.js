@@ -313,7 +313,15 @@ async function generateContent() {
         console.log('Generation response:', response);
         
         if (response && response.status === 'success') {
-            displayGeneratedContent(response.content, platforms);
+            // Transform the response to match displayGeneratedContent expected format
+            const transformedContent = {};
+            platforms.forEach(platform => {
+                transformedContent[platform] = {
+                    content: response.content[platform] || '',
+                    hashtags: response.hashtags[platform] || []
+                };
+            });
+            displayGeneratedContent(transformedContent, platforms);
             showSuccessMessage('Contenido generado exitosamente');
         } else if (response && response.status === 'error') {
             if (response.requires_setup) {
