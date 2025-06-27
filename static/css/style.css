@@ -239,6 +239,32 @@ main {
     color: var(--text-primary);
 }
 
+/* Content preview styling for better contrast */
+.content-preview {
+    color: var(--text-primary) !important;
+    background-color: var(--secondary-bg) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Light theme overrides for content preview */
+[data-theme="light"] .content-preview {
+    background-color: #f8f9fa !important;
+    color: #2d3748 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* Dark theme specific styling for bg-light elements */
+.bg-light {
+    background-color: var(--secondary-bg) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .bg-light {
+    background-color: #f8f9fa !important;
+    color: #2d3748 !important;
+}
+
 /* Calendar */
 #calendar-container {
     min-height: 600px;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social Media AI Dashboard</title>
+    <title>Nova - Social Media AI Dashboard</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -26,15 +26,15 @@
             <!-- Sidebar -->
             <nav class="col-md-3 col-lg-2 d-md-block sidebar">
                 <div class="position-sticky pt-3">
-                    <!-- User Info -->
+                    <!-- Nova Logo and Info -->
                     <div class="user-info mb-4">
                         <div class="d-flex align-items-center">
-                            <div class="avatar-circle me-3">
-                                <i class="fas fa-user"></i>
+                            <div class="me-3">
+                                <img src="{{ url_for('static', filename='nova-logo.png') }}" alt="Nova Logo" style="height: 40px; width: 40px; border-radius: 8px;">
                             </div>
                             <div>
-                                <h6 class="mb-0">Empresa X</h6>
-                                <small class="text-muted">Admin</small>
+                                <h6 class="mb-0">Nova</h6>
+                                <small class="text-muted">AI Dashboard</small>
                             </div>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#crear-contenido" data-view="crear-contenido">
-                                <i class="fas fa-sparkles me-2"></i>
+                                <img src="{{ url_for('static', filename='nova-logo.png') }}" alt="Nova" style="height: 16px; width: 16px; margin-right: 8px;">
                                 Crear Contenido
                             </a>
                         </li>

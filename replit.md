@@ -1,8 +1,8 @@
-# Social Media AI Dashboard
+# Nova - Social Media AI Dashboard
 
 ## Overview
 
-This is a Flask-based web application that provides a social media management dashboard. The application is designed to help users manage, schedule, and analyze social media content across multiple platforms. It features a dark-themed, modern UI with mock data for demonstration purposes.
+This is a Flask-based web application that provides a comprehensive social media management dashboard for Nova. The application is designed to help users manage, schedule, and analyze social media content across multiple platforms using AI-powered content generation. It features a dark/light theme toggle, real AI integration, and complete content adaptation capabilities.
 
 ## System Architecture
 
@@ -119,6 +119,20 @@ The application is configured for deployment on Replit with the following setup:
   - Added API endpoints for saving, loading, and resetting prompt configurations
   - Integrated prompt settings into configuration dashboard with real-time updates
   - Included validation and error handling for prompt management operations
+- June 27, 2025. Implemented comprehensive content adaptation feature:
+  - Created new "Adaptar Contenido" section with complete user interface
+  - Built content adaptation API endpoint with multi-platform support
+  - Added style options (summary, highlights, questions, story, tips) and focus settings
+  - Integrated with all AI providers (OpenAI, Gemini, Perplexity) for content adaptation
+  - Created tabbed interface for displaying adapted content by platform
+  - Added scheduling, editing, and copying functionality for adapted content
+  - Fixed content processing issues to ensure proper text extraction and hashtag handling
+- June 27, 2025. Rebranded application to Nova with visual identity integration:
+  - Updated application title and branding to Nova throughout the interface
+  - Added Nova logo to sidebar and navigation elements
+  - Integrated Nova logo as icon for "Crear Contenido" navigation item
+  - Fixed dark mode contrast issues for content preview areas
+  - Enhanced styling for better text visibility in both light and dark themes
 
 ## User Preferences
 
