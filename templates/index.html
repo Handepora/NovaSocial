@@ -2072,7 +2072,7 @@
                     margin: 0 !important;
                     padding: 0 !important;
                     border: none !important;
-                    margin-right: -20px !important;
+
                 ">
                     <!-- Header -->
                     <div id="sidebar-header" style="padding: 20px; border-bottom: 1px solid #2d3748; color: white;">
@@ -2211,7 +2211,7 @@
             
             // Create content wrapper
             const contentWrapper = document.createElement('div');
-            contentWrapper.style.cssText = 'flex: 1; overflow-y: auto; max-height: 100vh; padding: 0; margin: 0; border: none;';
+            contentWrapper.style.cssText = 'flex: 1; overflow-y: auto; max-height: 100vh; padding: 0; margin: 0; border: none; margin-left: -20px;';
             
             // Move existing main content into content wrapper
             const mainContent = document.querySelector('main');
@@ -2221,7 +2221,7 @@
                 mainContent.style.margin = '0';
                 mainContent.style.transition = 'none';
                 mainContent.style.padding = '20px';
-                mainContent.style.paddingLeft = '20px';
+                mainContent.style.paddingLeft = '30px';
                 mainContent.style.width = '100%';
                 mainContent.style.border = 'none';
                 contentWrapper.appendChild(mainContent);
