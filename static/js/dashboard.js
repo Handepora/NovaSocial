@@ -1151,6 +1151,14 @@ function setTheme(theme) {
 // Function to force fix dark backgrounds in light mode
 function fixLightModeBackgrounds() {
     setTimeout(() => {
+        // Get current theme once at the beginning
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        
+        // Only apply fixes if we're in light mode
+        if (currentTheme !== 'light') {
+            return;
+        }
+        
         // Fix all canvas elements
         const canvases = document.querySelectorAll('canvas');
         canvases.forEach(canvas => {
@@ -1260,7 +1268,6 @@ function fixLightModeBackgrounds() {
         });
         
         // Only apply card body fixes in light theme
-        const currentTheme = document.documentElement.getAttribute('data-theme');
         if (currentTheme === 'light') {
             // Force fix specific card body areas that remain dark
             const cardBodies = document.querySelectorAll('.card-body');
@@ -1305,31 +1312,27 @@ function fixLightModeBackgrounds() {
             });
         }
         
-        // Only apply aggressive fixes if we're currently in light theme
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        if (currentTheme === 'light') {
-            // Final aggressive pass - any element with dark background in light mode only
-            const allElements = document.querySelectorAll('*');
-            allElements.forEach(element => {
-                const computedStyle = window.getComputedStyle(element);
-                const bgColor = computedStyle.backgroundColor;
-                
-                if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent') {
-                    // Parse RGB values
-                    const rgbMatch = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-                    if (rgbMatch) {
-                        const r = parseInt(rgbMatch[1]);
-                        const g = parseInt(rgbMatch[2]);
-                        const b = parseInt(rgbMatch[3]);
-                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-                        
-                        if (brightness < 100) { // Very dark backgrounds
-                            element.style.backgroundColor = '#ffffff';
-                        }
+        // Final aggressive pass - any element with dark background in light mode only
+        const allElements = document.querySelectorAll('*');
+        allElements.forEach(element => {
+            const computedStyle = window.getComputedStyle(element);
+            const bgColor = computedStyle.backgroundColor;
+            
+            if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent') {
+                // Parse RGB values
+                const rgbMatch = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+                if (rgbMatch) {
+                    const r = parseInt(rgbMatch[1]);
+                    const g = parseInt(rgbMatch[2]);
+                    const b = parseInt(rgbMatch[3]);
+                    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                    
+                    if (brightness < 100) { // Very dark backgrounds
+                        element.style.backgroundColor = '#ffffff';
                     }
                 }
-            });
-        }
+            }
+        });
     }, 100);
 }
 
