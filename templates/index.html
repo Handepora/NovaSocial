@@ -2040,7 +2040,7 @@
                     <!-- Header -->
                     <div id="sidebar-header" style="padding: 20px; border-bottom: 1px solid #2d3748; color: white;">
                         <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                            <div id="logo-container" style="width: 40px; height: 40px; margin-right: 0.75rem; border-radius: 8px; overflow: hidden; background: black; display: flex; align-items: center; justify-content: center;">
+                            <div id="logo-container" style="width: 40px; height: 40px; margin-right: 0.75rem; border-radius: 8px; overflow: hidden; background: transparent; display: flex; align-items: center; justify-content: center;">
                                 <img src="/static/nova-logo.png" alt="Nova Logo" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
                             <div>
@@ -2249,9 +2249,9 @@
                         const subtitle = header.querySelector('div > div:last-child');
                         if (subtitle) subtitle.style.color = '#6c757d';
                         
-                        // Update logo background for light theme
+                        // Keep logo background transparent
                         const logoContainer = header.querySelector('#logo-container');
-                        if (logoContainer) logoContainer.style.background = 'white';
+                        if (logoContainer) logoContainer.style.background = 'transparent';
                     }
                     
                     // Update navigation items
@@ -2288,9 +2288,9 @@
                         const subtitle = header.querySelector('div > div:last-child');
                         if (subtitle) subtitle.style.color = '#a0aec0';
                         
-                        // Update logo background for dark theme
+                        // Keep logo background transparent
                         const logoContainer = header.querySelector('#logo-container');
-                        if (logoContainer) logoContainer.style.background = 'black';
+                        if (logoContainer) logoContainer.style.background = 'transparent';
                     }
                     
                     // Update navigation items
@@ -2381,9 +2381,9 @@
                             header.style.borderBottom = '1px solid #dee2e6';
                             header.style.color = '#212529';
                             
-                            // Update logo background for light theme
+                            // Keep logo background transparent
                             const logoContainer = header.querySelector('#logo-container');
-                            if (logoContainer) logoContainer.style.background = 'white';
+                            if (logoContainer) logoContainer.style.background = 'transparent';
                         }
                         
                         const navItems = sidebar.querySelectorAll('div[onclick]');
