@@ -447,6 +447,180 @@ body {
     color: #2d3748 !important;
 }
 
+/* Light theme specific improvements */
+[data-theme="light"] .text-muted {
+    color: #4a5568 !important;
+}
+
+[data-theme="light"] .text-secondary {
+    color: #4a5568 !important;
+}
+
+[data-theme="light"] .card {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .card-header {
+    background-color: #f7fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .card-body {
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .form-text {
+    color: #718096 !important;
+}
+
+[data-theme="light"] .content-section {
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] #calendar-container {
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .dashboard-card {
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .dashboard-card .card-header {
+    background-color: #f7fafc !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .time-label {
+    background-color: #f7fafc !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .time-slot {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .week-day-header {
+    background-color: #f7fafc !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .week-time-label {
+    background-color: #f7fafc !important;
+    color: #2d3748 !important;
+}
+
+/* Configuration section light theme fixes */
+[data-theme="light"] .config-card {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .config-card .card-header {
+    background-color: #f7fafc !important;
+    color: #2d3748 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .config-card .card-body {
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .config-section {
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .config-section .form-text,
+[data-theme="light"] .config-section small {
+    color: #718096 !important;
+}
+
+[data-theme="light"] .ai-provider-card {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .provider-info {
+    color: #4a5568 !important;
+}
+
+[data-theme="light"] .provider-status {
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .empty-state {
+    color: #718096 !important;
+}
+
+[data-theme="light"] .empty-state h5 {
+    color: #4a5568 !important;
+}
+
+[data-theme="light"] .empty-state p {
+    color: #718096 !important;
+}
+
+/* Light theme for all chart containers */
+[data-theme="light"] .chart-container {
+    background-color: #ffffff !important;
+}
+
+[data-theme="light"] .chart-placeholder {
+    background-color: #f7fafc !important;
+    color: #718096 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* Light theme for tables */
+[data-theme="light"] .table {
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .table th {
+    background-color: #f7fafc !important;
+    color: #2d3748 !important;
+    border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .table td {
+    color: #2d3748 !important;
+    border-color: #e2e8f0 !important;
+}
+
+/* Light theme for modals */
+[data-theme="light"] .modal-content {
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .modal-header {
+    background-color: #f7fafc !important;
+    color: #2d3748 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .modal-body {
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .modal-footer {
+    background-color: #f7fafc !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
 /* Calendar */
 #calendar-container {
     min-height: 600px;
