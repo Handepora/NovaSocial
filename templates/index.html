@@ -834,30 +834,63 @@
                         <h1 class="h2">Validación</h1>
                     </div>
                     
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header bg-warning">
-                                    <h5 class="mb-0">Pendiente de Aprobación</h5>
+                    <!-- Validation Cards Grid -->
+                    <div class="dashboard-cards">
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-clock text-warning me-2"></i>
+                                <h6 class="mb-0">Pendiente de Aprobación</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="pending-approval-list">
+                                    <!-- Pending posts will be loaded here -->
                                 </div>
-                                <div class="card-body">
-                                    <div id="pending-approval-list">
-                                        <!-- Pending posts will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-times-circle text-danger me-2"></i>
+                                <h6 class="mb-0">Rechazado</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="rejected-list">
+                                    <div class="text-center text-muted py-4">
+                                        <i class="fas fa-times-circle fa-2x mb-2"></i>
+                                        <p>No hay posts rechazados</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header bg-danger">
-                                    <h5 class="mb-0">Rechazado</h5>
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <h6 class="mb-0">Aprobado</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center text-muted py-4">
+                                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                                    <p>No hay posts aprobados recientes</p>
                                 </div>
-                                <div class="card-body">
-                                    <div id="rejected-list">
-                                        <div class="text-center text-muted py-4">
-                                            <i class="fas fa-times-circle fa-2x mb-2"></i>
-                                            <p>No hay posts rechazados</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-chart-line text-info me-2"></i>
+                                <h6 class="mb-0">Estadísticas de Validación</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <div class="h4 text-warning mb-0">0</div>
+                                            <small class="text-muted">Pendientes</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h4 text-success mb-0">0</div>
+                                            <small class="text-muted">Aprobados</small>
                                         </div>
                                     </div>
                                 </div>
@@ -872,49 +905,62 @@
                         <h1 class="h2">Analíticas</h1>
                     </div>
                     
-                    <div class="row g-4">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Crecimiento de Seguidores</h5>
-                                </div>
-                                <div class="card-body">
-                                    <canvas id="followersChart" width="400" height="200"></canvas>
+                    <!-- Analytics Cards Grid -->
+                    <div class="dashboard-cards">
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-chart-line text-success me-2"></i>
+                                <h6 class="mb-0">Crecimiento de Seguidores</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="followersChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-chart-pie text-info me-2"></i>
+                                <h6 class="mb-0">Tasa de Interacción por Plataforma</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="engagementChart" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-trophy text-warning me-2"></i>
+                                <h6 class="mb-0">Publicaciones con Mejor Rendimiento</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped analytics-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Publicación</th>
+                                                <th>Plataforma</th>
+                                                <th>Interacciones</th>
+                                                <th>Alcance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="top-posts-table">
+                                            <!-- Top posts will be loaded here -->
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Tasa de Interacción por Plataforma</h5>
-                                </div>
-                                <div class="card-body">
-                                    <canvas id="engagementChart" width="400" height="300"></canvas>
-                                </div>
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                <h6 class="mb-0">Actividad Reciente</h6>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Publicaciones con Mejor Rendimiento</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-striped analytics-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Publicación</th>
-                                                    <th>Plataforma</th>
-                                                    <th>Interacciones</th>
-                                                    <th>Alcance</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="top-posts-table">
-                                                <!-- Top posts will be loaded here -->
-                                            </tbody>
-                                        </table>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <div class="text-center text-muted">
+                                        <i class="fas fa-chart-bar fa-3x mb-3 opacity-50"></i>
+                                        <p>No hay actividad reciente</p>
                                     </div>
                                 </div>
                             </div>
@@ -928,43 +974,84 @@
                         <h1 class="h2">Configuración</h1>
                     </div>
                     
-                    <div class="row g-4">
+                    <!-- Configuration Cards Grid -->
+                    <div class="dashboard-cards">
                         <!-- Social Media Accounts -->
-                        <div class="col-md-8">
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0">Cuentas de Redes Sociales</h5>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAccountModal">
-                                        <i class="fas fa-plus me-1"></i>Agregar Cuenta
-                                    </button>
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-share-alt text-primary me-2"></i>
+                                    <h6 class="mb-0">Cuentas de Redes Sociales</h6>
                                 </div>
-                                <div class="card-body">
-                                    <div id="social-accounts-list">
-                                        <!-- Social accounts will be loaded here -->
-                                    </div>
+                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAccountModal">
+                                    <i class="fas fa-plus me-1"></i>Agregar
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="social-accounts-list">
+                                    <!-- Social accounts will be loaded here -->
                                 </div>
                             </div>
                         </div>
                         
                         <!-- AI Content Generation Providers -->
-                        <div class="col-md-8 mt-4">
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-robot me-2"></i>Proveedores de IA para Generación de Contenido
-                                    </h5>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#aiProviderModal">
-                                        <i class="fas fa-key me-1"></i>Configurar API Keys
-                                    </button>
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-robot text-success me-2"></i>
+                                    <h6 class="mb-0">Proveedores de IA</h6>
                                 </div>
-                                <div class="card-body">
-                                    <div id="ai-providers-list">
-                                        <!-- AI providers will be loaded here -->
+                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#aiProviderModal">
+                                    <i class="fas fa-key me-1"></i>Configurar
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="ai-providers-list">
+                                    <!-- AI providers will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Prompt Configuration -->
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-comment-dots text-info me-2"></i>
+                                    <h6 class="mb-0">Configuración de Prompts</h6>
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm" onclick="resetPromptsToDefault()">
+                                    <i class="fas fa-undo me-1"></i>Restaurar
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <div class="text-center">
+                                        <i class="fas fa-cog fa-2x text-muted mb-2"></i>
+                                        <p class="text-muted">Personaliza prompts de IA</p>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="collapse" data-bs-target="#promptConfiguration">
+                                            Configurar Prompts
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
+                        <!-- Account Statistics -->
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-chart-bar text-warning me-2"></i>
+                                <h6 class="mb-0">Estadísticas de Cuentas</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="account-stats-summary">
+                                    <!-- Account statistics will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Collapsible Prompt Configuration Section -->
+                    <div class="collapse mt-4" id="promptConfiguration">
                         <!-- AI Prompt Configuration -->
                         <div class="col-md-12 mt-4">
                             <div class="card">
