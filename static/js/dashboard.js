@@ -1600,6 +1600,15 @@ function setupAccountManagement() {
             }
         });
     }
+    
+    // Add modal event listeners to reset form when opened
+    const addAccountModal = document.getElementById('addAccountModal');
+    if (addAccountModal) {
+        addAccountModal.addEventListener('show.bs.modal', function() {
+            // Force reset when modal is opened manually
+            resetAccountForm(true);
+        });
+    }
 }
 
 // Update platform-specific API help text
@@ -1721,15 +1730,27 @@ async function testApiCredentials() {
             console.log('Display name field:', displayNameField);
             console.log('Profile data:', profile);
             
-            if (accountNameField && profile.username) {
-                accountNameField.value = profile.username;
-                console.log('Set account name to:', profile.username);
-            }
+            // Wait a bit and try again if elements are not found
+            setTimeout(() => {
+                const accountField = document.getElementById('accountName');
+                const displayField = document.getElementById('accountDisplayName');
+                
+                console.log('Retry - Account field:', accountField);
+                console.log('Retry - Display field:', displayField);
+                
+                if (accountField && profile.username) {
+                    accountField.value = profile.username;
+                    console.log('Successfully set account name to:', profile.username);
+                }
+                
+                if (displayField && profile.display_name) {
+                    displayField.value = profile.display_name;
+                    console.log('Successfully set display name to:', profile.display_name);
+                }
+            }, 100);
             
-            if (displayNameField && profile.display_name) {
-                displayNameField.value = profile.display_name;
-                console.log('Set display name to:', profile.display_name);
-            }
+            // Mark credentials as verified to preserve form state
+            credentialsVerified = true;
             
             // Mark API configuration as enabled since credentials are verified
             const enableAPIToggle = document.getElementById('enableAPIConfig');
@@ -1857,7 +1878,11 @@ async function handleAddAccount(withAPI) {
             // Close modal and reset form
             const modal = bootstrap.Modal.getInstance(document.getElementById('addAccountModal'));
             modal.hide();
-            resetAccountForm();
+            
+            // Reset form but preserve some settings if credentials were verified
+            setTimeout(() => {
+                resetAccountForm();
+            }, 300);
             
             // Refresh account list and stats
             loadSocialAccounts();
@@ -1868,11 +1893,21 @@ async function handleAddAccount(withAPI) {
     }
 }
 
+// Global variable to track if credentials were verified
+let credentialsVerified = false;
+
 // Reset account form
-function resetAccountForm() {
+function resetAccountForm(force = false) {
+    // Don't reset if credentials were just verified, unless forced
+    if (credentialsVerified && !force) {
+        credentialsVerified = false;
+        return;
+    }
+    
     document.getElementById('addAccountForm').reset();
     document.getElementById('apiCredentialsContent').style.display = 'none';
     document.getElementById('enableAPIConfig').checked = false;
+    credentialsVerified = false;
     
     // Reset modal title
     document.getElementById('addAccountModalLabel').textContent = 'Agregar Cuenta de Red Social';
@@ -1881,6 +1916,15 @@ function resetAccountForm() {
     const statusDiv = document.getElementById('verification-status');
     if (statusDiv) {
         statusDiv.remove();
+    }
+    
+    // Reset platform API help
+    const platformApiHelp = document.getElementById('platformApiHelp');
+    if (platformApiHelp) {
+        platformApiHelp.innerHTML = `
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Instrucciones:</strong> Selecciona una plataforma arriba para ver las instrucciones específicas de configuración de API.
+        `;
     }
     
     // Reset save button handlers

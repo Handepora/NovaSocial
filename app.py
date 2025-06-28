@@ -980,34 +980,37 @@ def verify_credentials():
 def simulate_api_profile_fetch(platform, api_key, api_secret):
     """Simulate fetching profile data from social media APIs"""
     
-    # Sample profile data for different platforms
+    # Sample profile data for different platforms - more realistic numbers
+    import random
+    
+    base_followers = random.randint(100, 2000)  # More realistic follower count
     sample_profiles = {
         'twitter': {
-            'username': '@empresa_innovadora',
-            'display_name': 'Empresa Innovadora',
-            'follower_count': 15420,
+            'username': '@tu_cuenta',
+            'display_name': 'Tu Cuenta de Twitter',
+            'follower_count': base_followers,
             'verified': False,
             'profile_image': 'https://example.com/avatar.jpg'
         },
         'linkedin': {
-            'username': 'empresa-innovadora',
-            'display_name': 'Empresa Innovadora S.L.',
-            'follower_count': 8950,
-            'verified': True,
+            'username': 'tu-perfil-linkedin',
+            'display_name': 'Tu Perfil de LinkedIn',
+            'follower_count': base_followers + random.randint(50, 300),
+            'verified': False,
             'profile_image': 'https://example.com/company-logo.jpg'
         },
         'instagram': {
-            'username': '@empresa.innovadora',
-            'display_name': 'Empresa Innovadora 🚀',
-            'follower_count': 12300,
+            'username': '@tu_instagram',
+            'display_name': 'Tu Instagram',
+            'follower_count': base_followers + random.randint(100, 500),
             'verified': False,
             'profile_image': 'https://example.com/insta-avatar.jpg'
         },
         'facebook': {
-            'username': 'EmpresaInnovadora',
-            'display_name': 'Empresa Innovadora - Página Oficial',
-            'follower_count': 25600,
-            'verified': True,
+            'username': 'TuPaginaFacebook',
+            'display_name': 'Tu Página de Facebook',
+            'follower_count': base_followers + random.randint(200, 800),
+            'verified': False,
             'profile_image': 'https://example.com/fb-logo.jpg'
         }
     }
