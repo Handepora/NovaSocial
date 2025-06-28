@@ -590,90 +590,95 @@
                         <h1 class="h2">Crear Contenido</h1>
                     </div>
                     
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card content-section">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Formulario de Entrada</h5>
-                                </div>
-                                <div class="card-body">
-                                    <form id="content-creation-form">
-                                        <div class="mb-3">
-                                            <label for="main-topic" class="form-label">Tema Principal</label>
-                                            <textarea class="form-control" id="main-topic" rows="3" placeholder="Describe el tema o idea para tu contenido..."></textarea>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="tone-voice" class="form-label">Tono de Voz</label>
-                                            <select class="form-select" id="tone-voice">
-                                                <option value="profesional">Profesional</option>
-                                                <option value="ingenioso">Ingenioso</option>
-                                                <option value="inspirador">Inspirador</option>
-                                                <option value="casual">Casual</option>
-                                            </select>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label for="ai-provider" class="form-label">Proveedor de IA</label>
-                                            <select class="form-select" id="ai-provider">
-                                                <option value="perplexity">Perplexity Sonar (Recomendado)</option>
-                                                <option value="openai">OpenAI GPT-4o</option>
-                                                <option value="gemini">Google Gemini 2.5 Flash</option>
-                                            </select>
-                                            <div class="form-text">
-                                                <i class="fas fa-info-circle me-1"></i>
-                                                Configura las API keys en la sección de Configuración
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label class="form-label">Plataformas</label>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="linkedin" id="platform-linkedin">
-                                                <label class="form-check-label" for="platform-linkedin">
-                                                    <i class="fab fa-linkedin text-primary me-2"></i>LinkedIn
-                                                </label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="twitter" id="platform-twitter">
-                                                <label class="form-check-label" for="platform-twitter">
-                                                    <i class="fab fa-twitter text-info me-2"></i>Twitter
-                                                </label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="instagram" id="platform-instagram">
-                                                <label class="form-check-label" for="platform-instagram">
-                                                    <i class="fab fa-instagram text-danger me-2"></i>Instagram
-                                                </label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="web" id="platform-web">
-                                                <label class="form-check-label" for="platform-web">
-                                                    <i class="fas fa-globe text-success me-2"></i>Web
-                                                </label>
-                                            </div>
-                                        </div>
-                                        
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fas fa-sparkles me-2"></i>
-                                            Generar Contenido
-                                        </button>
-                                    </form>
-                                </div>
+                    <!-- Create Content Cards Grid -->
+                    <div class="dashboard-cards">
+                        <!-- Topic & AI Configuration -->
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-edit text-primary me-2"></i>
+                                <h6 class="mb-0">Configuración de Contenido</h6>
+                            </div>
+                            <div class="card-body">
+                                <form id="content-creation-form">
+                                    <div class="mb-3">
+                                        <label for="main-topic" class="form-label">Tema Principal</label>
+                                        <textarea class="form-control" id="main-topic" rows="3" placeholder="Describe el tema o idea para tu contenido..."></textarea>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="tone-voice" class="form-label">Tono de Voz</label>
+                                        <select class="form-select" id="tone-voice">
+                                            <option value="profesional">Profesional</option>
+                                            <option value="ingenioso">Ingenioso</option>
+                                            <option value="inspirador">Inspirador</option>
+                                            <option value="casual">Casual</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="ai-provider" class="form-label">Proveedor de IA</label>
+                                        <select class="form-select" id="ai-provider">
+                                            <option value="perplexity">Perplexity Sonar</option>
+                                            <option value="openai">OpenAI GPT-4o</option>
+                                            <option value="gemini">Google Gemini</option>
+                                        </select>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                         
-                        <div class="col-md-6">
-                            <div class="card content-section">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Área de Resultados</h5>
+                        <!-- Platform Selection -->
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-share-alt text-success me-2"></i>
+                                <h6 class="mb-0">Selección de Plataformas</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Plataformas de Destino</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="linkedin" id="platform-linkedin">
+                                        <label class="form-check-label" for="platform-linkedin">
+                                            <i class="fab fa-linkedin text-primary me-2"></i>LinkedIn
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="twitter" id="platform-twitter">
+                                        <label class="form-check-label" for="platform-twitter">
+                                            <i class="fab fa-twitter text-info me-2"></i>Twitter
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="instagram" id="platform-instagram">
+                                        <label class="form-check-label" for="platform-instagram">
+                                            <i class="fab fa-instagram text-danger me-2"></i>Instagram
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="web" id="platform-web">
+                                        <label class="form-check-label" for="platform-web">
+                                            <i class="fas fa-globe text-success me-2"></i>Web/Blog
+                                        </label>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <div id="generated-content">
-                                        <div class="text-center text-muted py-5">
-                                            <i class="fas fa-robot fa-3x mb-3"></i>
-                                            <p>Completa el formulario y haz clic en "Generar Contenido" para ver los resultados</p>
-                                        </div>
+                                
+                                <button type="submit" class="btn btn-primary" form="content-creation-form">
+                                    <i class="fas fa-sparkles me-2"></i>Generar Contenido
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Generated Content Results -->
+                        <div class="card" style="grid-column: span 2;">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-robot text-info me-2"></i>
+                                <h6 class="mb-0">Contenido Generado</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="generated-content">
+                                    <div class="text-center text-muted py-5">
+                                        <i class="fas fa-robot fa-3x mb-3"></i>
+                                        <p>Completa la configuración y haz clic en "Generar Contenido" para ver los resultados</p>
                                     </div>
                                 </div>
                             </div>
@@ -687,140 +692,117 @@
                         <h1 class="h2">Adaptar Contenido</h1>
                     </div>
                     
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Contenido Original</h5>
+                    <!-- Adapt Content Cards Grid -->
+                    <div class="dashboard-cards">
+                        <!-- Original Content Input -->
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-file-text text-primary me-2"></i>
+                                <h6 class="mb-0">Contenido Original</h6>
+                            </div>
+                            <div class="card-body">
+                                <form id="content-adaptation-form">
+                                    <div class="mb-3">
+                                        <label for="original-content" class="form-label">Artículo o Contenido</label>
+                                        <textarea class="form-control" id="original-content" rows="8" placeholder="Pega aquí el contenido que quieres adaptar..."></textarea>
+                                        <div class="form-text">
+                                            <span id="content-char-count">0</span> caracteres
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Adaptation Settings -->
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-cog text-success me-2"></i>
+                                <h6 class="mb-0">Configuración de Adaptación</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="adaptation-style" class="form-label">Estilo</label>
+                                    <select class="form-select" id="adaptation-style">
+                                        <option value="summary">Resumen</option>
+                                        <option value="highlights">Puntos Clave</option>
+                                        <option value="questions">Preguntas Engaging</option>
+                                        <option value="story">Formato Historia</option>
+                                        <option value="tips">Tips/Consejos</option>
+                                    </select>
                                 </div>
-                                <div class="card-body">
-                                    <form id="content-adaptation-form">
-                                        <div class="mb-3">
-                                            <label for="original-content" class="form-label">Pega tu artículo aquí</label>
-                                            <textarea class="form-control" id="original-content" rows="12" placeholder="Pega aquí el contenido que quieres adaptar para redes sociales..."></textarea>
-                                            <div class="form-text">
-                                                <span id="content-char-count">0</span> caracteres
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="adaptation-style" class="form-label">Estilo de Adaptación</label>
-                                                    <select class="form-select" id="adaptation-style">
-                                                        <option value="summary">Resumen</option>
-                                                        <option value="highlights">Puntos Clave</option>
-                                                        <option value="questions">Preguntas Engaging</option>
-                                                        <option value="story">Formato Historia</option>
-                                                        <option value="tips">Tips/Consejos</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="adaptation-tone" class="form-label">Tono</label>
-                                                    <select class="form-select" id="adaptation-tone">
-                                                        <option value="professional">Profesional</option>
-                                                        <option value="casual">Casual</option>
-                                                        <option value="humorous">Humorístico</option>
-                                                        <option value="inspirational">Inspiracional</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label class="form-label">Plataformas de Destino</label>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="twitter" id="adapt-twitter">
-                                                        <label class="form-check-label" for="adapt-twitter">
-                                                            <i class="fab fa-twitter me-1"></i>Twitter
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="linkedin" id="adapt-linkedin">
-                                                        <label class="form-check-label" for="adapt-linkedin">
-                                                            <i class="fab fa-linkedin me-1"></i>LinkedIn
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="instagram" id="adapt-instagram">
-                                                        <label class="form-check-label" for="adapt-instagram">
-                                                            <i class="fab fa-instagram me-1"></i>Instagram
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="facebook" id="adapt-facebook">
-                                                        <label class="form-check-label" for="adapt-facebook">
-                                                            <i class="fab fa-facebook me-1"></i>Facebook
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="youtube" id="adapt-youtube">
-                                                        <label class="form-check-label" for="adapt-youtube">
-                                                            <i class="fab fa-youtube me-1"></i>YouTube
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value="web" id="adapt-web">
-                                                        <label class="form-check-label" for="adapt-web">
-                                                            <i class="fas fa-globe me-1"></i>Blog/Web
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="adaptation-provider" class="form-label">Proveedor de IA</label>
-                                                    <select class="form-select" id="adaptation-provider">
-                                                        <option value="perplexity">Perplexity (Recomendado)</option>
-                                                        <option value="openai">OpenAI GPT-4o</option>
-                                                        <option value="gemini">Google Gemini 2.5</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label for="adaptation-focus" class="form-label">Enfoque</label>
-                                                    <select class="form-select" id="adaptation-focus">
-                                                        <option value="engagement">Máximo Engagement</option>
-                                                        <option value="information">Informativo</option>
-                                                        <option value="viral">Potencial Viral</option>
-                                                        <option value="educational">Educativo</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="d-grid">
-                                            <button type="button" class="btn btn-primary btn-lg" onclick="adaptContent()">
-                                                <i class="fas fa-magic me-2"></i>Adaptar Contenido
-                                            </button>
-                                        </div>
-                                    </form>
+                                
+                                <div class="mb-3">
+                                    <label for="adaptation-tone" class="form-label">Tono</label>
+                                    <select class="form-select" id="adaptation-tone">
+                                        <option value="professional">Profesional</option>
+                                        <option value="casual">Casual</option>
+                                        <option value="humorous">Humorístico</option>
+                                        <option value="inspirational">Inspiracional</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="adaptation-provider" class="form-label">Proveedor de IA</label>
+                                    <select class="form-select" id="adaptation-provider">
+                                        <option value="perplexity">Perplexity</option>
+                                        <option value="openai">OpenAI GPT-4o</option>
+                                        <option value="gemini">Google Gemini</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Contenido Adaptado</h5>
+                        <!-- Platform Selection -->
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-share-alt text-info me-2"></i>
+                                <h6 class="mb-0">Plataformas de Destino</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="twitter" id="adapt-twitter">
+                                    <label class="form-check-label" for="adapt-twitter">
+                                        <i class="fab fa-twitter me-1"></i>Twitter
+                                    </label>
                                 </div>
-                                <div class="card-body">
-                                    <div id="adapted-content-results">
-                                        <div class="text-center text-muted py-5">
-                                            <i class="fas fa-magic fa-3x mb-3"></i>
-                                            <h6>Adapta tu contenido</h6>
-                                            <p>Pega tu artículo en el formulario de la izquierda y haz clic en "Adaptar Contenido" para generar versiones optimizadas para cada plataforma</p>
-                                        </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="linkedin" id="adapt-linkedin">
+                                    <label class="form-check-label" for="adapt-linkedin">
+                                        <i class="fab fa-linkedin me-1"></i>LinkedIn
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="instagram" id="adapt-instagram">
+                                    <label class="form-check-label" for="adapt-instagram">
+                                        <i class="fab fa-instagram me-1"></i>Instagram
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="web" id="adapt-web">
+                                    <label class="form-check-label" for="adapt-web">
+                                        <i class="fas fa-globe me-1"></i>Blog/Web
+                                    </label>
+                                </div>
+                                
+                                <div class="d-grid mt-3">
+                                    <button type="button" class="btn btn-primary" onclick="adaptContent()">
+                                        <i class="fas fa-magic me-2"></i>Adaptar Contenido
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Adapted Content Results -->
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-magic text-warning me-2"></i>
+                                <h6 class="mb-0">Contenido Adaptado</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="adapted-content-results">
+                                    <div class="text-center text-muted py-4">
+                                        <i class="fas fa-magic fa-2x mb-3"></i>
+                                        <p>Configura las opciones y haz clic en "Adaptar Contenido" para generar versiones optimizadas</p>
                                     </div>
                                 </div>
                             </div>
