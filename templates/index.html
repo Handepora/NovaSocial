@@ -247,92 +247,162 @@
             position: relative !important;
             z-index: 10 !important;
         }
+
+        /* Sidebar Structure Restore */
+        .sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100vh !important;
+            width: 280px !important;
+            background-color: var(--sidebar-bg) !important;
+            border-right: 2px solid var(--border-color) !important;
+            z-index: 1050 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow-y: auto !important;
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem 1rem !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+
+        .sidebar-logo {
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 8px !important;
+            margin-right: 0.75rem !important;
+        }
+
+        .brand-text h5 {
+            color: var(--text-primary) !important;
+            margin: 0 !important;
+        }
+
+        .brand-text small {
+            color: var(--text-secondary) !important;
+        }
+
+        .sidebar-nav {
+            flex: 1 !important;
+            padding: 1rem !important;
+        }
+
+        .sidebar-nav .nav-link {
+            display: flex !important;
+            align-items: center !important;
+            padding: 0.75rem !important;
+            color: var(--text-secondary) !important;
+            text-decoration: none !important;
+            border-radius: 0.375rem !important;
+            margin-bottom: 0.5rem !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .sidebar-nav .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .sidebar-nav .nav-link.active {
+            background-color: rgba(255, 107, 71, 0.1) !important;
+            color: var(--text-primary) !important;
+            border-left: 3px solid #ff6b47 !important;
+        }
+
+        .sidebar-nav .nav-link i {
+            width: 20px !important;
+            margin-right: 0.75rem !important;
+            text-align: center !important;
+        }
+
+        .sidebar-nav .nav-link.active i {
+            color: #ff6b47 !important;
+        }
+
+        .sidebar-footer {
+            padding: 1rem !important;
+            border-top: 1px solid var(--border-color) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+
+        .sidebar-footer span {
+            color: var(--text-secondary) !important;
+            font-size: 0.875rem !important;
+        }
     </style>
 </head>
 <body class="dashboard-loading">
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="sidebar" style="position: fixed; top: 0; left: 0; width: 280px; height: 100vh; background: #1a202c; border-right: 2px solid #2d3748; z-index: 10000; display: flex; flex-direction: column;">
-                <!-- Top Section -->
-                <div style="padding: 1rem; flex-shrink: 0;">
-                    <!-- Nova Logo and Info -->
-                    <div class="user-info mb-4">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center">
-                                <div class="me-3">
-                                    <img src="{{ url_for('static', filename='nova-logo.png') }}" alt="Nova Logo" style="height: 40px; width: 40px; border-radius: 8px;">
-                                </div>
-                                <div>
-                                    <h6 class="mb-0" style="color: #e2e8f0;">Nova</h6>
-                                    <small class="text-muted">Admin</small>
-                                </div>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-user"></i>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{{ url_for('logout') }}">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                    </a></li>
-                                </ul>
-                            </div>
-                        </div>
+            <div class="sidebar">
+                <div class="sidebar-brand">
+                    <img src="{{ url_for('static', filename='nova-logo.png') }}" alt="Nova" class="sidebar-logo">
+                    <div class="brand-text">
+                        <h5 class="mb-0">Nova</h5>
+                        <small class="text-muted">Admin</small>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                            </a></li>
+                        </ul>
                     </div>
                 </div>
 
-                <!-- Navigation - Growing Section -->
-                <div style="flex: 1; padding: 1rem; background: #1a202c; min-height: 400px;">
-                    <div data-view="dashboard" style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; background: rgba(255, 107, 71, 0.1); border-left: 3px solid #ff6b47; cursor: pointer; color: #e2e8f0; display: flex; align-items: center;">
-                        <i class="fas fa-home" style="color: #ff6b47; margin-right: 0.5rem; width: 16px;"></i>
+                <nav class="sidebar-nav">
+                    <a href="#" data-view="dashboard" class="nav-link active">
+                        <i class="fas fa-home"></i>
                         <span>Dashboard</span>
-                    </div>
-                    
-                    <div data-view="calendario" style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s; cursor: pointer; color: #a0aec0; display: flex; align-items: center;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-                        <i class="fas fa-calendar" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                    </a>
+                    <a href="#" data-view="calendario" class="nav-link">
+                        <i class="fas fa-calendar"></i>
                         <span>Calendario</span>
-                    </div>
-                    
-                    <div data-view="crear-contenido" style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s; cursor: pointer; color: #a0aec0; display: flex; align-items: center;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-                        <i class="fas fa-plus" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                    </a>
+                    <a href="#" data-view="crear-contenido" class="nav-link">
+                        <i class="fas fa-plus"></i>
                         <span>Crear Contenido</span>
-                    </div>
-                    
-                    <div data-view="adaptar-contenido" style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s; cursor: pointer; color: #a0aec0; display: flex; align-items: center;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-                        <i class="fas fa-magic" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                    </a>
+                    <a href="#" data-view="adaptar-contenido" class="nav-link">
+                        <i class="fas fa-magic"></i>
                         <span>Adaptar Contenido</span>
-                    </div>
-                    
-                    <div data-view="monitoreo" style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s; cursor: pointer; color: #a0aec0; display: flex; align-items: center;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-                        <i class="fas fa-eye" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
-                        <span>Monitoreo de Redes</span>
-                    </div>
-                    
-                    <div data-view="validacion" style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s; cursor: pointer; color: #a0aec0; display: flex; align-items: center;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-                        <i class="fas fa-check-circle" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                    </a>
+                    <a href="#" data-view="monitoreo" class="nav-link">
+                        <i class="fas fa-eye"></i>
+                        <span style="line-height: 1.2;">Monitoreo de<br>Redes</span>
+                    </a>
+                    <a href="#" data-view="validacion" class="nav-link">
+                        <i class="fas fa-check-circle"></i>
                         <span>Validación</span>
-                    </div>
-                    
-                    <div data-view="analiticas" style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s; cursor: pointer; color: #a0aec0; display: flex; align-items: center;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-                        <i class="fas fa-chart-bar" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                    </a>
+                    <a href="#" data-view="analiticas" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
                         <span>Analíticas</span>
-                    </div>
-                    
-                    <div data-view="configuracion" style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s; cursor: pointer; color: #a0aec0; display: flex; align-items: center;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-                        <i class="fas fa-cog" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                    </a>
+                    <a href="#" data-view="configuracion" class="nav-link">
+                        <i class="fas fa-cog"></i>
                         <span>Configuración</span>
-                    </div>
-                </div>
+                    </a>
+                </nav>
 
-                <!-- Theme Toggle - Bottom Section -->
-                <div style="padding: 1rem; border-top: 1px solid #2d3748; background: #1a202c; flex-shrink: 0;">
-                    <button id="theme-toggle" class="btn btn-outline-secondary btn-sm w-100">
-                        <i class="fas fa-moon me-2" id="theme-icon"></i>
-                        <span id="theme-text">Modo Claro</span>
+                <div class="sidebar-footer">
+                    <span>© 2025 Nova</span>
+                    <button class="theme-toggle btn btn-sm" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="theme-icon"></i>
                     </button>
                 </div>
-            </nav>
+            </div>
             
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 dashboard-entrance" style="margin-left: 280px !important; display: block !important; visibility: visible !important; padding-top: 0 !important;">
@@ -2173,12 +2243,13 @@
         // Setup navigation functionality
         function setupSidebarNavigation() {
             console.log('Setting up sidebar navigation...');
-            const navItems = document.querySelectorAll('[data-view]');
-            console.log('Found navigation items:', navItems.length);
+            const navLinks = document.querySelectorAll('.sidebar-nav .nav-link[data-view]');
+            console.log('Found navigation links:', navLinks.length);
             
-            navItems.forEach((item, index) => {
-                console.log('Setting up item', index, ':', item.getAttribute('data-view'));
-                item.addEventListener('click', function(e) {
+            navLinks.forEach((link, index) => {
+                console.log('Setting up link', index, ':', link.getAttribute('data-view'));
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
                     const view = this.getAttribute('data-view');
                     console.log('Clicked on view:', view);
                     if (view) {
@@ -2230,23 +2301,14 @@
         
         // Update active state in sidebar
         function updateSidebarActive(activeView) {
-            const navItems = document.querySelectorAll('[data-view]');
-            navItems.forEach(item => {
-                const view = item.getAttribute('data-view');
-                const icon = item.querySelector('i');
+            const navLinks = document.querySelectorAll('.sidebar-nav .nav-link[data-view]');
+            navLinks.forEach(link => {
+                const view = link.getAttribute('data-view');
                 
                 if (view === activeView) {
-                    // Active state
-                    item.style.background = 'rgba(255, 107, 71, 0.1)';
-                    item.style.borderLeft = '3px solid #ff6b47';
-                    item.style.color = '#e2e8f0';
-                    if (icon) icon.style.color = '#ff6b47';
+                    link.classList.add('active');
                 } else {
-                    // Inactive state
-                    item.style.background = 'transparent';
-                    item.style.borderLeft = 'none';
-                    item.style.color = '#a0aec0';
-                    if (icon) icon.style.color = '#a0aec0';
+                    link.classList.remove('active');
                 }
             });
         }
