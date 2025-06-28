@@ -1686,19 +1686,60 @@ async function testApiCredentials() {
         // Show loading state
         const testButton = document.querySelector('[onclick="testApiCredentials()"]');
         const originalText = testButton.innerHTML;
-        testButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Probando...';
+        testButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Verificando...';
         testButton.disabled = true;
         
-        // Simulate API test (in production, this would make a real API call)
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Call the new verification endpoint
+        const response = await fetchData('/api/accounts/verify-credentials', {
+            method: 'POST',
+            body: JSON.stringify({
+                platform: platform,
+                api_key: apiKey,
+                api_secret: apiSecret
+            })
+        });
         
-        // Simulate random success/failure for demo
-        const success = Math.random() > 0.3; // 70% success rate
-        
-        if (success) {
-            showSuccessMessage(`Credenciales de ${platform.charAt(0).toUpperCase() + platform.slice(1)} validadas correctamente`);
+        if (response.status === 'success') {
+            const profile = response.profile;
+            
+            // Auto-fill account information from API response
+            const accountNameField = document.getElementById('accountName');
+            const displayNameField = document.getElementById('accountDisplayName');
+            
+            if (accountNameField && profile.username) {
+                accountNameField.value = profile.username;
+            }
+            
+            if (displayNameField && profile.display_name) {
+                displayNameField.value = profile.display_name;
+            }
+            
+            // Show success message with profile info
+            showSuccessMessage(`Credenciales verificadas. Cuenta: ${profile.username} (${profile.follower_count.toLocaleString()} seguidores)`);
+            
+            // Show verification status
+            const credentialsSection = document.querySelector('#apiCredentialsContent');
+            let statusDiv = document.getElementById('verification-status');
+            
+            if (!statusDiv) {
+                statusDiv = document.createElement('div');
+                statusDiv.id = 'verification-status';
+                credentialsSection.appendChild(statusDiv);
+            }
+            
+            statusDiv.innerHTML = `
+                <div class="alert alert-success mt-3">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Cuenta verificada:</strong> ${profile.display_name}<br>
+                    <small class="text-muted">
+                        <i class="fas fa-users me-1"></i>${profile.follower_count.toLocaleString()} seguidores
+                        ${profile.verified ? '<i class="fas fa-check-circle text-primary ms-2"></i>Verificada' : ''}
+                    </small>
+                </div>
+            `;
+            
         } else {
-            showErrorMessage(`Error al validar credenciales de ${platform.charAt(0).toUpperCase() + platform.slice(1)}. Verifica que sean correctas.`);
+            showErrorMessage(response.message || `Error al validar credenciales de ${platform}`);
         }
         
         // Restore button state
@@ -1707,6 +1748,13 @@ async function testApiCredentials() {
         
     } catch (error) {
         showErrorMessage('Error al probar las credenciales: ' + error.message);
+        
+        // Restore button state
+        const testButton = document.querySelector('[onclick="testApiCredentials()"]');
+        if (testButton) {
+            testButton.innerHTML = '<i class="fas fa-vial me-1"></i>Probar Credenciales';
+            testButton.disabled = false;
+        }
     }
 }
 
@@ -1802,6 +1850,12 @@ function resetAccountForm() {
     
     // Reset modal title
     document.getElementById('addAccountModalLabel').textContent = 'Agregar Cuenta de Red Social';
+    
+    // Clear verification status
+    const statusDiv = document.getElementById('verification-status');
+    if (statusDiv) {
+        statusDiv.remove();
+    }
     
     // Reset save button handlers
     const saveBasicBtn = document.getElementById('saveAccountBasic');

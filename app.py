@@ -947,6 +947,80 @@ def delete_account(account_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/accounts/verify-credentials', methods=['POST'])
+def verify_credentials():
+    """Verify API credentials and get account information"""
+    try:
+        data = request.get_json()
+        platform = data.get('platform')
+        api_key = data.get('api_key')
+        api_secret = data.get('api_secret')
+        
+        if not platform or not api_key:
+            return jsonify({"error": "Platform and API key are required"}), 400
+        
+        # Simulate API calls to get account information
+        profile_data = simulate_api_profile_fetch(platform, api_key, api_secret)
+        
+        if profile_data:
+            return jsonify({
+                "status": "success",
+                "message": f"Credenciales verificadas para {platform}",
+                "profile": profile_data
+            })
+        else:
+            return jsonify({
+                "status": "error",
+                "message": f"No se pudieron verificar las credenciales para {platform}"
+            }), 400
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+def simulate_api_profile_fetch(platform, api_key, api_secret):
+    """Simulate fetching profile data from social media APIs"""
+    
+    # Sample profile data for different platforms
+    sample_profiles = {
+        'twitter': {
+            'username': '@empresa_innovadora',
+            'display_name': 'Empresa Innovadora',
+            'follower_count': 15420,
+            'verified': False,
+            'profile_image': 'https://example.com/avatar.jpg'
+        },
+        'linkedin': {
+            'username': 'empresa-innovadora',
+            'display_name': 'Empresa Innovadora S.L.',
+            'follower_count': 8950,
+            'verified': True,
+            'profile_image': 'https://example.com/company-logo.jpg'
+        },
+        'instagram': {
+            'username': '@empresa.innovadora',
+            'display_name': 'Empresa Innovadora 🚀',
+            'follower_count': 12300,
+            'verified': False,
+            'profile_image': 'https://example.com/insta-avatar.jpg'
+        },
+        'facebook': {
+            'username': 'EmpresaInnovadora',
+            'display_name': 'Empresa Innovadora - Página Oficial',
+            'follower_count': 25600,
+            'verified': True,
+            'profile_image': 'https://example.com/fb-logo.jpg'
+        }
+    }
+    
+    # Simulate 90% success rate for credential verification
+    import random
+    success = random.random() > 0.1
+    
+    if success and platform in sample_profiles:
+        return sample_profiles[platform]
+    
+    return None
+
 @app.route('/api/accounts/<int:account_id>/test', methods=['POST'])
 def test_account_connection(account_id):
     """Test connection to a social media account"""

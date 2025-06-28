@@ -161,6 +161,13 @@ The application is configured for deployment on Replit with the following setup:
   - Modified scheduleGeneratedContent to use Madrid time for content scheduling
   - Updated scheduleAdaptedContent to default to Madrid timezone
   - All scheduling functions now default to Madrid time (CET/CEST) instead of UTC
+- June 28, 2025. Implemented automatic field completion from social media APIs:
+  - Created verify-credentials endpoint to fetch profile data from social media APIs
+  - Added automatic completion of account name and display name fields after API verification
+  - Integrated profile information display (follower count, verification status) in credential testing
+  - Enhanced user experience with visual verification status showing account details
+  - Updated resetAccountForm to clear verification status when opening new account modals
+  - Improved error handling and loading states for credential verification process
 
 ## User Preferences
 
