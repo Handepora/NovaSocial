@@ -103,8 +103,9 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar sidebar-entrance">
-                <div class="position-sticky pt-3">
+            <nav class="sidebar" style="position: fixed; top: 0; left: 0; width: 280px; height: 100vh; background: #1a202c; border-right: 2px solid #2d3748; z-index: 10000; display: flex; flex-direction: column;">
+                <!-- Top Section -->
+                <div style="padding: 1rem; flex-shrink: 0;">
                     <!-- Nova Logo and Info -->
                     <div class="user-info mb-4">
                         <div class="d-flex align-items-center justify-content-between">
@@ -113,7 +114,7 @@
                                     <img src="{{ url_for('static', filename='nova-logo.png') }}" alt="Nova Logo" style="height: 40px; width: 40px; border-radius: 8px;">
                                 </div>
                                 <div>
-                                    <h6 class="mb-0">Nova</h6>
+                                    <h6 class="mb-0" style="color: #e2e8f0;">Nova</h6>
                                     <small class="text-muted">Admin</small>
                                 </div>
                             </div>
@@ -129,66 +130,68 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Navigation -->
+                </div>
+
+                <!-- Navigation - Growing Section -->
+                <div style="flex: 1; overflow-y: auto; padding: 0 1rem;">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#dashboard" data-view="dashboard">
+                            <a class="nav-link active" href="#dashboard" data-view="dashboard" style="color: #e2e8f0; padding: 0.75rem 0;">
                                 <i class="fas fa-home me-2"></i>
                                 Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#calendario" data-view="calendario">
+                            <a class="nav-link" href="#calendario" data-view="calendario" style="color: #a0aec0; padding: 0.75rem 0;">
                                 <i class="fas fa-calendar me-2"></i>
                                 Calendario
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#crear-contenido" data-view="crear-contenido">
+                            <a class="nav-link" href="#crear-contenido" data-view="crear-contenido" style="color: #a0aec0; padding: 0.75rem 0;">
                                 <i class="fas fa-plus me-2"></i>
                                 Crear Contenido
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#adaptar-contenido" data-view="adaptar-contenido">
+                            <a class="nav-link" href="#adaptar-contenido" data-view="adaptar-contenido" style="color: #a0aec0; padding: 0.75rem 0;">
                                 <i class="fas fa-magic me-2"></i>
                                 Adaptar Contenido
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#monitoreo" data-view="monitoreo">
+                            <a class="nav-link" href="#monitoreo" data-view="monitoreo" style="color: #a0aec0; padding: 0.75rem 0;">
                                 <i class="fas fa-eye me-2"></i>
                                 Monitoreo de Redes
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#validacion" data-view="validacion">
+                            <a class="nav-link" href="#validacion" data-view="validacion" style="color: #a0aec0; padding: 0.75rem 0;">
                                 <i class="fas fa-check-circle me-2"></i>
                                 Validación
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#analiticas" data-view="analiticas">
+                            <a class="nav-link" href="#analiticas" data-view="analiticas" style="color: #a0aec0; padding: 0.75rem 0;">
                                 <i class="fas fa-chart-bar me-2"></i>
                                 Analíticas
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#configuracion" data-view="configuracion">
+                            <a class="nav-link" href="#configuracion" data-view="configuracion" style="color: #a0aec0; padding: 0.75rem 0;">
                                 <i class="fas fa-cog me-2"></i>
                                 Configuración
                             </a>
                         </li>
                     </ul>
-                    
-                    <!-- Theme Toggle -->
-                    <div class="sidebar-footer">
-                        <button id="theme-toggle" class="btn btn-outline-secondary btn-sm w-100">
-                            <i class="fas fa-moon me-2" id="theme-icon"></i>
-                            <span id="theme-text">Modo Claro</span>
-                        </button>
-                    </div>
+                </div>
+
+                <!-- Theme Toggle - Bottom Section -->
+                <div style="padding: 1rem; border-top: 1px solid #2d3748; background: #1a202c; flex-shrink: 0;">
+                    <button id="theme-toggle" class="btn btn-outline-secondary btn-sm w-100">
+                        <i class="fas fa-moon me-2" id="theme-icon"></i>
+                        <span id="theme-text">Modo Claro</span>
+                    </button>
                 </div>
             </nav>
             
@@ -1866,67 +1869,16 @@
             }
         }
         
-        // Force sidebar structure fix
-        function fixSidebarStructure() {
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar) {
-                // Force sidebar positioning
-                sidebar.style.position = 'fixed';
-                sidebar.style.top = '0';
-                sidebar.style.left = '0';
-                sidebar.style.bottom = '0';
-                sidebar.style.height = '100vh';
-                sidebar.style.width = '280px';
-                sidebar.style.background = '#1a202c';
-                sidebar.style.borderRight = '2px solid #2d3748';
-                sidebar.style.zIndex = '10000';
-                sidebar.style.display = 'flex';
-                sidebar.style.flexDirection = 'column';
-                
-                // Fix sidebar content
-                const sidebarContent = sidebar.querySelector('.position-sticky') || sidebar.querySelector('div');
-                if (sidebarContent) {
-                    sidebarContent.style.height = '100%';
-                    sidebarContent.style.display = 'flex';
-                    sidebarContent.style.flexDirection = 'column';
-                    sidebarContent.style.padding = '0';
-                }
-                
-                // Fix navigation
-                const nav = sidebar.querySelector('.nav');
-                if (nav) {
-                    nav.style.flexGrow = '1';
-                    nav.style.marginBottom = '80px';
-                    nav.style.paddingLeft = '1rem';
-                    nav.style.paddingRight = '1rem';
-                }
-                
-                // Fix theme toggle
-                const themeToggle = sidebar.querySelector('.mt-auto, .sidebar-footer');
-                if (themeToggle) {
-                    themeToggle.style.position = 'absolute';
-                    themeToggle.style.bottom = '0';
-                    themeToggle.style.left = '0';
-                    themeToggle.style.right = '0';
-                    themeToggle.style.width = '100%';
-                    themeToggle.style.padding = '1rem';
-                    themeToggle.style.borderTop = '1px solid #2d3748';
-                    themeToggle.style.background = '#1a202c';
-                }
-                
-                // Fix user info
-                const userInfo = sidebar.querySelector('.user-info');
-                if (userInfo) {
-                    userInfo.style.padding = '1rem';
-                    userInfo.style.marginBottom = '1rem';
-                }
+        // Simple layout correction
+        function forceSidebarLayout() {
+            const main = document.querySelector('main');
+            if (main) {
+                main.style.marginLeft = '280px';
+                main.style.width = 'calc(100% - 280px)';
+                main.style.padding = '1.5rem';
+                main.style.minHeight = '100vh';
+                main.style.backgroundColor = 'var(--bg-color)';
             }
-            
-            // Force main content positioning
-            forceSidebarLayout();
-            
-            // Fix configuration section components
-            fixConfigurationComponents();
         }
         
         // Fix configuration section styling issues
@@ -2031,12 +1983,10 @@
         
         // Apply layout fixes
         document.addEventListener('DOMContentLoaded', function() {
-            fixSidebarStructure();
-            setTimeout(fixSidebarStructure, 100);
-            setTimeout(fixSidebarStructure, 500);
-            setTimeout(fixSidebarStructure, 1000);
+            forceSidebarLayout();
+            setTimeout(forceSidebarLayout, 100);
             
-            // Also fix configuration when switching views
+            // Fix configuration when switching views
             document.addEventListener('click', function(e) {
                 if (e.target.closest('[data-view="configuracion"]')) {
                     setTimeout(fixConfigurationComponents, 100);
@@ -2045,8 +1995,8 @@
         });
         
         // Apply on window events
-        window.addEventListener('resize', fixSidebarStructure);
-        window.addEventListener('load', fixSidebarStructure);
+        window.addEventListener('resize', forceSidebarLayout);
+        window.addEventListener('load', forceSidebarLayout);
     </script>
 </body>
 </html>
