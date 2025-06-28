@@ -2040,7 +2040,7 @@
                     <!-- Header -->
                     <div id="sidebar-header" style="padding: 20px; border-bottom: 1px solid #2d3748; color: white;">
                         <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                            <div style="width: 40px; height: 40px; margin-right: 0.75rem; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center;">
+                            <div id="logo-container" style="width: 40px; height: 40px; margin-right: 0.75rem; border-radius: 8px; overflow: hidden; background: black; display: flex; align-items: center; justify-content: center;">
                                 <img src="/static/nova-logo.png" alt="Nova Logo" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
                             <div>
@@ -2052,7 +2052,7 @@
                     
                     <!-- Navigation Links -->
                     <div style="padding: 20px 10px;">
-                        <div onclick="showView('dashboard')" style="
+                        <div id="nav-dashboard" onclick="setActiveNavItem('dashboard')" style="
                             padding: 12px; 
                             margin: 5px 0; 
                             background: rgba(255, 107, 71, 0.1); 
@@ -2064,7 +2064,7 @@
                             📊 Dashboard
                         </div>
                         
-                        <div onclick="showView('calendario')" style="
+                        <div id="nav-calendario" onclick="setActiveNavItem('calendario')" style="
                             padding: 12px; 
                             margin: 5px 0; 
                             color: #a0aec0; 
@@ -2074,7 +2074,7 @@
                             📅 Calendario
                         </div>
                         
-                        <div onclick="showView('crear-contenido')" style="
+                        <div id="nav-crear-contenido" onclick="setActiveNavItem('crear-contenido')" style="
                             padding: 12px; 
                             margin: 5px 0; 
                             color: #a0aec0; 
@@ -2084,7 +2084,7 @@
                             ➕ Crear Contenido
                         </div>
                         
-                        <div onclick="showView('adaptar-contenido')" style="
+                        <div id="nav-adaptar-contenido" onclick="setActiveNavItem('adaptar-contenido')" style="
                             padding: 12px; 
                             margin: 5px 0; 
                             color: #a0aec0; 
@@ -2094,7 +2094,7 @@
                             🔄 Adaptar Contenido
                         </div>
                         
-                        <div onclick="showView('monitoreo')" style="
+                        <div id="nav-monitoreo" onclick="setActiveNavItem('monitoreo')" style="
                             padding: 12px; 
                             margin: 5px 0; 
                             color: #a0aec0; 
@@ -2104,7 +2104,7 @@
                             👁️ Monitoreo de Redes
                         </div>
                         
-                        <div onclick="showView('validacion')" style="
+                        <div id="nav-validacion" onclick="setActiveNavItem('validacion')" style="
                             padding: 12px; 
                             margin: 5px 0; 
                             color: #a0aec0; 
@@ -2114,7 +2114,7 @@
                             ✅ Validación
                         </div>
                         
-                        <div onclick="showView('analiticas')" style="
+                        <div id="nav-analiticas" onclick="setActiveNavItem('analiticas')" style="
                             padding: 12px; 
                             margin: 5px 0; 
                             color: #a0aec0; 
@@ -2124,7 +2124,7 @@
                             📈 Analíticas
                         </div>
                         
-                        <div onclick="showView('configuracion')" style="
+                        <div id="nav-configuracion" onclick="setActiveNavItem('configuracion')" style="
                             padding: 12px; 
                             margin: 5px 0; 
                             color: #a0aec0; 
@@ -2176,6 +2176,52 @@
             }
         }
         
+        // Navigation active state management
+        function setActiveNavItem(viewName) {
+            // Remove active state from all nav items
+            const navItems = ['dashboard', 'calendario', 'crear-contenido', 'adaptar-contenido', 'monitoreo', 'validacion', 'analiticas', 'configuracion'];
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            
+            navItems.forEach(item => {
+                const navElement = document.getElementById(`nav-${item}`);
+                if (navElement) {
+                    // Reset to inactive state
+                    navElement.style.background = 'transparent';
+                    navElement.style.borderLeft = 'none';
+                    navElement.style.color = currentTheme === 'light' ? '#6c757d' : '#a0aec0';
+                    
+                    // Re-add hover effects
+                    navElement.onmouseover = function() {
+                        if (this.id !== `nav-${viewName}`) {
+                            this.style.background = 'rgba(255,255,255,0.05)';
+                        }
+                    };
+                    navElement.onmouseout = function() {
+                        if (this.id !== `nav-${viewName}`) {
+                            this.style.background = 'transparent';
+                        }
+                    };
+                }
+            });
+            
+            // Set active state for clicked item
+            const activeElement = document.getElementById(`nav-${viewName}`);
+            if (activeElement) {
+                activeElement.style.background = 'rgba(255, 107, 71, 0.1)';
+                activeElement.style.borderLeft = '3px solid #ff6b47';
+                activeElement.style.color = currentTheme === 'light' ? '#212529' : '#e2e8f0';
+                
+                // Remove hover effects from active item
+                activeElement.onmouseover = null;
+                activeElement.onmouseout = null;
+            }
+            
+            // Call the original showView function
+            if (typeof showView === 'function') {
+                showView(viewName);
+            }
+        }
+        
         // Theme toggle functionality
         function toggleNovaTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
@@ -2202,6 +2248,10 @@
                         if (title) title.style.color = '#212529';
                         const subtitle = header.querySelector('div > div:last-child');
                         if (subtitle) subtitle.style.color = '#6c757d';
+                        
+                        // Update logo background for light theme
+                        const logoContainer = header.querySelector('#logo-container');
+                        if (logoContainer) logoContainer.style.background = 'white';
                     }
                     
                     // Update navigation items
@@ -2237,6 +2287,10 @@
                         if (title) title.style.color = '#e2e8f0';
                         const subtitle = header.querySelector('div > div:last-child');
                         if (subtitle) subtitle.style.color = '#a0aec0';
+                        
+                        // Update logo background for dark theme
+                        const logoContainer = header.querySelector('#logo-container');
+                        if (logoContainer) logoContainer.style.background = 'black';
                     }
                     
                     // Update navigation items
@@ -2326,6 +2380,10 @@
                         if (header) {
                             header.style.borderBottom = '1px solid #dee2e6';
                             header.style.color = '#212529';
+                            
+                            // Update logo background for light theme
+                            const logoContainer = header.querySelector('#logo-container');
+                            if (logoContainer) logoContainer.style.background = 'white';
                         }
                         
                         const navItems = sidebar.querySelectorAll('div[onclick]');
