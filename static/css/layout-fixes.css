@@ -1,0 +1,160 @@
+/* Layout fixes for deployment - Load after Bootstrap */
+
+/* Force sidebar positioning with maximum specificity */
+html body .container-fluid .row .sidebar,
+html body .container-fluid .row nav.sidebar,
+html body .container-fluid .row .col-md-3.sidebar,
+html body .container-fluid .row .col-lg-2.sidebar,
+html body .container-fluid .row nav.col-md-3.sidebar,
+html body .container-fluid .row nav.col-lg-2.sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    z-index: 1000 !important;
+    padding: 0 !important;
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+    height: 100vh !important;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15) !important;
+    background-color: var(--secondary-bg) !important;
+    border-right: 1px solid var(--border-color) !important;
+    overflow: hidden !important;
+    flex: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Force main content positioning */
+html body .container-fluid .row main,
+html body .container-fluid .row main.col-md-9,
+html body .container-fluid .row main.ms-sm-auto,
+html body .container-fluid .row main.col-lg-10,
+html body .container-fluid .row main.col-md-9.ms-sm-auto.col-lg-10 {
+    margin-left: 250px !important;
+    padding: 1rem !important;
+    width: calc(100% - 250px) !important;
+    max-width: calc(100% - 250px) !important;
+    flex: none !important;
+    background-color: var(--bg-color) !important;
+    min-height: 100vh !important;
+    position: relative !important;
+}
+
+/* Container and row fixes */
+html body .container-fluid {
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+html body .container-fluid .row {
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Sidebar internal structure */
+html body .sidebar .position-sticky {
+    position: relative !important;
+    height: 100vh !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* User info section */
+html body .sidebar .user-info {
+    padding: 1rem !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    background-color: var(--secondary-bg) !important;
+    flex-shrink: 0 !important;
+}
+
+/* Navigation section */
+html body .sidebar .nav {
+    flex: 1 !important;
+    padding: 0 1rem !important;
+}
+
+/* Navigation links */
+html body .sidebar .nav-link {
+    color: var(--text-secondary) !important;
+    padding: 0.75rem 1rem !important;
+    margin: 0.25rem 0 !important;
+    border-radius: 0.375rem !important;
+    transition: all 0.3s ease !important;
+    font-weight: 500 !important;
+    border-left: 3px solid transparent !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+html body .sidebar .nav-link:hover {
+    color: var(--text-primary) !important;
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    text-decoration: none !important;
+}
+
+html body .sidebar .nav-link.active {
+    color: var(--accent-color) !important;
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border-left: 3px solid var(--accent-color) !important;
+}
+
+html body .sidebar .nav-link i {
+    font-size: 1.1rem !important;
+    width: 20px !important;
+    text-align: center !important;
+    margin-right: 0.5rem !important;
+    display: inline-block !important;
+    flex-shrink: 0 !important;
+}
+
+/* Sidebar footer */
+html body .sidebar .sidebar-footer {
+    padding: 1rem !important;
+    border-top: 1px solid var(--border-color) !important;
+    margin-top: auto !important;
+    flex-shrink: 0 !important;
+    background-color: var(--secondary-bg) !important;
+}
+
+html body .sidebar .sidebar-footer .btn {
+    border-color: var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    background-color: transparent !important;
+    transition: all 0.3s ease !important;
+}
+
+html body .sidebar .sidebar-footer .btn:hover {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border-color: var(--accent-color) !important;
+    color: var(--accent-color) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    html body .container-fluid .row .sidebar,
+    html body .container-fluid .row nav.sidebar {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        box-shadow: none !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+    
+    html body .container-fluid .row main,
+    html body .container-fluid .row main.col-md-9,
+    html body .container-fluid .row main.ms-sm-auto,
+    html body .container-fluid .row main.col-lg-10 {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-top: 1rem !important;
+    }
+}

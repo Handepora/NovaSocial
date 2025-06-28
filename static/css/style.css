@@ -98,22 +98,30 @@ body.dashboard-loaded {
     --slide-distance: 30px;
 }
 
-/* Sidebar Styles */
-.sidebar {
+/* Sidebar Styles - Force positioning */
+.sidebar,
+nav.sidebar,
+.col-md-3.sidebar,
+.col-lg-2.sidebar,
+nav.col-md-3.sidebar,
+nav.col-lg-2.sidebar {
     position: fixed !important;
     top: 0 !important;
     bottom: 0 !important;
     left: 0 !important;
     z-index: 1000 !important;
     padding: 0 !important;
-    width: 16.66667% !important;
-    min-width: 200px !important;
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
     min-height: 100vh !important;
     height: 100vh !important;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15) !important;
     background-color: var(--secondary-bg) !important;
     border-right: 1px solid var(--border-color) !important;
     overflow: hidden !important;
+    flex: none !important;
+    margin-left: 0 !important;
 }
 
 .sidebar .position-sticky {
@@ -130,8 +138,8 @@ body.dashboard-loaded {
 /* Override Bootstrap column classes */
 .col-md-3.col-lg-2.sidebar {
     position: fixed !important;
-    width: 16.66667% !important;
-    max-width: 16.66667% !important;
+    width: 250px !important;
+    max-width: 250px !important;
     flex: none !important;
 }
 
@@ -203,27 +211,11 @@ body.dashboard-loaded {
     font-size: 1.1rem !important;
     width: 20px !important;
     text-align: center !important;
-    vertical-align: top !important;
-    margin-top: 2px !important;
+    margin-right: 0.5rem !important;
+    display: inline-block !important;
 }
 
-/* Multi-line navigation text */
-.nav-text-multiline {
-    display: flex !important;
-    flex-direction: column !important;
-    line-height: 1.1 !important;
-}
-
-.nav-text-multiline .line1 {
-    font-size: inherit !important;
-    font-weight: inherit !important;
-}
-
-.nav-text-multiline .line2 {
-    font-size: inherit !important;
-    font-weight: inherit !important;
-    margin-left: 0 !important;
-}
+/* Remove multi-line navigation styles - reverting to standard format */
 
 /* Sidebar Footer */
 .sidebar-footer {
@@ -248,23 +240,19 @@ body.dashboard-loaded {
 }
 
 /* Main Content */
-main {
-    margin-left: 16.66667% !important; /* Offset for sidebar */
+main,
+main.col-md-9,
+main.ms-sm-auto,
+main.col-lg-10,
+main.col-md-9.ms-sm-auto.col-lg-10 {
+    margin-left: 250px !important; /* Offset for sidebar */
     padding: 1rem !important;
-    width: 83.33333% !important;
-    max-width: 83.33333% !important;
-    flex: 0 0 83.33333% !important;
+    width: calc(100% - 250px) !important;
+    max-width: calc(100% - 250px) !important;
+    flex: none !important;
     background-color: var(--bg-color) !important;
     min-height: 100vh !important;
     position: relative !important;
-}
-
-/* Override Bootstrap main content classes */
-main.col-md-9.ms-sm-auto.col-lg-10 {
-    margin-left: 16.66667% !important;
-    width: 83.33333% !important;
-    max-width: 83.33333% !important;
-    flex: 0 0 83.33333% !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
 }
@@ -274,11 +262,21 @@ main.col-md-9.ms-sm-auto.col-lg-10 {
     padding-left: 0 !important;
     padding-right: 0 !important;
     max-width: 100% !important;
+    width: 100% !important;
 }
 
 .row {
     margin-left: 0 !important;
     margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Body layout fixes */
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
 }
 
 @media (max-width: 768px) {

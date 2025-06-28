@@ -19,6 +19,8 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Layout fixes for deployment -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout-fixes.css') }}">
 </head>
 <body class="dashboard-loading">
     <div class="container-fluid">
@@ -80,10 +82,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#monitoreo" data-view="monitoreo">
                                 <i class="fas fa-eye me-2"></i>
-                                <span class="nav-text-multiline">
-                                    <span class="line1">Monitoreo</span>
-                                    <span class="line2">de Redes</span>
-                                </span>
+                                Monitoreo de Redes
                             </a>
                         </li>
                         <li class="nav-item">
