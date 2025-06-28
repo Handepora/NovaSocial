@@ -3244,3 +3244,141 @@ function setupSessionManagement() {
     resetInactivityTimer();
 }
 
+// ===== MODAL PROMPT CONFIGURATION FUNCTIONS =====
+
+async function saveSystemPromptModal() {
+    const systemPrompt = document.getElementById('modal-system-prompt')?.value;
+    
+    if (!systemPrompt) {
+        showErrorMessage('Por favor completa el prompt del sistema');
+        return;
+    }
+    
+    try {
+        const response = await fetchData('/api/update-system-prompt', {
+            method: 'POST',
+            body: JSON.stringify({ system_prompt: systemPrompt })
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage('Prompt del sistema guardado correctamente');
+        } else {
+            showErrorMessage(response.error || 'Error al guardar el prompt del sistema');
+        }
+    } catch (error) {
+        console.error('Error saving system prompt:', error);
+        showErrorMessage('Error al guardar el prompt del sistema');
+    }
+}
+
+async function savePlatformPromptsModal() {
+    const platformPrompts = {
+        twitter: document.getElementById('modal-twitter-prompt')?.value || '',
+        linkedin: document.getElementById('modal-linkedin-prompt')?.value || '',
+        instagram: document.getElementById('modal-instagram-prompt')?.value || '',
+        web: document.getElementById('modal-web-prompt')?.value || ''
+    };
+    
+    try {
+        const response = await fetchData('/api/update-platform-prompts', {
+            method: 'POST',
+            body: JSON.stringify({ platform_prompts: platformPrompts })
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage('Prompts de plataformas guardados correctamente');
+        } else {
+            showErrorMessage(response.error || 'Error al guardar los prompts de plataformas');
+        }
+    } catch (error) {
+        console.error('Error saving platform prompts:', error);
+        showErrorMessage('Error al guardar los prompts de plataformas');
+    }
+}
+
+async function saveTonePromptsModal() {
+    const tonePrompts = {
+        professional: document.getElementById('modal-professional-prompt')?.value || '',
+        casual: document.getElementById('modal-casual-prompt')?.value || '',
+        humorous: document.getElementById('modal-humorous-prompt')?.value || '',
+        inspirational: document.getElementById('modal-inspirational-prompt')?.value || ''
+    };
+    
+    try {
+        const response = await fetchData('/api/update-tone-prompts', {
+            method: 'POST',
+            body: JSON.stringify({ tone_prompts: tonePrompts })
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage('Prompts de tonos guardados correctamente');
+        } else {
+            showErrorMessage(response.error || 'Error al guardar los prompts de tonos');
+        }
+    } catch (error) {
+        console.error('Error saving tone prompts:', error);
+        showErrorMessage('Error al guardar los prompts de tonos');
+    }
+}
+
+async function resetPromptsToDefaultModal() {
+    if (!confirm('¿Estás seguro de que quieres restablecer todos los prompts a sus valores por defecto?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetchData('/api/reset-prompts-to-default', {
+            method: 'POST'
+        });
+        
+        if (response.status === 'success') {
+            showSuccessMessage('Prompts restablecidos a valores por defecto');
+            // Reload the prompt settings in the modal
+            await loadPromptSettingsModal();
+        } else {
+            showErrorMessage(response.error || 'Error al restablecer los prompts');
+        }
+    } catch (error) {
+        console.error('Error resetting prompts:', error);
+        showErrorMessage('Error al restablecer los prompts');
+    }
+}
+
+async function loadPromptSettingsModal() {
+    try {
+        const response = await fetchData('/api/get-prompt-settings');
+        
+        if (response.status === 'success') {
+            const settings = response.settings;
+            
+            // Populate modal fields
+            safeElementOperation('modal-system-prompt', el => el.value = settings.system_prompt || '');
+            
+            // Platform prompts
+            safeElementOperation('modal-twitter-prompt', el => el.value = settings.platform_prompts?.twitter || '');
+            safeElementOperation('modal-linkedin-prompt', el => el.value = settings.platform_prompts?.linkedin || '');
+            safeElementOperation('modal-instagram-prompt', el => el.value = settings.platform_prompts?.instagram || '');
+            safeElementOperation('modal-web-prompt', el => el.value = settings.platform_prompts?.web || '');
+            
+            // Tone prompts
+            safeElementOperation('modal-professional-prompt', el => el.value = settings.tone_prompts?.professional || '');
+            safeElementOperation('modal-casual-prompt', el => el.value = settings.tone_prompts?.casual || '');
+            safeElementOperation('modal-humorous-prompt', el => el.value = settings.tone_prompts?.humorous || '');
+            safeElementOperation('modal-inspirational-prompt', el => el.value = settings.tone_prompts?.inspirational || '');
+        }
+    } catch (error) {
+        console.error('Error loading prompt settings:', error);
+        showErrorMessage('Error al cargar la configuración de prompts');
+    }
+}
+
+// Setup prompt modal event listener when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    const promptModal = document.getElementById('promptConfigModal');
+    if (promptModal) {
+        promptModal.addEventListener('show.bs.modal', function() {
+            loadPromptSettingsModal();
+        });
+    }
+});
+

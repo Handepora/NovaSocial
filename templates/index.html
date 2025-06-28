@@ -1010,7 +1010,7 @@
                                     <div class="text-center">
                                         <i class="fas fa-cog fa-2x text-muted mb-2"></i>
                                         <p class="text-muted">Personaliza prompts de IA</p>
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="collapse" data-bs-target="#promptConfiguration">
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#promptConfigModal">
                                             Configurar Prompts
                                         </button>
                                     </div>
@@ -2138,6 +2138,116 @@
                     <button type="button" class="btn btn-danger" id="confirm-delete-provider">
                         <i class="fas fa-unlink me-1"></i>Desconectar Proveedor
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Prompt Configuration Modal -->
+    <div class="modal fade" id="promptConfigModal" tabindex="-1" aria-labelledby="promptConfigModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="promptConfigModalLabel">Configurar Prompts de IA</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tabs for different prompt types -->
+                    <ul class="nav nav-tabs" id="promptTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="system-tab" data-bs-toggle="tab" data-bs-target="#system-prompt" type="button" role="tab">
+                                <i class="fas fa-cog me-1"></i>Sistema
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="platform-tab" data-bs-toggle="tab" data-bs-target="#platform-prompts" type="button" role="tab">
+                                <i class="fas fa-share-alt me-1"></i>Plataformas
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tone-tab" data-bs-toggle="tab" data-bs-target="#tone-prompts" type="button" role="tab">
+                                <i class="fas fa-microphone me-1"></i>Tonos
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content mt-3" id="promptTabContent">
+                        <!-- System Prompt Tab -->
+                        <div class="tab-pane fade show active" id="system-prompt" role="tabpanel">
+                            <div class="mb-3">
+                                <label for="modal-system-prompt" class="form-label">Prompt del Sistema</label>
+                                <textarea class="form-control" id="modal-system-prompt" rows="6" placeholder="Define el comportamiento general de la IA..."></textarea>
+                                <div class="form-text">Este prompt controla el comportamiento general de la IA en todas las generaciones de contenido.</div>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="saveSystemPromptModal()">
+                                <i class="fas fa-save me-1"></i>Guardar Prompt del Sistema
+                            </button>
+                        </div>
+                        
+                        <!-- Platform Prompts Tab -->
+                        <div class="tab-pane fade" id="platform-prompts" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="modal-twitter-prompt" class="form-label">Twitter</label>
+                                        <textarea class="form-control" id="modal-twitter-prompt" rows="4" placeholder="Prompt específico para Twitter..."></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="modal-linkedin-prompt" class="form-label">LinkedIn</label>
+                                        <textarea class="form-control" id="modal-linkedin-prompt" rows="4" placeholder="Prompt específico para LinkedIn..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="modal-instagram-prompt" class="form-label">Instagram</label>
+                                        <textarea class="form-control" id="modal-instagram-prompt" rows="4" placeholder="Prompt específico para Instagram..."></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="modal-web-prompt" class="form-label">Web/Blog</label>
+                                        <textarea class="form-control" id="modal-web-prompt" rows="4" placeholder="Prompt específico para Web/Blog..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="savePlatformPromptsModal()">
+                                <i class="fas fa-save me-1"></i>Guardar Prompts de Plataformas
+                            </button>
+                        </div>
+                        
+                        <!-- Tone Prompts Tab -->
+                        <div class="tab-pane fade" id="tone-prompts" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="modal-professional-prompt" class="form-label">Profesional</label>
+                                        <textarea class="form-control" id="modal-professional-prompt" rows="4" placeholder="Prompt para tono profesional..."></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="modal-casual-prompt" class="form-label">Casual</label>
+                                        <textarea class="form-control" id="modal-casual-prompt" rows="4" placeholder="Prompt para tono casual..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="modal-humorous-prompt" class="form-label">Humorístico</label>
+                                        <textarea class="form-control" id="modal-humorous-prompt" rows="4" placeholder="Prompt para tono humorístico..."></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="modal-inspirational-prompt" class="form-label">Inspiracional</label>
+                                        <textarea class="form-control" id="modal-inspirational-prompt" rows="4" placeholder="Prompt para tono inspiracional..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="saveTonePromptsModal()">
+                                <i class="fas fa-save me-1"></i>Guardar Prompts de Tonos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" onclick="resetPromptsToDefaultModal()">
+                        <i class="fas fa-undo me-1"></i>Restablecer por Defecto
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
