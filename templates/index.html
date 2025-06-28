@@ -231,6 +231,22 @@
             margin-top: auto !important;
             flex-shrink: 0 !important;
         }
+        
+        /* Force sidebar visibility and navigation elements */
+        .sidebar {
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: flex !important;
+            z-index: 999999 !important;
+        }
+        
+        .sidebar [data-view] {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
     </style>
 </head>
 <body class="dashboard-loading">
@@ -2118,9 +2134,41 @@
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             
+            // Force sidebar visibility
+            forceSidebarVisibility();
+            
             // Setup sidebar navigation
             setupSidebarNavigation();
         });
+        
+        // Force sidebar visibility
+        function forceSidebarVisibility() {
+            console.log('Forcing sidebar visibility...');
+            
+            // Find sidebar
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.style.display = 'flex';
+                sidebar.style.visibility = 'visible';
+                sidebar.style.opacity = '1';
+                sidebar.style.zIndex = '999999';
+                console.log('Sidebar forced visible');
+                
+                // Force navigation items visibility
+                const navItems = sidebar.querySelectorAll('[data-view]');
+                console.log('Found nav items to force visible:', navItems.length);
+                navItems.forEach((item, index) => {
+                    item.style.display = 'flex';
+                    item.style.visibility = 'visible';
+                    item.style.opacity = '1';
+                    item.style.position = 'relative';
+                    item.style.zIndex = '10';
+                    console.log('Forced visibility for item', index, ':', item.getAttribute('data-view'));
+                });
+            } else {
+                console.error('Sidebar not found!');
+            }
+        }
         
         // Setup navigation functionality
         function setupSidebarNavigation() {
