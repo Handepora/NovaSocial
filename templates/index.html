@@ -2133,7 +2133,50 @@
             // Initialize theme
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Setup sidebar navigation
+            setupSidebarNavigation();
         });
+        
+        // Setup navigation functionality
+        function setupSidebarNavigation() {
+            const navLinks = document.querySelectorAll('[data-view]');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const view = this.getAttribute('data-view');
+                    if (view) {
+                        showView(view);
+                        updateSidebarActive(view);
+                    }
+                });
+            });
+        }
+        
+        // Update active state in sidebar
+        function updateSidebarActive(activeView) {
+            const navLinks = document.querySelectorAll('[data-view]');
+            navLinks.forEach(link => {
+                const parent = link.closest('div');
+                const view = link.getAttribute('data-view');
+                
+                if (view === activeView) {
+                    // Active state
+                    parent.style.background = 'rgba(255, 107, 71, 0.1)';
+                    parent.style.borderLeft = '3px solid #ff6b47';
+                    link.style.color = '#e2e8f0';
+                    const icon = link.querySelector('i');
+                    if (icon) icon.style.color = '#ff6b47';
+                } else {
+                    // Inactive state
+                    parent.style.background = 'transparent';
+                    parent.style.borderLeft = 'none';
+                    link.style.color = '#a0aec0';
+                    const icon = link.querySelector('i');
+                    if (icon) icon.style.color = '#a0aec0';
+                }
+            });
+        }
     </script>
 </body>
 </html>
