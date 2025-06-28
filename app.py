@@ -187,6 +187,7 @@ def logout():
             return redirect(url_for('login'))
 
 @app.route('/')
+@login_required
 def index():
     """Main dashboard page"""
     return render_template('index.html')
@@ -197,6 +198,7 @@ def get_posts():
     return jsonify(SCHEDULED_POSTS)
 
 @app.route('/api/posts/today')
+@login_required
 def get_today_posts():
     """Get posts scheduled for today"""
     today = datetime.now().date()
@@ -207,11 +209,13 @@ def get_today_posts():
     return jsonify(today_posts)
 
 @app.route('/api/posts/pending')
+@login_required
 def get_pending_posts():
     """Get posts pending approval"""
     return jsonify(MOCK_PENDING_POSTS)
 
 @app.route('/api/analytics')
+@login_required
 def get_analytics():
     """Get analytics data"""
     return jsonify(MOCK_ANALYTICS)

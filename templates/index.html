@@ -26,6 +26,38 @@
     
     <!-- Critical inline CSS for deployment -->
     <style>
+        /* Force main content visibility */
+        main,
+        main.col-md-9,
+        .col-md-9.ms-sm-auto,
+        .col-lg-10 {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+            padding: 1.5rem !important;
+            min-height: 100vh !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
+        
+        #dashboard-view,
+        .view.active {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .dashboard-card,
+        .card,
+        .row,
+        .col-md-6 {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
         /* Force sticky sidebar layout */
         body {
             margin: 0 !important;
@@ -267,9 +299,9 @@
             </nav>
             
             <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 dashboard-entrance">
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 dashboard-entrance" style="margin-left: 260px !important; display: block !important; visibility: visible !important;">
                 <!-- Dashboard View -->
-                <div id="dashboard-view" class="view active">
+                <div id="dashboard-view" class="view active" style="display: block !important; visibility: visible !important;">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2">Dashboard</h1>
                     </div>
