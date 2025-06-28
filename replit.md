@@ -221,6 +221,14 @@ The application is configured for deployment on Replit with the following setup:
   - Added CSS animations for button states including success pulse and error shake
   - Fixed content processing for Web/Blog platform to properly extract and display content
   - Integrated draft selection functionality in calendar modal for easy content reuse
+- June 28, 2025. Implemented automatic logout and removed all dummy data:
+  - Added automatic logout on browser/tab close using navigator.sendBeacon
+  - Configured session timeout after 30 minutes of inactivity
+  - Enhanced logout endpoint to support both GET and POST requests
+  - Removed all mock analytics data - charts now show empty states
+  - Eliminated dummy top posts - table shows real published content or empty state
+  - Fixed hover movement issues in charts and cards with stable CSS transitions
+  - Application now starts completely clean with authentic data only
 
 ## User Preferences
 

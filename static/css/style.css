@@ -1575,6 +1575,62 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Fix hover movement issues for cards and charts */
+.card {
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+    transform: none !important; /* Prevent unwanted movement */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Stable chart containers */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.chart-container canvas {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    pointer-events: auto;
+}
+
+/* Prevent layout shifts on hover */
+.analytics-card,
+.performance-card,
+.stats-card {
+    transform: none !important;
+}
+
+.analytics-card:hover,
+.performance-card:hover,
+.stats-card:hover {
+    transform: none !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Chart specific fixes */
+#followersChart,
+#engagementChart {
+    position: relative !important;
+    width: 100% !important;
+    height: 300px !important;
+}
+
+/* Stable table rows */
+table tr {
+    transition: background-color 0.2s ease;
+}
+
+table tr:hover {
+    background-color: var(--hover-bg);
+    transform: none !important;
+}
+
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
     *, ::before, ::after {

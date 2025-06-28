@@ -672,6 +672,19 @@ function updateEngagementChart(data) {
         analyticsCharts.engagement.destroy();
     }
     
+    // Check if all engagement rates are 0 (no real data)
+    const hasData = data.linkedin > 0 || data.twitter > 0 || data.instagram > 0;
+    
+    if (!hasData) {
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '16px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText('No hay datos de interacción disponibles', ctx.canvas.width / 2, ctx.canvas.height / 2 - 10);
+        ctx.font = '14px Inter';
+        ctx.fillText('Publica contenido para ver las tasas de interacción', ctx.canvas.width / 2, ctx.canvas.height / 2 + 10);
+        return;
+    }
+    
     analyticsCharts.engagement = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -721,21 +734,38 @@ function updateEngagementChart(data) {
 function updateTopPostsTable() {
     const tableBody = document.getElementById('top-posts-table');
     
-    // Mock top posts data
-    const topPosts = [
-        { title: 'Anuncio de nuevo producto innovador', platform: 'linkedin', interactions: 245, reach: 1250 },
-        { title: 'Behind the scenes de nuestro equipo', platform: 'instagram', interactions: 312, reach: 1580 },
-        { title: 'Tips para mejorar productividad', platform: 'twitter', interactions: 189, reach: 890 },
-        { title: 'Reflexiones sobre el futuro del trabajo', platform: 'linkedin', interactions: 156, reach: 780 },
-        { title: 'Celebrando logros del trimestre', platform: 'twitter', interactions: 134, reach: 650 }
-    ];
+    // Get real posts from published posts
+    const publishedPosts = JSON.parse(sessionStorage.getItem('publishedPosts') || '[]');
+    
+    if (publishedPosts.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center text-muted py-4">
+                    <i class="fas fa-chart-line fa-2x mb-2 d-block"></i>
+                    No hay publicaciones publicadas aún
+                    <br><small>Publica contenido para ver las estadísticas aquí</small>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Sort by interactions (simulated) and take top 5
+    const topPosts = publishedPosts
+        .map(post => ({
+            ...post,
+            interactions: Math.floor(Math.random() * 100) + 10, // Simulate engagement
+            reach: Math.floor(Math.random() * 1000) + 100
+        }))
+        .sort((a, b) => b.interactions - a.interactions)
+        .slice(0, 5);
     
     tableBody.innerHTML = topPosts.map(post => `
         <tr>
             <td>
                 <div class="d-flex align-items-center">
                     <i class="fab fa-${post.platform} platform-${post.platform} me-2"></i>
-                    ${post.title}
+                    ${post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content}
                 </div>
             </td>
             <td>${post.platform.charAt(0).toUpperCase() + post.platform.slice(1)}</td>

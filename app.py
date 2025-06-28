@@ -135,19 +135,13 @@ SCHEDULED_POSTS = []
 MOCK_PENDING_POSTS = []
 
 MOCK_ANALYTICS = {
-    "followers_growth": [
-        {"date": "2025-06-01", "linkedin": 1200, "twitter": 850, "instagram": 2100},
-        {"date": "2025-06-07", "linkedin": 1250, "twitter": 890, "instagram": 2180},
-        {"date": "2025-06-14", "linkedin": 1300, "twitter": 920, "instagram": 2250},
-        {"date": "2025-06-21", "linkedin": 1380, "twitter": 950, "instagram": 2320},
-        {"date": "2025-06-27", "linkedin": 1420, "twitter": 980, "instagram": 2400}
-    ],
+    "followers_growth": [],
     "engagement_rates": {
-        "linkedin": 4.2,
-        "twitter": 3.8,
-        "instagram": 5.1
+        "linkedin": 0,
+        "twitter": 0,
+        "instagram": 0
     },
-    "weekly_interactions": [120, 135, 158, 142, 167, 189, 201]
+    "weekly_interactions": []
 }
 
 # Authentication routes
