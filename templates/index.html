@@ -2208,9 +2208,12 @@
             // Insert sidebar HTML into container
             containerWrapper.innerHTML = sidebarHTML;
             
-            // Adjust main content to start right after fixed sidebar
+            // Ensure main content is visible and properly positioned
             const mainContent = document.querySelector('main');
             if (mainContent) {
+                mainContent.style.display = 'block';
+                mainContent.style.visibility = 'visible';
+                mainContent.style.opacity = '1';
                 mainContent.style.marginLeft = '260px';
                 mainContent.style.marginRight = '0';
                 mainContent.style.marginTop = '0';
@@ -2222,7 +2225,19 @@
                 mainContent.style.border = 'none';
                 mainContent.style.minHeight = '100vh';
                 mainContent.style.boxSizing = 'border-box';
+                mainContent.style.backgroundColor = 'var(--bg-color)';
+                mainContent.style.position = 'relative';
+                mainContent.style.zIndex = '1';
             }
+            
+            // Make sure all dashboard views are properly visible
+            const dashboardViews = document.querySelectorAll('.view-container, #dashboard-view, #calendar-view, #content-generation-view');
+            dashboardViews.forEach(view => {
+                if (view) {
+                    view.style.display = 'block';
+                    view.style.visibility = 'visible';
+                }
+            });
             
             // Insert sidebar at beginning of body
             document.body.insertBefore(containerWrapper, document.body.firstChild);
