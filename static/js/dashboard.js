@@ -385,9 +385,15 @@ async function generateQuickContent() {
         return;
     }
     
+    // Get the button element
+    const button = document.querySelector('.btn[onclick="generateQuickContent()"]');
+    
     // Use default values for quick generation
     const platforms = ['linkedin', 'twitter']; // Default platforms
     const provider = 'perplexity'; // Default provider
+    
+    // Set button to loading state
+    setButtonLoading(button, true);
     
     const resultContainer = document.getElementById('generated-content');
     if (resultContainer) {
@@ -416,19 +422,36 @@ async function generateQuickContent() {
             // Switch to content creation view and display results
             showView('crear-contenido');
             displayGeneratedContent(transformedContent, platforms);
+            
+            // Set button to success state
+            setButtonLoading(button, false);
+            button.innerHTML = '<i class="fas fa-check me-2"></i>¡Generado!';
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-success');
+            
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-magic me-2"></i>Generar Borrador';
+                button.classList.remove('btn-success');
+                button.classList.add('btn-primary');
+            }, 2000);
+            
             showSuccessMessage('Contenido generado exitosamente');
         } else if (response && response.status === 'error') {
+            setButtonLoading(button, false);
             if (response.requires_setup) {
                 showErrorMessage(`${response.error}. Configura las API keys en la sección de Configuración.`);
             } else {
                 showErrorMessage(response.error || 'Error al generar contenido');
             }
         } else {
+            setButtonLoading(button, false);
             showErrorMessage('Error al generar contenido');
         }
         
     } catch (error) {
         console.error('Error generating quick content:', error);
+        setButtonLoading(button, false);
         showErrorMessage('Error al generar contenido: ' + (error.message || 'Error desconocido'));
     }
 }
