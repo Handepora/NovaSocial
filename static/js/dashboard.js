@@ -5,81 +5,127 @@ let currentView = 'dashboard';
 let analyticsCharts = {};
 let mockData = {};
 
+// Utility function for safe element operations
+function safeElementOperation(elementId, operation, fallback = null) {
+    try {
+        const element = typeof elementId === 'string' ? document.getElementById(elementId) : elementId;
+        if (!element) {
+            console.warn(`Element not found: ${elementId}`);
+            return fallback;
+        }
+        return operation(element);
+    } catch (error) {
+        console.warn(`Operation failed for element ${elementId}:`, error);
+        return fallback;
+    }
+}
+
+// Safe querySelector wrapper
+function safeQuerySelector(selector, operation = null, fallback = null) {
+    try {
+        const element = document.querySelector(selector);
+        if (!element) {
+            console.warn(`Element not found with selector: ${selector}`);
+            return fallback;
+        }
+        return operation ? operation(element) : element;
+    } catch (error) {
+        console.warn(`Query failed for selector ${selector}:`, error);
+        return fallback;
+    }
+}
+
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    initializeNavigation();
-    setupEventListeners();
-    setupSchedulingEventListeners();
-    setupContentGenerationWorkflow();
-    setupAccountManagement();
-    initializeTheme();
-    // Load dashboard data after a short delay to ensure DOM is fully ready
-    setTimeout(() => {
-        loadDashboardData();
-        initializeCharts();
-        setDefaultScheduleDateTime();
-    }, 100);
+    try {
+        initializeNavigation();
+        setupEventListeners();
+        setupSchedulingEventListeners();
+        setupContentGenerationWorkflow();
+        setupAccountManagement();
+        initializeTheme();
+        // Load dashboard data after a short delay to ensure DOM is fully ready
+        setTimeout(() => {
+            try {
+                loadDashboardData();
+                initializeCharts();
+                setDefaultScheduleDateTime();
+            } catch (error) {
+                console.warn('Dashboard data loading failed:', error);
+            }
+        }, 100);
+    } catch (error) {
+        console.warn('Dashboard initialization failed:', error);
+    }
 });
 
 // Navigation Management
 function initializeNavigation() {
-    const navLinks = document.querySelectorAll('.nav-link[data-view]');
-    
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const view = this.getAttribute('data-view');
-            showView(view);
-            
-            // Update active state
-            navLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
+    safeDOM.queryAll('.nav-link[data-view]', (navLinks) => {
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const view = this.getAttribute('data-view');
+                if (view) {
+                    showView(view);
+                    
+                    // Update active state
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
         });
     });
 }
 
 function showView(viewName) {
-    const currentActiveView = document.querySelector('.view.active');
-    const targetView = document.getElementById(viewName + '-view');
+    try {
+        const currentActiveView = document.querySelector('.view.active');
+        const targetView = document.getElementById(viewName + '-view');
+        
+        if (!targetView || currentView === viewName) return;
+        
+        // Simple and clean transition
+        if (currentActiveView) {
+            currentActiveView.classList.remove('active');
+        }
     
-    if (!targetView || currentView === viewName) return;
-    
-    // Simple and clean transition
-    if (currentActiveView) {
-        currentActiveView.classList.remove('active');
+        targetView.classList.add('active');
+        currentView = viewName;
+        
+        // Update sidebar navigation active state
+        updateSidebarActive(viewName);
+        
+        // Load view-specific data immediately
+        switch(viewName) {
+            case 'dashboard':
+                loadDashboardData();
+                break;
+            case 'calendario':
+                loadCalendarData();
+                loadUpcomingPosts();
+                break;
+            case 'validacion':
+                loadValidationData();
+                break;
+            case 'analiticas':
+                loadAnalyticsData();
+                break;
+            case 'configuracion':
+                loadConfigurationData();
+                break;
+            case 'monitoreo':
+                loadMonitoringData();
+                break;
+        }
+        
+        // Smooth scroll to top
+        if (window.scrollTo) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    } catch (error) {
+        console.warn('View switching failed:', error);
     }
-    
-    targetView.classList.add('active');
-    currentView = viewName;
-    
-    // Update sidebar navigation active state
-    updateSidebarActive(viewName);
-    
-    // Load view-specific data immediately
-    switch(viewName) {
-        case 'dashboard':
-            loadDashboardData();
-            break;
-        case 'calendario':
-            loadCalendarData();
-            loadUpcomingPosts();
-            break;
-        case 'validacion':
-            loadValidationData();
-            break;
-        case 'analiticas':
-            loadAnalyticsData();
-            break;
-        case 'configuracion':
-            loadConfigurationData();
-            break;
-        case 'monitoreo':
-            loadMonitoringData();
-            break;
-    }
-    
-    // Smooth scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Reset card animations when view changes
@@ -127,32 +173,27 @@ async function loadDashboardData() {
 }
 
 function updateTodayPosts(posts) {
-    const countElement = document.getElementById('today-posts-count');
-    const listElement = document.getElementById('today-posts-list');
+    safeDOM.setText('today-posts-count', posts.length);
     
-    countElement.textContent = posts.length;
-    
-    if (posts.length === 0) {
-        listElement.innerHTML = '<p class="text-muted small">No hay publicaciones programadas para hoy</p>';
-        return;
-    }
-    
-    listElement.innerHTML = posts.map(post => `
-        <div class="post-item mb-2">
-            <div class="d-flex align-items-center">
-                <i class="fab fa-${post.platform} platform-${post.platform} me-2"></i>
-                <div class="flex-grow-1">
-                    <div class="small fw-medium">${post.title}</div>
-                    <div class="text-muted small">${formatTime(post.scheduled_date)}</div>
+    const postsHTML = posts.length === 0 
+        ? '<p class="text-muted small">No hay publicaciones programadas para hoy</p>'
+        : posts.map(post => `
+            <div class="post-item mb-2">
+                <div class="d-flex align-items-center">
+                    <i class="fab fa-${post.platform} platform-${post.platform} me-2"></i>
+                    <div class="flex-grow-1">
+                        <div class="small fw-medium">${post.title}</div>
+                        <div class="text-muted small">${formatTime(post.scheduled_date)}</div>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    
+    safeDOM.setHTML('today-posts-list', postsHTML);
 }
 
 function updatePendingCount(count) {
-    const countElement = document.getElementById('pending-posts-count');
-    countElement.textContent = count;
+    safeDOM.setText('pending-posts-count', count);
 }
 
 function updatePerformanceChart(data) {
@@ -176,17 +217,30 @@ function updatePerformanceChart(data) {
 function loadCalendarData() {
     const calendarContainer = document.getElementById('calendar-container');
     
-    // Simple calendar implementation
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+    if (!calendarContainer) {
+        console.warn('Calendar container not found');
+        return;
+    }
     
-    calendarContainer.innerHTML = generateCalendarHTML(currentYear, currentMonth);
-    
-    // Add calendar events
-    fetchData('/api/posts').then(posts => {
-        addCalendarEvents(posts);
-    });
+    try {
+        // Simple calendar implementation
+        const today = new Date();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+        
+        calendarContainer.innerHTML = generateCalendarHTML(currentYear, currentMonth);
+        
+        // Add calendar events
+        fetchData('/api/posts').then(posts => {
+            if (posts && Array.isArray(posts)) {
+                addCalendarEvents(posts);
+            }
+        }).catch(error => {
+            console.warn('Failed to load calendar events:', error);
+        });
+    } catch (error) {
+        console.warn('Calendar loading failed:', error);
+    }
 }
 
 function generateCalendarHTML(year, month) {
@@ -257,20 +311,33 @@ function generateCalendarHTML(year, month) {
 }
 
 function addCalendarEvents(posts) {
+    if (!posts || !Array.isArray(posts)) {
+        console.warn('Invalid posts data for calendar events');
+        return;
+    }
+    
     posts.forEach(post => {
-        const postDate = new Date(post.scheduled_date).toISOString().split('T')[0];
-        const dayElement = document.querySelector(`[data-date="${postDate}"] .day-events`);
-        
-        if (dayElement) {
-            const eventElement = document.createElement('div');
-            eventElement.className = `calendar-event ${post.platform}`;
-            eventElement.innerHTML = post.title.length > 15 ? post.title.substring(0, 15) + '...' : post.title;
-            eventElement.title = `${post.title} - ${formatTime(post.scheduled_date)}`;
-            eventElement.addEventListener('click', (e) => {
-                e.stopPropagation();
-                editPost(post.id);
-            });
-            dayElement.appendChild(eventElement);
+        try {
+            if (!post.scheduled_date) return;
+            
+            const postDate = new Date(post.scheduled_date).toISOString().split('T')[0];
+            const dayElement = safeQuerySelector(`[data-date="${postDate}"] .day-events`);
+            
+            if (dayElement) {
+                const eventElement = document.createElement('div');
+                eventElement.className = `calendar-event ${post.platform || 'default'}`;
+                eventElement.innerHTML = post.title && post.title.length > 15 ? post.title.substring(0, 15) + '...' : (post.title || 'Sin título');
+                eventElement.title = `${post.title || 'Sin título'} - ${formatTime(post.scheduled_date)}`;
+                eventElement.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (typeof editPost === 'function') {
+                        editPost(post.id);
+                    }
+                });
+                dayElement.appendChild(eventElement);
+            }
+        } catch (error) {
+            console.warn('Error adding calendar event:', error);
         }
     });
 }
@@ -278,27 +345,27 @@ function addCalendarEvents(posts) {
 // Content Creation
 function setupEventListeners() {
     // Quick create form
-    const quickCreateForm = document.getElementById('quick-create-form');
-    if (quickCreateForm) {
-        quickCreateForm.addEventListener('submit', function(e) {
+    safeElementOperation('quick-create-form', el => {
+        el.addEventListener('submit', function(e) {
             e.preventDefault();
-            const topic = document.getElementById('quick-topic').value;
+            const topic = safeElementOperation('quick-topic', el => el.value);
             if (topic) {
                 // Switch to create content view and populate form
                 showView('crear-contenido');
-                document.getElementById('main-topic').value = topic;
+                safeElementOperation('main-topic', el => el.value = topic);
             }
         });
-    }
+    });
     
     // Content creation form
-    const contentForm = document.getElementById('content-creation-form');
-    if (contentForm) {
-        contentForm.addEventListener('submit', function(e) {
+    safeElementOperation('content-creation-form', el => {
+        el.addEventListener('submit', function(e) {
             e.preventDefault();
-            generateContent();
+            if (typeof generateContent === 'function') {
+                generateContent();
+            }
         });
-    }
+    });
 }
 
 async function generateContent() {

@@ -229,6 +229,11 @@
             const transitionText = document.getElementById('transitionText');
             const loginContainer = document.querySelector('.login-container');
 
+            if (!loginForm || !transitionOverlay || !transitionText || !loginContainer) {
+                console.warn('Login elements not found, skipping transition setup');
+                return;
+            }
+
             loginForm.addEventListener('submit', function(e) {
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
