@@ -3379,6 +3379,25 @@ document.addEventListener('DOMContentLoaded', function() {
         promptModal.addEventListener('show.bs.modal', function() {
             loadPromptSettingsModal();
         });
+        
+        promptModal.addEventListener('shown.bs.modal', function() {
+            // Initialize Bootstrap tabs manually
+            const tabButtons = promptModal.querySelectorAll('[data-bs-toggle="tab"]');
+            tabButtons.forEach(button => {
+                const tab = new bootstrap.Tab(button);
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    tab.show();
+                });
+            });
+            
+            // Ensure first tab is active
+            const firstTab = promptModal.querySelector('#system-tab');
+            if (firstTab) {
+                const tab = new bootstrap.Tab(firstTab);
+                tab.show();
+            }
+        });
     }
 });
 
