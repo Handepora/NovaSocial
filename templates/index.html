@@ -2153,6 +2153,45 @@
             });
         }
         
+        // Show specific view and hide others
+        function showView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.style.display = 'none';
+                view.classList.remove('active');
+            });
+            
+            // Show the selected view
+            const targetView = document.getElementById(viewName + '-view');
+            if (targetView) {
+                targetView.style.display = 'block';
+                targetView.classList.add('active');
+                
+                // Load view-specific data
+                switch(viewName) {
+                    case 'dashboard':
+                        if (typeof loadDashboardData === 'function') loadDashboardData();
+                        break;
+                    case 'calendario':
+                        if (typeof loadCalendarData === 'function') loadCalendarData();
+                        if (typeof loadUpcomingPosts === 'function') loadUpcomingPosts();
+                        break;
+                    case 'validacion':
+                        if (typeof loadValidationData === 'function') loadValidationData();
+                        break;
+                    case 'analiticas':
+                        if (typeof loadAnalyticsData === 'function') loadAnalyticsData();
+                        break;
+                    case 'configuracion':
+                        if (typeof loadConfigurationData === 'function') loadConfigurationData();
+                        break;
+                    case 'monitoreo':
+                        if (typeof loadMonitoringData === 'function') loadMonitoringData();
+                        break;
+                }
+            }
+        }
+        
         // Update active state in sidebar
         function updateSidebarActive(activeView) {
             const navLinks = document.querySelectorAll('[data-view]');
