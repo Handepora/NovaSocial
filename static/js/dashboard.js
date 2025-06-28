@@ -676,13 +676,20 @@ async function fetchData(url, options = {}) {
         },
     };
     
-    const response = await fetch(url, { ...defaultOptions, ...options });
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    try {
+        const response = await fetch(url, { ...defaultOptions, ...options });
+        const data = await response.json();
+        
+        if (!response.ok) {
+            // Return the error data from the server if available
+            throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('Fetch error:', error);
+        throw error;
     }
-    
-    return await response.json();
 }
 
 function formatDate(dateString) {
@@ -1689,6 +1696,8 @@ async function testApiCredentials() {
         testButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Verificando...';
         testButton.disabled = true;
         
+        console.log('Verifying credentials for:', platform);
+        
         // Call the new verification endpoint
         const response = await fetchData('/api/accounts/verify-credentials', {
             method: 'POST',
@@ -1698,6 +1707,8 @@ async function testApiCredentials() {
                 api_secret: apiSecret
             })
         });
+        
+        console.log('Verification response:', response);
         
         if (response.status === 'success') {
             const profile = response.profile;
@@ -1712,6 +1723,14 @@ async function testApiCredentials() {
             
             if (displayNameField && profile.display_name) {
                 displayNameField.value = profile.display_name;
+            }
+            
+            // Mark API configuration as enabled since credentials are verified
+            const enableAPIToggle = document.getElementById('enableAPIConfig');
+            if (enableAPIToggle) {
+                enableAPIToggle.checked = true;
+                // Trigger the change event to show API content if hidden
+                enableAPIToggle.dispatchEvent(new Event('change'));
             }
             
             // Show success message with profile info
@@ -1747,6 +1766,7 @@ async function testApiCredentials() {
         testButton.disabled = false;
         
     } catch (error) {
+        console.error('Error verifying credentials:', error);
         showErrorMessage('Error al probar las credenciales: ' + error.message);
         
         // Restore button state
@@ -1796,7 +1816,7 @@ async function handleAddAccount(withAPI) {
         };
         
         // Include API credentials if withAPI is true
-        if (withAPI && document.getElementById('enableAPIConfig').checked) {
+        if (withAPI) {
             formData.api_key = document.getElementById('apiKey').value;
             formData.api_secret = document.getElementById('apiSecret').value;
             formData.access_token = document.getElementById('accessToken').value;
