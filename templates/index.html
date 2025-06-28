@@ -441,82 +441,71 @@
                         <h1 class="h2">Dashboard</h1>
                     </div>
                     
-                    <!-- Dashboard Cards Row 1 -->
-                    <div class="row mb-4">
+                    <!-- Dashboard Cards Grid -->
+                    <div class="dashboard-cards">
                         <!-- Today's Posts Card -->
-                        <div class="col-md-6">
-                            <div class="card dashboard-card">
-                                <div class="card-header d-flex align-items-center">
-                                    <i class="fas fa-calendar-day text-primary me-2"></i>
-                                    <h6 class="mb-0">Publicaciones Programadas para Hoy</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <div>
-                                            <h2 class="text-primary mb-0" id="today-posts-count">0</h2>
-                                            <small class="text-muted">No hay publicaciones programadas para hoy</small>
-                                        </div>
-                                        <div class="text-primary">
-                                            <i class="fas fa-calendar-day fa-2x opacity-50"></i>
-                                        </div>
+                        <div class="card dashboard-card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-calendar-day text-primary me-2"></i>
+                                <h6 class="mb-0">Publicaciones Programadas para Hoy</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <h2 class="text-primary mb-0" id="today-posts-count">0</h2>
+                                        <small class="text-muted">No hay publicaciones programadas para hoy</small>
+                                    </div>
+                                    <div class="text-primary">
+                                        <i class="fas fa-calendar-day fa-2x opacity-50"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Pending Approval Card -->
-                        <div class="col-md-6">
-                            <div class="card dashboard-card">
-                                <div class="card-header d-flex align-items-center">
-                                    <i class="fas fa-clock text-warning me-2"></i>
-                                    <h6 class="mb-0">Pendientes de Aprobación</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <div>
-                                            <h2 class="text-warning mb-0" id="pending-posts-count">0</h2>
-                                            <a href="#" class="btn btn-sm btn-outline-primary" data-view="validacion">Ir a Validación</a>
-                                        </div>
-                                        <div class="text-warning">
-                                            <i class="fas fa-clock fa-2x opacity-50"></i>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="card dashboard-card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-clock text-warning me-2"></i>
+                                <h6 class="mb-0">Pendientes de Aprobación</h6>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Dashboard Cards Row 2 -->
-                    <div class="row mb-4">
-                        <!-- Performance Chart -->
-                        <div class="col-md-6">
-                            <div class="card dashboard-card">
-                                <div class="card-header d-flex align-items-center">
-                                    <i class="fas fa-chart-line text-success me-2"></i>
-                                    <h6 class="mb-0">Rendimiento General (Últimos 7 días)</h6>
-                                </div>
-                                <div class="card-body">
-                                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <h2 class="text-warning mb-0" id="pending-posts-count">0</h2>
+                                        <a href="#" class="btn btn-sm btn-outline-primary" data-view="validacion">Ir a Validación</a>
+                                    </div>
+                                    <div class="text-warning">
+                                        <i class="fas fa-clock fa-2x opacity-50"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
+                        <!-- Performance Chart -->
+                        <div class="card dashboard-card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-chart-line text-success me-2"></i>
+                                <h6 class="mb-0">Rendimiento General (Últimos 7 días)</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="performanceChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                        
                         <!-- Quick Creation -->
-                        <div class="col-md-6">
-                            <div class="card dashboard-card">
-                                <div class="card-header d-flex align-items-center">
-                                    <i class="fas fa-magic text-info me-2"></i>
-                                    <h6 class="mb-0">Creación Rápida</h6>
+                        <div class="card dashboard-card">
+                            <div class="card-header d-flex align-items-center">
+                                <i class="fas fa-magic text-info me-2"></i>
+                                <h6 class="mb-0">Creación Rápida</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="quick-topic" class="form-label">Tema del post</label>
+                                    <input type="text" class="form-control" id="quick-topic" placeholder="Ej: Nuevo producto, tips, noticias...">
                                 </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label for="quick-topic" class="form-label">Tema del post</label>
-                                        <input type="text" class="form-control" id="quick-topic" placeholder="Ej: Nuevo producto, tips, noticias...">
-                                    </div>
-                                    <button type="button" class="btn btn-primary" onclick="generateContent()">
-                                        <i class="fas fa-magic me-2"></i>Generar Borrador
-                                    </button>
-                                </div>
+                                <button type="button" class="btn btn-primary" onclick="generateContent()">
+                                    <i class="fas fa-magic me-2"></i>Generar Borrador
+                                </button>
                             </div>
                         </div>
                     </div>
