@@ -1258,6 +1258,68 @@ function fixLightModeBackgrounds() {
                 }
             }
         });
+        
+        // Force fix specific card body areas that remain dark
+        const cardBodies = document.querySelectorAll('.card-body');
+        cardBodies.forEach(cardBody => {
+            cardBody.style.backgroundColor = '#ffffff';
+            
+            // Fix any flex containers inside card bodies
+            const flexContainers = cardBody.querySelectorAll('.d-flex');
+            flexContainers.forEach(flex => {
+                flex.style.backgroundColor = '#ffffff';
+            });
+            
+            // Fix text-center divs
+            const textCenters = cardBody.querySelectorAll('.text-center');
+            textCenters.forEach(center => {
+                center.style.backgroundColor = 'transparent';
+                center.style.color = '#718096';
+            });
+        });
+        
+        // Specifically target the prompt configuration card
+        const promptCard = document.querySelector('.card .card-header h6:contains("Configuración de Prompts")');
+        if (promptCard) {
+            const card = promptCard.closest('.card');
+            if (card) {
+                const cardBody = card.querySelector('.card-body');
+                if (cardBody) {
+                    cardBody.style.backgroundColor = '#ffffff';
+                    const allChildren = cardBody.querySelectorAll('*');
+                    allChildren.forEach(child => {
+                        if (child.style.backgroundColor && 
+                            (child.style.backgroundColor.includes('#1') || 
+                             child.style.backgroundColor.includes('#2') || 
+                             child.style.backgroundColor.includes('#3'))) {
+                            child.style.backgroundColor = '#ffffff';
+                        }
+                    });
+                }
+            }
+        }
+        
+        // Final aggressive pass - any element with dark background
+        const allElements = document.querySelectorAll('*');
+        allElements.forEach(element => {
+            const computedStyle = window.getComputedStyle(element);
+            const bgColor = computedStyle.backgroundColor;
+            
+            if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent') {
+                // Parse RGB values
+                const rgbMatch = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+                if (rgbMatch) {
+                    const r = parseInt(rgbMatch[1]);
+                    const g = parseInt(rgbMatch[2]);
+                    const b = parseInt(rgbMatch[3]);
+                    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                    
+                    if (brightness < 100) { // Very dark backgrounds
+                        element.style.backgroundColor = '#ffffff';
+                    }
+                }
+            }
+        });
     }, 100);
 }
 

@@ -2195,6 +2195,27 @@
         font-style: italic;
     }
     
+    /* Fix specific card body areas that remain dark */
+    [data-theme="light"] .card-body .d-flex.align-items-center.justify-content-center.h-100 {
+        background-color: #ffffff !important;
+        min-height: 200px !important;
+        padding: 2rem !important;
+    }
+    
+    [data-theme="light"] .card-body .text-center {
+        background-color: transparent !important;
+        color: #718096 !important;
+    }
+    
+    [data-theme="light"] .card-body .text-center .text-muted {
+        color: #718096 !important;
+    }
+    
+    /* Force override any remaining dark areas in card bodies */
+    [data-theme="light"] .card .card-body * {
+        background-color: inherit !important;
+    }
+    
     .time-slot {
         display: flex;
         align-items: center;
