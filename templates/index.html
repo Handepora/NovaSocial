@@ -1933,14 +1933,23 @@
         function fixConfigurationComponents() {
             const configView = document.getElementById('configuracion-view');
             if (configView) {
+                // Remove any phantom elements or overlays
+                configView.style.position = 'relative';
+                configView.style.zIndex = 'auto';
+                configView.style.overflow = 'visible';
+                
                 // Fix all cards in configuration
                 const cards = configView.querySelectorAll('.card');
-                cards.forEach(card => {
+                cards.forEach((card, index) => {
                     card.style.background = '#2d3748';
                     card.style.border = '1px solid #4a5568';
                     card.style.borderRadius = '0.5rem';
                     card.style.color = '#e2e8f0';
                     card.style.marginBottom = '1.5rem';
+                    card.style.position = 'relative';
+                    card.style.zIndex = index + 1;
+                    card.style.width = '100%';
+                    card.style.boxSizing = 'border-box';
                 });
                 
                 // Fix card headers
@@ -1949,6 +1958,8 @@
                     header.style.background = '#1a202c';
                     header.style.borderBottom = '1px solid #4a5568';
                     header.style.color = '#e2e8f0';
+                    header.style.position = 'relative';
+                    header.style.zIndex = '2';
                 });
                 
                 // Fix card bodies
@@ -1956,15 +1967,22 @@
                 cardBodies.forEach(body => {
                     body.style.background = '#2d3748';
                     body.style.color = '#e2e8f0';
+                    body.style.position = 'relative';
+                    body.style.zIndex = '2';
                 });
                 
-                // Fix tabs
+                // Fix tabs container
                 const navTabs = configView.querySelectorAll('.nav-tabs');
                 navTabs.forEach(tabs => {
                     tabs.style.background = '#1a202c';
                     tabs.style.borderRadius = '0.5rem';
                     tabs.style.padding = '0.25rem';
                     tabs.style.borderBottom = '1px solid #4a5568';
+                    tabs.style.position = 'relative';
+                    tabs.style.zIndex = '3';
+                    tabs.style.width = '100%';
+                    tabs.style.display = 'flex';
+                    tabs.style.flexWrap = 'nowrap';
                 });
                 
                 // Fix tab links
@@ -1972,6 +1990,11 @@
                 tabLinks.forEach(link => {
                     link.style.border = 'none';
                     link.style.borderRadius = '0.375rem';
+                    link.style.position = 'relative';
+                    link.style.zIndex = '4';
+                    link.style.pointerEvents = 'auto';
+                    link.style.cursor = 'pointer';
+                    
                     if (link.classList.contains('active')) {
                         link.style.background = '#ff6b47';
                         link.style.color = 'white';
@@ -1988,6 +2011,20 @@
                     control.style.border = '1px solid #4a5568';
                     control.style.color = '#e2e8f0';
                     control.style.borderRadius = '0.375rem';
+                    control.style.position = 'relative';
+                    control.style.zIndex = '2';
+                });
+                
+                // Remove any overlapping divs or ghost elements
+                const allElements = configView.querySelectorAll('*');
+                allElements.forEach(element => {
+                    // Check for empty divs with just positioning
+                    if (element.tagName === 'DIV' && 
+                        element.innerHTML.trim() === '' && 
+                        element.children.length === 0 &&
+                        !element.classList.length) {
+                        element.remove();
+                    }
                 });
             }
         }

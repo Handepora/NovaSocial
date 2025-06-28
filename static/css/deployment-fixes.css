@@ -180,6 +180,72 @@ div[id="configuracion-view"] .card {
     resize: vertical !important;
 }
 
+/* Eliminate phantom/ghost elements in configuration */
+#configuracion-view {
+    position: relative !important;
+    z-index: 1 !important;
+    overflow: visible !important;
+}
+
+#configuracion-view::before,
+#configuracion-view::after {
+    display: none !important;
+}
+
+/* Ensure proper layering for all configuration elements */
+#configuracion-view .card {
+    position: relative !important;
+    z-index: 2 !important;
+    pointer-events: auto !important;
+    isolation: isolate !important;
+}
+
+#configuracion-view .nav-tabs {
+    position: relative !important;
+    z-index: 10 !important;
+    pointer-events: auto !important;
+    isolation: isolate !important;
+}
+
+#configuracion-view .nav-tabs .nav-link {
+    position: relative !important;
+    z-index: 11 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* Remove any Bootstrap overlay effects */
+#configuracion-view .nav-tabs .nav-link:hover,
+#configuracion-view .nav-tabs .nav-link:focus,
+#configuracion-view .nav-tabs .nav-link:active {
+    outline: none !important;
+    text-decoration: none !important;
+}
+
+/* Ensure form elements are properly positioned */
+#configuracion-view .form-control,
+#configuracion-view .form-select,
+#configuracion-view .btn {
+    position: relative !important;
+    z-index: 5 !important;
+    pointer-events: auto !important;
+}
+
+/* Remove any conflicting positioning */
+#configuracion-view * {
+    box-sizing: border-box !important;
+}
+
+/* Fix any overflow issues */
+#configuracion-view .card-body {
+    overflow: visible !important;
+}
+
+/* Prevent any invisible overlays */
+#configuracion-view > * {
+    pointer-events: auto !important;
+}
+
 /* Ensure main content doesn't overlap with sidebar */
 main,
 .main-content,

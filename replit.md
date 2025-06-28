@@ -229,6 +229,14 @@ The application is configured for deployment on Replit with the following setup:
   - Eliminated dummy top posts - table shows real published content or empty state
   - Fixed hover movement issues in charts and cards with stable CSS transitions
   - Application now starts completely clean with authentic data only
+- June 28, 2025. Fixed deployment layout issues and eliminated phantom elements:
+  - Resolved sidebar height problems by implementing JavaScript-based structure correction
+  - Eliminated duplicate theme toggle button and positioned single button at sidebar bottom
+  - Fixed configuration section styling inconsistencies with deployment-specific CSS
+  - Removed phantom/ghost elements in configuration view that caused selection issues
+  - Applied z-index layering and pointer-events fixes to prevent invisible overlays
+  - Enhanced deployment-fixes.css with maximum specificity for consistent layout
+  - Implemented automated fixes that run on page load and view changes
 
 ## User Preferences
 
