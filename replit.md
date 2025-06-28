@@ -195,6 +195,14 @@ The application is configured for deployment on Replit with the following setup:
   - Enhanced navigation, calendar, and dashboard loading with error-resistant code
   - Replaced direct DOM access with validated operations using fallback mechanisms
   - Eliminated deployment errors while maintaining all functionality and user experience
+- June 28, 2025. Fixed sidebar consistency and layout issues across preview and deployment:
+  - Implemented consistent sidebar positioning with fixed layout and proper shadow rendering
+  - Added integrated theme toggle button in sidebar footer with Madrid-style text alignment
+  - Created multi-line navigation text for "Monitoreo de Redes" with proper vertical alignment
+  - Enhanced CSS specificity with !important declarations to override Bootstrap conflicts
+  - Fixed main content positioning and width calculations for stable layout
+  - Added robust container and row overrides to prevent layout shifts in deployment
+  - Ensured consistent sidebar behavior across all dashboard sections and views
 
 ## User Preferences
 
