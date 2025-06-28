@@ -1133,6 +1133,74 @@ function setTheme(theme) {
     
     // Update charts with new theme colors
     updateChartsTheme(theme);
+    
+    // Force fix for persistent dark backgrounds in light mode
+    if (theme === 'light') {
+        fixLightModeBackgrounds();
+    }
+}
+
+// Function to force fix dark backgrounds in light mode
+function fixLightModeBackgrounds() {
+    setTimeout(() => {
+        // Fix all canvas elements
+        const canvases = document.querySelectorAll('canvas');
+        canvases.forEach(canvas => {
+            canvas.style.backgroundColor = '#ffffff';
+        });
+        
+        // Fix chart containers
+        const chartContainers = document.querySelectorAll('.chart-container, .chart-area, .chart-wrapper');
+        chartContainers.forEach(container => {
+            container.style.backgroundColor = '#ffffff';
+        });
+        
+        // Fix dark placeholders in configuration
+        const darkPlaceholders = document.querySelectorAll('#configuracion-view .text-center.text-muted');
+        darkPlaceholders.forEach(placeholder => {
+            placeholder.style.backgroundColor = '#f7fafc';
+            placeholder.style.color = '#718096';
+            placeholder.style.border = '1px dashed #e2e8f0';
+            placeholder.style.borderRadius = '0.5rem';
+        });
+        
+        // Fix any remaining bg-dark elements
+        const bgDarkElements = document.querySelectorAll('.bg-dark');
+        bgDarkElements.forEach(element => {
+            element.style.backgroundColor = '#f7fafc';
+            element.style.color = '#2d3748';
+        });
+        
+        // Fix empty state containers
+        const emptyStates = document.querySelectorAll('.empty-state, .config-placeholder');
+        emptyStates.forEach(element => {
+            element.style.backgroundColor = '#f7fafc';
+            element.style.border = '2px dashed #e2e8f0';
+            element.style.color = '#718096';
+        });
+        
+        // Fix any hardcoded dark styles
+        const allDivs = document.querySelectorAll('div');
+        allDivs.forEach(div => {
+            const style = div.getAttribute('style');
+            if (style && style.includes('background') && (style.includes('#1') || style.includes('#2') || style.includes('#3'))) {
+                // Only change if it's a dark color
+                const bgMatch = style.match(/background-color:\s*#([0-9a-fA-F]{3,6})/);
+                if (bgMatch) {
+                    const color = bgMatch[1];
+                    // Check if it's a dark color (simple heuristic)
+                    const r = parseInt(color.substr(0, 2), 16);
+                    const g = parseInt(color.substr(2, 2), 16);
+                    const b = parseInt(color.substr(4, 2), 16);
+                    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                    
+                    if (brightness < 128) { // Dark color
+                        div.style.backgroundColor = '#ffffff';
+                    }
+                }
+            }
+        });
+    }, 100);
 }
 
 function updateChartsTheme(theme) {

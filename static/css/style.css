@@ -621,6 +621,77 @@ body {
     border-top: 1px solid #e2e8f0 !important;
 }
 
+/* Fix chart placeholder containers in light theme */
+[data-theme="light"] canvas {
+    background-color: #ffffff !important;
+}
+
+[data-theme="light"] .chart-container,
+[data-theme="light"] .chart-area {
+    background-color: #ffffff !important;
+}
+
+/* Fix specific dark placeholders in configuration */
+[data-theme="light"] #configuracion-view .text-center.text-muted.py-5,
+[data-theme="light"] #configuracion-view .text-center.text-muted.py-4 {
+    background-color: #f7fafc !important;
+    color: #718096 !important;
+    border-radius: 0.5rem;
+    border: 1px dashed #e2e8f0 !important;
+}
+
+/* Fix any remaining dark containers */
+[data-theme="light"] .bg-dark {
+    background-color: #f7fafc !important;
+    color: #2d3748 !important;
+}
+
+[data-theme="light"] .text-white {
+    color: #2d3748 !important;
+}
+
+/* Chart.js canvas specific fixes */
+[data-theme="light"] #performanceChart,
+[data-theme="light"] #followersChart,
+[data-theme="light"] #engagementChart {
+    background-color: #ffffff !important;
+}
+
+/* Configuration section dark areas */
+[data-theme="light"] .config-placeholder {
+    background-color: #f7fafc !important;
+    border: 2px dashed #e2e8f0 !important;
+    color: #718096 !important;
+}
+
+/* Override any hardcoded dark backgrounds */
+[data-theme="light"] * {
+    --chart-bg: #ffffff;
+    --placeholder-bg: #f7fafc;
+    --placeholder-border: #e2e8f0;
+    --placeholder-text: #718096;
+}
+
+/* Specific fixes for chart containers that might have JS-applied styles */
+[data-theme="light"] .chart-wrapper,
+[data-theme="light"] .chart-content {
+    background-color: #ffffff !important;
+}
+
+/* Fix any div with dark background in light mode */
+[data-theme="light"] div[style*="background-color: #"] {
+    background-color: #ffffff !important;
+}
+
+/* Empty state containers */
+[data-theme="light"] .empty-chart-state {
+    background-color: #f7fafc !important;
+    border: 2px dashed #e2e8f0 !important;
+    color: #718096 !important;
+    border-radius: 0.5rem;
+    padding: 2rem;
+}
+
 /* Calendar */
 #calendar-container {
     min-height: 600px;
