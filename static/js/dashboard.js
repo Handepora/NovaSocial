@@ -3113,6 +3113,7 @@ async function scheduleFromCalendar() {
 
 document.addEventListener('DOMContentLoaded', function() {
     enhanceCardAnimations();
+    setupSessionManagement();
     
     // Add smooth scrolling to navigation
     document.querySelectorAll('.nav-link[data-view]').forEach(link => {
@@ -3121,4 +3122,88 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Session management for automatic logout
+function setupSessionManagement() {
+    let inactivityTimer = null;
+    const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    
+    // Handle window beforeunload (closing tab/browser)
+    window.addEventListener('beforeunload', function(e) {
+        // Use sendBeacon for reliable logout on page unload
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon('/logout');
+        } else {
+            // Fallback for older browsers
+            fetch('/logout', {
+                method: 'POST',
+                keepalive: true,
+                credentials: 'same-origin'
+            });
+        }
+    });
+    
+    // Handle page unload (backup)
+    window.addEventListener('unload', function(e) {
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon('/logout');
+        }
+    });
+    
+    // Handle page visibility changes (tab switching)
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Start inactivity timer when tab becomes hidden
+            startInactivityTimer();
+        } else {
+            // Cancel timer when tab becomes visible again
+            cancelInactivityTimer();
+        }
+    });
+    
+    // Track user activity to reset inactivity timer
+    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    activityEvents.forEach(event => {
+        document.addEventListener(event, resetInactivityTimer, { passive: true });
+    });
+    
+    function startInactivityTimer() {
+        cancelInactivityTimer();
+        inactivityTimer = setTimeout(() => {
+            performLogout('Sesión cerrada por inactividad');
+        }, INACTIVITY_TIMEOUT);
+    }
+    
+    function cancelInactivityTimer() {
+        if (inactivityTimer) {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = null;
+        }
+    }
+    
+    function resetInactivityTimer() {
+        if (document.hidden) {
+            startInactivityTimer();
+        } else {
+            cancelInactivityTimer();
+        }
+    }
+    
+    function performLogout(message = 'Cerrando sesión...') {
+        showSuccessMessage(message);
+        
+        fetch('/logout', {
+            method: 'POST',
+            credentials: 'same-origin'
+        }).then(() => {
+            window.location.href = '/login';
+        }).catch(() => {
+            // Force redirect even if logout fails
+            window.location.href = '/login';
+        });
+    }
+    
+    // Initialize activity tracking
+    resetInactivityTimer();
+}
 

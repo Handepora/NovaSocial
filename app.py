@@ -170,13 +170,27 @@ def login():
     
     return render_template('login.html')
 
-@app.route('/logout')
-@login_required
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    """Logout user"""
-    logout_user()
-    flash('Has cerrado sesión correctamente')
-    return redirect(url_for('login'))
+    """Logout user - supports both GET and POST requests"""
+    if current_user.is_authenticated:
+        logout_user()
+        session.clear()  # Clear all session data including drafts
+        
+        # Handle different request types
+        if request.method == 'POST':
+            # For AJAX/fetch requests or sendBeacon
+            return '', 204  # No Content response for successful logout
+        else:
+            # For regular GET requests, redirect with flash message
+            flash('Has cerrado sesión correctamente')
+            return redirect(url_for('login'))
+    else:
+        # User already logged out
+        if request.method == 'POST':
+            return '', 204
+        else:
+            return redirect(url_for('login'))
 
 @app.route('/')
 @login_required
