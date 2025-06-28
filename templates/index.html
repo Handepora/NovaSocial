@@ -2050,12 +2050,13 @@
                     height: 100vh !important; 
                     background: #1a202c !important; 
                     z-index: 999999 !important;
-                    border-right: 2px solid #2d3748 !important;
+                    border-right: 1px solid #2d3748 !important;
                     font-family: Arial, sans-serif !important;
                     display: block !important;
                     visibility: visible !important;
                     opacity: 1 !important;
-                    float: left !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
                 ">
                     <!-- Header -->
                     <div id="sidebar-header" style="padding: 20px; border-bottom: 1px solid #2d3748; color: white;">
@@ -2187,22 +2188,26 @@
             
             // Create container wrapper for sticky layout
             const containerWrapper = document.createElement('div');
-            containerWrapper.style.cssText = 'display: flex; min-height: 100vh; width: 100%;';
+            containerWrapper.style.cssText = 'display: flex; min-height: 100vh; width: 100%; gap: 0; margin: 0; padding: 0;';
             
             // Insert sidebar HTML into container
             containerWrapper.innerHTML = sidebarHTML;
             
             // Create content wrapper
             const contentWrapper = document.createElement('div');
-            contentWrapper.style.cssText = 'flex: 1; overflow-y: auto; max-height: 100vh; padding: 0;';
+            contentWrapper.style.cssText = 'flex: 1; overflow-y: auto; max-height: 100vh; padding: 0; margin: 0; border: none;';
             
             // Move existing main content into content wrapper
             const mainContent = document.querySelector('main');
             if (mainContent) {
                 mainContent.style.marginLeft = '0';
+                mainContent.style.marginRight = '0';
+                mainContent.style.margin = '0';
                 mainContent.style.transition = 'none';
-                mainContent.style.padding = '0';
+                mainContent.style.padding = '20px';
+                mainContent.style.paddingLeft = '20px';
                 mainContent.style.width = '100%';
+                mainContent.style.border = 'none';
                 contentWrapper.appendChild(mainContent);
             }
             
