@@ -1,0 +1,222 @@
+/* Deployment-specific fixes for sidebar and layout issues */
+
+/* Force sidebar to full height with flexbox layout */
+.sidebar,
+nav.sidebar,
+.col-md-3.sidebar,
+.col-lg-2.sidebar,
+nav.col-md-3.sidebar,
+nav.col-lg-2.sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    width: 280px !important;
+    background: var(--secondary-bg) !important;
+    border-right: 2px solid var(--border-color) !important;
+    z-index: 9999 !important;
+    overflow-y: auto !important;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Ensure sidebar flexbox layout works properly */
+.sidebar > div,
+.sidebar .position-sticky,
+.sidebar .d-flex.flex-column {
+    height: 100% !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Fix navigation area to grow and fill space */
+.sidebar .nav.flex-column {
+    flex-grow: 1 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Force theme toggle to bottom with proper styling */
+.sidebar .mt-auto,
+.sidebar .sidebar-footer {
+    margin-top: auto !important;
+    padding: 1rem !important;
+    border-top: 1px solid var(--border-color) !important;
+    background: var(--secondary-bg) !important;
+}
+
+/* Hide duplicate theme toggle button */
+#themeToggle {
+    display: none !important;
+}
+
+/* Ensure only sidebar theme toggle is visible */
+.sidebar #theme-toggle {
+    display: block !important;
+}
+
+/* Fix multi-line navigation text for "Monitoreo de Redes" */
+.nav-text {
+    line-height: 1.2 !important;
+    font-size: 0.9rem !important;
+}
+
+/* Fix configuration section styling to match overall design */
+#configuracion-view .card,
+.configuration-view .card {
+    background: var(--secondary-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    margin-bottom: 1.5rem !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+#configuracion-view .card-header,
+.configuration-view .card-header {
+    background: var(--primary-bg) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    padding: 1rem 1.5rem !important;
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+#configuracion-view .card-body,
+.configuration-view .card-body {
+    padding: 1.5rem !important;
+    background: var(--secondary-bg) !important;
+}
+
+/* Fix prompt configuration tabs to match overall theme */
+#configuracion-view .nav-tabs,
+.configuration-view .nav-tabs {
+    border-bottom: 1px solid var(--border-color) !important;
+    margin-bottom: 1.5rem !important;
+    background: var(--primary-bg) !important;
+    border-radius: 0.5rem !important;
+    padding: 0.25rem !important;
+}
+
+#configuracion-view .nav-tabs .nav-link,
+.configuration-view .nav-tabs .nav-link {
+    border: none !important;
+    background: transparent !important;
+    color: var(--text-secondary) !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 0.375rem !important;
+    transition: all 0.3s ease !important;
+}
+
+#configuracion-view .nav-tabs .nav-link.active,
+.configuration-view .nav-tabs .nav-link.active {
+    background: var(--accent-color) !important;
+    color: white !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+#configuracion-view .nav-tabs .nav-link:hover:not(.active),
+.configuration-view .nav-tabs .nav-link:hover:not(.active) {
+    background: var(--secondary-bg) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Fix form elements in configuration to match theme */
+#configuracion-view .form-control,
+#configuracion-view .form-select,
+.configuration-view .form-control,
+.configuration-view .form-select {
+    background: var(--primary-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    border-radius: 0.375rem !important;
+    transition: all 0.3s ease !important;
+}
+
+#configuracion-view .form-control:focus,
+#configuracion-view .form-select:focus,
+.configuration-view .form-control:focus,
+.configuration-view .form-select:focus {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 107, 71, 0.25) !important;
+    background: var(--secondary-bg) !important;
+}
+
+/* Fix button styling in configuration */
+#configuracion-view .btn,
+.configuration-view .btn {
+    margin-right: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    border-radius: 0.375rem !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Fix textarea specifically for prompts */
+#configuracion-view textarea.form-control,
+.configuration-view textarea.form-control {
+    min-height: 120px !important;
+    resize: vertical !important;
+}
+
+/* Ensure main content doesn't overlap with sidebar */
+main,
+.main-content,
+.col-md-9.ms-sm-auto,
+.col-lg-10 {
+    margin-left: 280px !important;
+    padding: 2rem !important;
+    min-height: 100vh !important;
+    width: calc(100% - 280px) !important;
+    max-width: calc(100% - 280px) !important;
+    background: var(--bg-color) !important;
+}
+
+/* Fix container layout to prevent Bootstrap overrides */
+.container-fluid {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+.container-fluid .row {
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+/* Fix responsive behavior */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%) !important;
+    }
+    
+    .sidebar.show {
+        transform: translateX(0) !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+    }
+}
+
+/* Fix scrollbar in sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: var(--secondary-bg);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+}
