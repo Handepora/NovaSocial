@@ -44,94 +44,51 @@ function showView(viewName) {
     
     if (!targetView || currentView === viewName) return;
     
-    // Add transition class to body for smooth overall transition
-    document.body.classList.add('view-transitioning');
-    
-    // Fade out current view
+    // Simple and clean transition
     if (currentActiveView) {
-        currentActiveView.style.opacity = '0';
-        currentActiveView.style.transform = 'translateY(-20px)';
-        
-        setTimeout(() => {
-            currentActiveView.classList.remove('active');
-            currentActiveView.style.opacity = '';
-            currentActiveView.style.transform = '';
-        }, 200);
+        currentActiveView.classList.remove('active');
     }
     
-    // Fade in new view with delay
-    setTimeout(() => {
-        targetView.classList.add('active');
-        currentView = viewName;
-        
-        // Update sidebar navigation active state
-        updateSidebarActive(viewName);
-        
-        // Trigger content animations
-        triggerContentAnimations(targetView);
-        
-        // Load view-specific data
-        setTimeout(() => {
-            switch(viewName) {
-                case 'dashboard':
-                    loadDashboardData();
-                    break;
-                case 'calendario':
-                    loadCalendarData();
-                    loadUpcomingPosts();
-                    break;
-                case 'validacion':
-                    loadValidationData();
-                    break;
-                case 'analiticas':
-                    loadAnalyticsData();
-                    break;
-                case 'configuracion':
-                    loadConfigurationData();
-                    break;
-                case 'monitoreo':
-                    loadMonitoringData();
-                    break;
-            }
-        }, 100);
-        
-        // Remove transition class
-        setTimeout(() => {
-            document.body.classList.remove('view-transitioning');
-        }, 400);
-    }, currentActiveView ? 200 : 0);
+    targetView.classList.add('active');
+    currentView = viewName;
+    
+    // Update sidebar navigation active state
+    updateSidebarActive(viewName);
+    
+    // Load view-specific data immediately
+    switch(viewName) {
+        case 'dashboard':
+            loadDashboardData();
+            break;
+        case 'calendario':
+            loadCalendarData();
+            loadUpcomingPosts();
+            break;
+        case 'validacion':
+            loadValidationData();
+            break;
+        case 'analiticas':
+            loadAnalyticsData();
+            break;
+        case 'configuracion':
+            loadConfigurationData();
+            break;
+        case 'monitoreo':
+            loadMonitoringData();
+            break;
+    }
+    
+    // Smooth scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Trigger staggered animations for content elements
-function triggerContentAnimations(container) {
-    // Reset animations for all elements
-    const animatedElements = container.querySelectorAll('.dashboard-card, .content-section, .table tbody tr, .form-group');
-    
-    animatedElements.forEach((element, index) => {
-        element.style.animation = 'none';
-        element.offsetHeight; // Trigger reflow
-        
-        // Add appropriate animation class with staggered delay
-        setTimeout(() => {
-            if (element.classList.contains('dashboard-card')) {
-                element.style.animation = `fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s both`;
-            } else if (element.classList.contains('content-section')) {
-                const animationType = index % 2 === 0 ? 'fadeInLeft' : 'fadeInRight';
-                element.style.animation = `${animationType} 0.4s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s both`;
-            } else {
-                element.style.animation = `fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.05}s both`;
-            }
-        }, 50);
-    });
-    
-    // Animate charts with special handling
-    const charts = container.querySelectorAll('.chart-container, canvas');
-    charts.forEach((chart, index) => {
-        chart.style.animation = 'none';
-        chart.offsetHeight;
-        setTimeout(() => {
-            chart.style.animation = `fadeInScale 0.6s cubic-bezier(0.4, 0, 0.2, 1) ${0.3 + index * 0.1}s both`;
-        }, 100);
+// Reset card animations when view changes
+function resetCardAnimations() {
+    const cards = document.querySelectorAll('.dashboard-card, .content-section');
+    cards.forEach(card => {
+        card.style.animation = 'none';
+        card.offsetHeight; // Trigger reflow
+        card.style.animation = '';
     });
 }
 

@@ -473,24 +473,23 @@ main {
 
 /* Dashboard View Transitions */
 .view {
-    opacity: 0;
-    transform: translateY(var(--slide-distance));
-    transition: all var(--animation-duration) var(--animation-easing);
-    visibility: hidden;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    min-height: 100vh;
-    padding: 1rem;
+    display: none;
 }
 
 .view.active {
-    opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
-    position: relative;
-    min-height: auto;
+    display: block;
+    animation: fadeInSmooth 0.3s ease-out;
+}
+
+@keyframes fadeInSmooth {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Animation Keyframes */
@@ -549,41 +548,37 @@ main {
     }
 }
 
-/* Card Animations */
+/* Card Animations - Simplified */
 .dashboard-card {
-    animation: fadeInUp var(--animation-duration) var(--animation-easing);
-    animation-fill-mode: backwards;
+    opacity: 0;
+    animation: fadeInUp 0.4s ease-out forwards;
 }
 
 .dashboard-card:nth-child(1) {
-    animation-delay: 0.1s;
+    animation-delay: 0.05s;
 }
 
 .dashboard-card:nth-child(2) {
-    animation-delay: 0.2s;
+    animation-delay: 0.1s;
 }
 
 .dashboard-card:nth-child(3) {
-    animation-delay: 0.3s;
+    animation-delay: 0.15s;
 }
 
 .dashboard-card:nth-child(4) {
-    animation-delay: 0.4s;
+    animation-delay: 0.2s;
 }
 
-/* Staggered animations for content sections */
+/* Content sections - Simplified */
 .content-section {
-    animation: fadeInUp var(--animation-duration) var(--animation-easing);
-    animation-fill-mode: backwards;
+    opacity: 0;
+    animation: fadeInUp 0.3s ease-out forwards;
 }
 
-.content-section:nth-child(odd) {
-    animation-name: fadeInLeft;
-}
-
-.content-section:nth-child(even) {
-    animation-name: fadeInRight;
-}
+.content-section:nth-child(1) { animation-delay: 0.1s; }
+.content-section:nth-child(2) { animation-delay: 0.2s; }
+.content-section:nth-child(3) { animation-delay: 0.3s; }
 
 /* Modal animations */
 .modal.fade .modal-dialog {
