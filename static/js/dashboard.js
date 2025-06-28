@@ -1717,12 +1717,18 @@ async function testApiCredentials() {
             const accountNameField = document.getElementById('accountName');
             const displayNameField = document.getElementById('accountDisplayName');
             
+            console.log('Account name field:', accountNameField);
+            console.log('Display name field:', displayNameField);
+            console.log('Profile data:', profile);
+            
             if (accountNameField && profile.username) {
                 accountNameField.value = profile.username;
+                console.log('Set account name to:', profile.username);
             }
             
             if (displayNameField && profile.display_name) {
                 displayNameField.value = profile.display_name;
+                console.log('Set display name to:', profile.display_name);
             }
             
             // Mark API configuration as enabled since credentials are verified
