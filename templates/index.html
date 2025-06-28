@@ -26,14 +26,19 @@
     
     <!-- Critical inline CSS for deployment -->
     <style>
-        /* Force sidebar positioning with inline CSS */
+        /* Force sticky sidebar layout */
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
         .sidebar,
         nav.sidebar,
         .col-md-3.sidebar,
         .col-lg-2.sidebar,
         nav.col-md-3.sidebar,
         nav.col-lg-2.sidebar {
-            position: fixed !important;
+            position: sticky !important;
             top: 0 !important;
             left: 0 !important;
             width: 280px !important;
@@ -46,6 +51,20 @@
             flex: none !important;
             margin: 0 !important;
             padding: 0 !important;
+        }
+        
+        /* Layout for sticky sidebar */
+        .flex-container {
+            display: flex !important;
+            min-height: 100vh !important;
+            width: 100% !important;
+        }
+        
+        .content-area {
+            flex: 1 !important;
+            overflow-y: auto !important;
+            max-height: 100vh !important;
+            padding: 20px !important;
         }
         
         /* Force navigation elements visibility */
@@ -2024,7 +2043,7 @@
             // Create sidebar container with maximum visibility priority
             const sidebarHTML = `
                 <div id="nova-nav" style="
-                    position: fixed !important; 
+                    position: sticky !important; 
                     top: 0 !important; 
                     left: 0 !important; 
                     width: 280px !important; 
@@ -2036,6 +2055,7 @@
                     display: block !important;
                     visibility: visible !important;
                     opacity: 1 !important;
+                    float: left !important;
                 ">
                     <!-- Header -->
                     <div id="sidebar-header" style="padding: 20px; border-bottom: 1px solid #2d3748; color: white;">
@@ -2165,15 +2185,31 @@
                 </div>
             `;
             
-            // Insert at very beginning of body with highest priority
-            document.body.insertAdjacentHTML('afterbegin', sidebarHTML);
+            // Create container wrapper for sticky layout
+            const containerWrapper = document.createElement('div');
+            containerWrapper.style.cssText = 'display: flex; min-height: 100vh; width: 100%;';
             
-            // Adjust main content
+            // Insert sidebar HTML into container
+            containerWrapper.innerHTML = sidebarHTML;
+            
+            // Create content wrapper
+            const contentWrapper = document.createElement('div');
+            contentWrapper.style.cssText = 'flex: 1; overflow-y: auto; max-height: 100vh;';
+            
+            // Move existing main content into content wrapper
             const mainContent = document.querySelector('main');
             if (mainContent) {
-                mainContent.style.marginLeft = '280px';
-                mainContent.style.transition = 'margin-left 0.3s';
+                mainContent.style.marginLeft = '0';
+                mainContent.style.transition = 'none';
+                mainContent.style.padding = '20px';
+                contentWrapper.appendChild(mainContent);
             }
+            
+            // Add content wrapper to container
+            containerWrapper.appendChild(contentWrapper);
+            
+            // Insert container at beginning of body
+            document.body.insertBefore(containerWrapper, document.body.firstChild);
         }
         
         // Navigation active state management
