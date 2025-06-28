@@ -1730,24 +1730,40 @@ async function testApiCredentials() {
             console.log('Display name field:', displayNameField);
             console.log('Profile data:', profile);
             
-            // Wait a bit and try again if elements are not found
+            // Direct field setting
+            const accountField = document.querySelector('input[id="accountName"]');
+            const displayField = document.querySelector('input[id="accountDisplayName"]');
+            
+            console.log('Direct - Account field:', accountField);
+            console.log('Direct - Display field:', displayField);
+            console.log('All forms:', document.querySelectorAll('form'));
+            console.log('All inputs:', document.querySelectorAll('input'));
+            
+            if (accountField && profile.username) {
+                accountField.value = profile.username;
+                console.log('Set account name directly to:', profile.username);
+            }
+            
+            if (displayField && profile.display_name) {
+                displayField.value = profile.display_name;
+                console.log('Set display name directly to:', profile.display_name);
+            }
+            
+            // Also try with timeout
             setTimeout(() => {
-                const accountField = document.getElementById('accountName');
-                const displayField = document.getElementById('accountDisplayName');
+                const accountFieldRetry = document.querySelector('input[id="accountName"]');
+                const displayFieldRetry = document.querySelector('input[id="accountDisplayName"]');
                 
-                console.log('Retry - Account field:', accountField);
-                console.log('Retry - Display field:', displayField);
-                
-                if (accountField && profile.username) {
-                    accountField.value = profile.username;
-                    console.log('Successfully set account name to:', profile.username);
+                if (accountFieldRetry && profile.username) {
+                    accountFieldRetry.value = profile.username;
+                    console.log('Retry set account name to:', profile.username);
                 }
                 
-                if (displayField && profile.display_name) {
-                    displayField.value = profile.display_name;
-                    console.log('Successfully set display name to:', profile.display_name);
+                if (displayFieldRetry && profile.display_name) {
+                    displayFieldRetry.value = profile.display_name;
+                    console.log('Retry set display name to:', profile.display_name);
                 }
-            }, 100);
+            }, 300);
             
             // Mark credentials as verified to preserve form state
             credentialsVerified = true;

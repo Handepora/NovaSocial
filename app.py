@@ -861,14 +861,17 @@ def add_account():
         }
         
         # Encrypt and store API credentials if provided
-        if data.get('api_key') or data.get('api_secret'):
+        if data.get('has_api') and (data.get('api_key') or data.get('api_secret')):
             credentials = {
-                'api_key': data.get('api_key'),
-                'api_secret': data.get('api_secret'),
-                'access_token': data.get('access_token'),
-                'webhook_url': data.get('webhook_url')
+                'api_key': data.get('api_key', ''),
+                'api_secret': data.get('api_secret', ''),
+                'access_token': data.get('access_token', ''),
+                'webhook_url': data.get('webhook_url', '')
             }
             new_account['encrypted_credentials'] = encryption_service.encrypt_credentials(credentials)
+            new_account['status'] = 'connected'
+        elif data.get('has_api'):
+            new_account['status'] = 'error'
         
         # If this is set as default, remove default from other accounts of same platform
         if new_account['is_default']:
@@ -980,36 +983,51 @@ def verify_credentials():
 def simulate_api_profile_fetch(platform, api_key, api_secret):
     """Simulate fetching profile data from social media APIs"""
     
-    # Sample profile data for different platforms - more realistic numbers
-    import random
+    # Generate consistent profile data based on API key to avoid changing data
+    import hashlib
     
-    base_followers = random.randint(100, 2000)  # More realistic follower count
+    # Create a consistent hash from the API key for stable results
+    hash_obj = hashlib.md5(api_key.encode())
+    hash_int = int(hash_obj.hexdigest()[:8], 16)
+    
+    # Base follower count that stays consistent for the same API key
+    base_followers = 150 + (hash_int % 500)
+    
+    # Extract a username hint from API key if it looks like one
+    username_hint = api_key.lower()
+    if '@' in username_hint:
+        clean_username = username_hint
+    elif 'test' in username_hint or 'demo' in username_hint:
+        clean_username = f"@{username_hint.replace('_', '').replace('-', '')}"
+    else:
+        clean_username = f"@usuario_{username_hint[:6]}"
+    
     sample_profiles = {
         'twitter': {
-            'username': '@tu_cuenta',
-            'display_name': 'Tu Cuenta de Twitter',
+            'username': clean_username,
+            'display_name': f'Perfil de {clean_username[1:].title()}',
             'follower_count': base_followers,
             'verified': False,
             'profile_image': 'https://example.com/avatar.jpg'
         },
         'linkedin': {
-            'username': 'tu-perfil-linkedin',
-            'display_name': 'Tu Perfil de LinkedIn',
-            'follower_count': base_followers + random.randint(50, 300),
+            'username': clean_username.replace('@', '').replace('_', '-'),
+            'display_name': f'Perfil Profesional de {clean_username[1:].title()}',
+            'follower_count': base_followers + 50,
             'verified': False,
             'profile_image': 'https://example.com/company-logo.jpg'
         },
         'instagram': {
-            'username': '@tu_instagram',
-            'display_name': 'Tu Instagram',
-            'follower_count': base_followers + random.randint(100, 500),
+            'username': clean_username.replace('-', '_'),
+            'display_name': f'Instagram de {clean_username[1:].title()}',
+            'follower_count': base_followers + 30,
             'verified': False,
             'profile_image': 'https://example.com/insta-avatar.jpg'
         },
         'facebook': {
-            'username': 'TuPaginaFacebook',
-            'display_name': 'Tu Página de Facebook',
-            'follower_count': base_followers + random.randint(200, 800),
+            'username': clean_username.replace('@', '').replace('_', '').replace('-', ''),
+            'display_name': f'Página de {clean_username[1:].title()}',
+            'follower_count': base_followers + 100,
             'verified': False,
             'profile_image': 'https://example.com/fb-logo.jpg'
         }
