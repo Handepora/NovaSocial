@@ -2208,34 +2208,39 @@
             // Insert sidebar HTML into container
             containerWrapper.innerHTML = sidebarHTML;
             
-            // Ensure main content is visible and properly positioned
-            const mainContent = document.querySelector('main');
-            if (mainContent) {
-                mainContent.style.display = 'block';
-                mainContent.style.visibility = 'visible';
-                mainContent.style.opacity = '1';
-                mainContent.style.marginLeft = '260px';
-                mainContent.style.marginRight = '0';
-                mainContent.style.marginTop = '0';
-                mainContent.style.marginBottom = '0';
-                mainContent.style.transition = 'none';
-                mainContent.style.padding = '20px';
-                mainContent.style.paddingLeft = '20px';
-                mainContent.style.width = 'calc(100% - 260px)';
-                mainContent.style.border = 'none';
-                mainContent.style.minHeight = '100vh';
-                mainContent.style.boxSizing = 'border-box';
-                mainContent.style.backgroundColor = 'var(--bg-color)';
-                mainContent.style.position = 'relative';
-                mainContent.style.zIndex = '1';
-            }
+            // Fix main content positioning for fixed sidebar
+            const mainElements = document.querySelectorAll('main, main.col-md-9, .col-md-9.ms-sm-auto, .col-lg-10');
+            mainElements.forEach(main => {
+                if (main) {
+                    main.style.display = 'block !important';
+                    main.style.visibility = 'visible !important';
+                    main.style.opacity = '1 !important';
+                    main.style.marginLeft = '260px !important';
+                    main.style.width = 'calc(100% - 260px) !important';
+                    main.style.padding = '1.5rem !important';
+                    main.style.minHeight = '100vh !important';
+                    main.style.position = 'relative !important';
+                    main.style.zIndex = '10 !important';
+                    main.style.backgroundColor = 'var(--bg-color) !important';
+                }
+            });
             
-            // Make sure all dashboard views are properly visible
-            const dashboardViews = document.querySelectorAll('.view-container, #dashboard-view, #calendar-view, #content-generation-view');
-            dashboardViews.forEach(view => {
-                if (view) {
-                    view.style.display = 'block';
-                    view.style.visibility = 'visible';
+            // Force all dashboard content to be visible
+            const dashboardElements = document.querySelectorAll('#dashboard-view, .view, .dashboard-card, .card, .row');
+            dashboardElements.forEach(element => {
+                if (element) {
+                    element.style.display = 'block !important';
+                    element.style.visibility = 'visible !important';
+                    element.style.opacity = '1 !important';
+                }
+            });
+            
+            // Ensure container elements are properly displayed
+            const containers = document.querySelectorAll('.container-fluid, .row, .col-md-6, .col-md-9');
+            containers.forEach(container => {
+                if (container) {
+                    container.style.display = 'block !important';
+                    container.style.visibility = 'visible !important';
                 }
             });
             
