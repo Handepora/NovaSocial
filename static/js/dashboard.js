@@ -458,7 +458,10 @@ function displayGeneratedContent(content, platforms) {
                             <strong>Hashtags:</strong> 
                             <span class="text-muted">${platformContent.hashtags.join(' ')}</span>
                         </div>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-info" onclick="saveGeneratedContent('${platform}', \`${platformContent.content}\`, '${platformContent.hashtags.join(' ')}')">
+                                <i class="fas fa-save me-1"></i>Guardar
+                            </button>
                             <button class="btn btn-success" onclick="publishNow('${platform}', \`${platformContent.content}\`, '${platformContent.hashtags.join(' ')}')">
                                 <i class="fas fa-rocket me-1"></i>Publicar Ahora
                             </button>
@@ -1458,6 +1461,34 @@ function copyToClipboard(content) {
     }).catch(err => {
         showErrorMessage('Error al copiar contenido');
     });
+}
+
+async function saveGeneratedContent(platform, content, hashtags) {
+    try {
+        const response = await fetch('/api/save-draft', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                platform: platform,
+                content: content,
+                hashtags: hashtags,
+                created_at: new Date().toISOString()
+            })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            showSuccessMessage(`Contenido guardado como borrador para ${platform.charAt(0).toUpperCase() + platform.slice(1)}`);
+        } else {
+            showErrorMessage('Error al guardar el contenido: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error saving content:', error);
+        showErrorMessage('Error al guardar el contenido');
+    }
 }
 
 // Enhanced content generation workflow
@@ -2758,7 +2789,7 @@ function enhanceCardAnimations() {
 
 // Initialize enhanced animations when DOM loads
 // Calendar Day Modal Functions
-function openCalendarDayModal(selectedDate) {
+async function openCalendarDayModal(selectedDate) {
     // Set the selected date in the modal
     document.getElementById('calendarPostDate').value = selectedDate;
     
@@ -2780,9 +2811,139 @@ function openCalendarDayModal(selectedDate) {
     });
     document.getElementById('calendarDayModalLabel').textContent = `Crear Publicación - ${formattedDate}`;
     
+    // Load and display saved drafts
+    await loadAndDisplayDrafts();
+    
     // Show the modal
     const modal = new bootstrap.Modal(document.getElementById('calendarDayModal'));
     modal.show();
+}
+
+async function loadAndDisplayDrafts() {
+    try {
+        const response = await fetch('/api/drafts');
+        const result = await response.json();
+        
+        if (result.success && result.drafts.length > 0) {
+            displayDraftsInModal(result.drafts);
+        } else {
+            displayNoDraftsMessage();
+        }
+    } catch (error) {
+        console.error('Error loading drafts:', error);
+        displayNoDraftsMessage();
+    }
+}
+
+function displayDraftsInModal(drafts) {
+    const draftsContainer = document.getElementById('savedDrafts');
+    if (!draftsContainer) return;
+    
+    let html = `
+        <div class="mb-3">
+            <h6 class="text-muted mb-2">
+                <i class="fas fa-save me-1"></i>Borradores Guardados
+            </h6>
+            <div class="drafts-list">
+    `;
+    
+    drafts.forEach(draft => {
+        const createdDate = new Date(draft.created_at).toLocaleDateString('es-ES');
+        const platformIcon = getPlatformIcon(draft.platform);
+        
+        html += `
+            <div class="draft-item border rounded p-2 mb-2" style="cursor: pointer;" onclick="selectDraft(${draft.id})">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="fab fa-${draft.platform} me-2"></i>
+                            <small class="text-muted">${draft.platform.charAt(0).toUpperCase() + draft.platform.slice(1)} - ${createdDate}</small>
+                        </div>
+                        <div class="draft-content text-truncate">
+                            ${draft.title}
+                        </div>
+                        <small class="text-muted">${draft.hashtags}</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger ms-2" onclick="event.stopPropagation(); deleteDraft(${draft.id})" title="Eliminar borrador">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `
+            </div>
+        </div>
+    `;
+    
+    draftsContainer.innerHTML = html;
+}
+
+function displayNoDraftsMessage() {
+    const draftsContainer = document.getElementById('savedDrafts');
+    if (!draftsContainer) return;
+    
+    draftsContainer.innerHTML = `
+        <div class="text-center text-muted py-3">
+            <i class="fas fa-folder-open fa-2x mb-2"></i>
+            <p class="mb-0">No hay borradores guardados</p>
+            <small>Genera contenido y guárdalo para usarlo aquí</small>
+        </div>
+    `;
+}
+
+async function selectDraft(draftId) {
+    try {
+        const response = await fetch('/api/drafts');
+        const result = await response.json();
+        
+        if (result.success) {
+            const draft = result.drafts.find(d => d.id === draftId);
+            if (draft) {
+                // Fill form with draft data
+                document.getElementById('calendarPostContent').value = draft.content;
+                document.getElementById('calendarPostPlatform').value = draft.platform;
+                document.getElementById('calendarPostTitle').value = draft.title;
+                
+                // Highlight selected draft
+                document.querySelectorAll('.draft-item').forEach(item => {
+                    item.classList.remove('border-primary', 'bg-light');
+                });
+                event.target.closest('.draft-item').classList.add('border-primary', 'bg-light');
+                
+                showSuccessMessage(`Borrador seleccionado para ${draft.platform}`);
+            }
+        }
+    } catch (error) {
+        console.error('Error selecting draft:', error);
+        showErrorMessage('Error al seleccionar el borrador');
+    }
+}
+
+async function deleteDraft(draftId) {
+    if (!confirm('¿Estás seguro de que quieres eliminar este borrador?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/drafts/${draftId}`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showSuccessMessage('Borrador eliminado exitosamente');
+            // Reload drafts
+            await loadAndDisplayDrafts();
+        } else {
+            showErrorMessage('Error al eliminar el borrador');
+        }
+    } catch (error) {
+        console.error('Error deleting draft:', error);
+        showErrorMessage('Error al eliminar el borrador');
+    }
 }
 
 async function publishNowFromCalendar() {

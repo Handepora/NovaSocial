@@ -1414,5 +1414,80 @@ def get_monitoring_data():
             'message': 'Error al obtener datos de monitoreo'
         }), 500
 
+@app.route('/api/save-draft', methods=['POST'])
+@login_required
+def save_draft():
+    """Save generated content as draft"""
+    try:
+        data = request.get_json()
+        
+        # Create a draft entry
+        draft = {
+            'id': len(session.get('drafts', [])) + 1,
+            'platform': data.get('platform'),
+            'content': data.get('content'),
+            'hashtags': data.get('hashtags'),
+            'created_at': data.get('created_at'),
+            'type': 'draft',
+            'title': data.get('content', '')[:50] + '...' if len(data.get('content', '')) > 50 else data.get('content', '')
+        }
+        
+        # Store in session
+        if 'drafts' not in session:
+            session['drafts'] = []
+        
+        session['drafts'].append(draft)
+        session.modified = True
+        
+        return jsonify({
+            'success': True,
+            'message': 'Borrador guardado exitosamente',
+            'draft_id': draft['id']
+        })
+        
+    except Exception as e:
+        logging.error(f"Error saving draft: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/drafts')
+@login_required
+def get_drafts():
+    """Get all saved drafts"""
+    try:
+        drafts = session.get('drafts', [])
+        return jsonify({
+            'success': True,
+            'drafts': drafts
+        })
+    except Exception as e:
+        logging.error(f"Error getting drafts: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/drafts/<int:draft_id>', methods=['DELETE'])
+@login_required
+def delete_draft(draft_id):
+    """Delete a specific draft"""
+    try:
+        drafts = session.get('drafts', [])
+        session['drafts'] = [draft for draft in drafts if draft['id'] != draft_id]
+        session.modified = True
+        
+        return jsonify({
+            'success': True,
+            'message': 'Borrador eliminado exitosamente'
+        })
+    except Exception as e:
+        logging.error(f"Error deleting draft: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
