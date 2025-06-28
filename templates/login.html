@@ -99,6 +99,75 @@
             margin-bottom: 1rem;
             fill: white;
         }
+        
+        /* Login transition animations */
+        .login-container {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-success {
+            animation: fadeOutScale 0.6s ease-in forwards;
+        }
+        
+        @keyframes fadeOutScale {
+            to {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+        
+        .transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transition: opacity 0.6s ease;
+        }
+        
+        .transition-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .transition-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -144,6 +213,53 @@
         </div>
     </div>
 
+    <!-- Transition overlay -->
+    <div class="transition-overlay" id="transitionOverlay">
+        <div class="transition-content">
+            <div class="spinner"></div>
+            <h5 id="transitionText">Iniciando sesión...</h5>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.querySelector('.login-form form');
+            const transitionOverlay = document.getElementById('transitionOverlay');
+            const transitionText = document.getElementById('transitionText');
+            const loginContainer = document.querySelector('.login-container');
+
+            loginForm.addEventListener('submit', function(e) {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                // Only trigger transition for valid credentials
+                if (username === 'Admin' && password === 'Admin') {
+                    e.preventDefault();
+                    
+                    // Start transition animation
+                    loginContainer.classList.add('login-success');
+                    
+                    setTimeout(() => {
+                        transitionOverlay.classList.add('active');
+                        transitionText.textContent = 'Iniciando sesión...';
+                    }, 300);
+
+                    setTimeout(() => {
+                        transitionText.textContent = 'Cargando dashboard...';
+                    }, 1200);
+
+                    setTimeout(() => {
+                        transitionText.textContent = 'Preparando Nova...';
+                    }, 2000);
+
+                    // Submit form after transition
+                    setTimeout(() => {
+                        loginForm.submit();
+                    }, 2800);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

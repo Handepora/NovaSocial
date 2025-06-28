@@ -20,11 +20,11 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
+<body class="dashboard-loading">
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar sidebar-entrance">
                 <div class="position-sticky pt-3">
                     <!-- Nova Logo and Info -->
                     <div class="user-info mb-4">
@@ -106,7 +106,7 @@
             </nav>
             
             <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 dashboard-entrance">
                 <!-- Dashboard View -->
                 <div id="dashboard-view" class="view active">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -1596,5 +1596,42 @@
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/content-adaptation.js') }}"></script>
     <script src="{{ url_for('static', filename='js/monitoring.js') }}"></script>
+    
+    <!-- Dashboard entrance transition -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start dashboard entrance animation
+            setTimeout(() => {
+                document.body.classList.remove('dashboard-loading');
+                document.body.classList.add('dashboard-loaded');
+            }, 100);
+
+            // Stagger card animations for better visual effect
+            const cards = document.querySelectorAll('.dashboard-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 200 + (index * 100));
+            });
+
+            // Add smooth transition for navigation items
+            const navItems = document.querySelectorAll('.nav-link');
+            navItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(-20px)';
+                item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateX(0)';
+                }, 300 + (index * 50));
+            });
+        });
+    </script>
 </body>
 </html>
