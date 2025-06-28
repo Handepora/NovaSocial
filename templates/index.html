@@ -342,70 +342,99 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="sidebar">
-                <div class="sidebar-brand">
-                    <img src="{{ url_for('static', filename='nova-logo.png') }}" alt="Nova" class="sidebar-logo">
-                    <div class="brand-text">
-                        <h5 class="mb-0">Nova</h5>
-                        <small class="text-muted">Admin</small>
+            <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <!-- Brand -->
+                    <div class="user-info mb-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <img src="{{ url_for('static', filename='nova-logo.png') }}" alt="Nova Logo" style="height: 40px; width: 40px; border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-white">Nova</h6>
+                                    <small class="text-muted">Admin</small>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                    </a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                            </a></li>
-                        </ul>
+                    
+                    <!-- Navigation -->
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active text-white" data-view="dashboard" href="#">
+                                <i class="fas fa-home"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" data-view="calendario" href="#">
+                                <i class="fas fa-calendar"></i>
+                                Calendario
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" data-view="crear-contenido" href="#">
+                                <i class="fas fa-plus"></i>
+                                Crear Contenido
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" data-view="adaptar-contenido" href="#">
+                                <i class="fas fa-magic"></i>
+                                Adaptar Contenido
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" data-view="monitoreo" href="#">
+                                <i class="fas fa-eye"></i>
+                                Monitoreo de Redes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" data-view="validacion" href="#">
+                                <i class="fas fa-check-circle"></i>
+                                Validación
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" data-view="analiticas" href="#">
+                                <i class="fas fa-chart-bar"></i>
+                                Analíticas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" data-view="configuracion" href="#">
+                                <i class="fas fa-cog"></i>
+                                Configuración
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Theme Toggle -->
+                    <div class="mt-auto pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">© 2025 Nova</small>
+                            <button id="theme-toggle" class="btn btn-sm btn-outline-light">
+                                <i class="fas fa-moon" id="theme-icon"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-
-                <nav class="sidebar-nav">
-                    <a href="#" data-view="dashboard" class="nav-link active">
-                        <i class="fas fa-home"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="#" data-view="calendario" class="nav-link">
-                        <i class="fas fa-calendar"></i>
-                        <span>Calendario</span>
-                    </a>
-                    <a href="#" data-view="crear-contenido" class="nav-link">
-                        <i class="fas fa-plus"></i>
-                        <span>Crear Contenido</span>
-                    </a>
-                    <a href="#" data-view="adaptar-contenido" class="nav-link">
-                        <i class="fas fa-magic"></i>
-                        <span>Adaptar Contenido</span>
-                    </a>
-                    <a href="#" data-view="monitoreo" class="nav-link">
-                        <i class="fas fa-eye"></i>
-                        <span style="line-height: 1.2;">Monitoreo de<br>Redes</span>
-                    </a>
-                    <a href="#" data-view="validacion" class="nav-link">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Validación</span>
-                    </a>
-                    <a href="#" data-view="analiticas" class="nav-link">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Analíticas</span>
-                    </a>
-                    <a href="#" data-view="configuracion" class="nav-link">
-                        <i class="fas fa-cog"></i>
-                        <span>Configuración</span>
-                    </a>
-                </nav>
-
-                <div class="sidebar-footer">
-                    <span>© 2025 Nova</span>
-                    <button class="theme-toggle btn btn-sm" onclick="toggleTheme()">
-                        <i class="fas fa-moon" id="theme-icon"></i>
-                    </button>
-                </div>
-            </div>
+            </nav>
             
             <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 dashboard-entrance" style="margin-left: 280px !important; display: block !important; visibility: visible !important; padding-top: 0 !important;">
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <!-- Dashboard View -->
                 <div id="dashboard-view" class="view active" style="display: block !important; visibility: visible !important;">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -2243,7 +2272,7 @@
         // Setup navigation functionality
         function setupSidebarNavigation() {
             console.log('Setting up sidebar navigation...');
-            const navLinks = document.querySelectorAll('.sidebar-nav .nav-link[data-view]');
+            const navLinks = document.querySelectorAll('.nav-link[data-view]');
             console.log('Found navigation links:', navLinks.length);
             
             navLinks.forEach((link, index) => {
@@ -2301,16 +2330,37 @@
         
         // Update active state in sidebar
         function updateSidebarActive(activeView) {
-            const navLinks = document.querySelectorAll('.sidebar-nav .nav-link[data-view]');
+            const navLinks = document.querySelectorAll('.nav-link[data-view]');
             navLinks.forEach(link => {
                 const view = link.getAttribute('data-view');
                 
                 if (view === activeView) {
                     link.classList.add('active');
+                    link.classList.remove('text-light');
+                    link.classList.add('text-white');
                 } else {
                     link.classList.remove('active');
+                    link.classList.remove('text-white');
+                    link.classList.add('text-light');
                 }
             });
+        }
+        
+        // Theme toggle functionality
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (newTheme === 'light') {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
         }
     </script>
 </body>
