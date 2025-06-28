@@ -203,6 +203,15 @@ The application is configured for deployment on Replit with the following setup:
   - Fixed main content positioning and width calculations for stable layout
   - Added robust container and row overrides to prevent layout shifts in deployment
   - Ensured consistent sidebar behavior across all dashboard sections and views
+- June 28, 2025. Implemented clean slate user experience with enhanced calendar functionality:
+  - Removed all mock data from posts, accounts, and pending content - application starts empty
+  - Fixed spacing issues in validation section when rejecting posts
+  - Emptied social media accounts by default requiring manual setup
+  - Created clickable calendar days with modal for creating new publications
+  - Added dual action buttons: "Publicar Ahora" and "Programar" in calendar modal
+  - Implemented comprehensive post creation workflow from calendar interface
+  - Enhanced calendar styling with hover effects and clear visual feedback
+  - Configured Perplexity AI integration with proper API key authentication
 
 ## User Preferences
 
