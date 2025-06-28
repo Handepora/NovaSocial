@@ -562,19 +562,19 @@ function displayGeneratedContent(content, platforms) {
                             <span class="text-muted">${platformContent.hashtags.join(' ')}</span>
                         </div>
                         <div class="d-flex gap-2 flex-wrap">
-                            <button class="btn btn-info" onclick="saveGeneratedContent('${platform}', \`${platformContent.content}\`, '${platformContent.hashtags.join(' ')}')">
+                            <button class="btn btn-info" data-action="save" data-platform="${platform}" data-content="${encodeURIComponent(platformContent.content)}" data-hashtags="${encodeURIComponent(platformContent.hashtags.join(' '))}">
                                 <i class="fas fa-save me-1"></i>Guardar
                             </button>
-                            <button class="btn btn-success" onclick="publishNow('${platform}', \`${platformContent.content}\`, '${platformContent.hashtags.join(' ')}')">
+                            <button class="btn btn-success" data-action="publish" data-platform="${platform}" data-content="${encodeURIComponent(platformContent.content)}" data-hashtags="${encodeURIComponent(platformContent.hashtags.join(' '))}">
                                 <i class="fas fa-rocket me-1"></i>Publicar Ahora
                             </button>
-                            <button class="btn btn-primary" onclick="scheduleGeneratedContent('${platform}', \`${platformContent.content}\`, '${platformContent.hashtags.join(' ')}')">
-                                <i class="fas fa-calendar-plus me-1"></i>Programar Publicación
+                            <button class="btn btn-primary" data-action="schedule" data-platform="${platform}" data-content="${encodeURIComponent(platformContent.content)}" data-hashtags="${encodeURIComponent(platformContent.hashtags.join(' '))}">
+                                <i class="fas fa-calendar-plus me-1"></i>Programar
                             </button>
-                            <button class="btn btn-outline-secondary" onclick="editGeneratedContent('${platform}', \`${platformContent.content}\`, '${platformContent.hashtags.join(' ')}')">
+                            <button class="btn btn-outline-secondary" data-action="edit" data-platform="${platform}" data-content="${encodeURIComponent(platformContent.content)}" data-hashtags="${encodeURIComponent(platformContent.hashtags.join(' '))}">
                                 <i class="fas fa-edit me-1"></i>Editar
                             </button>
-                            <button class="btn btn-outline-warning" onclick="copyToClipboard(\`${fullContent}\`)">
+                            <button class="btn btn-outline-warning" data-action="copy" data-content="${encodeURIComponent(fullContent)}">
                                 <i class="fas fa-copy me-1"></i>Copiar
                             </button>
                         </div>
@@ -586,6 +586,36 @@ function displayGeneratedContent(content, platforms) {
     html += '</div>';
     
     resultContainer.innerHTML = html;
+    
+    // Add event listeners to all action buttons
+    const actionButtons = resultContainer.querySelectorAll('[data-action]');
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            const action = this.getAttribute('data-action');
+            const platform = this.getAttribute('data-platform');
+            const content = decodeURIComponent(this.getAttribute('data-content') || '');
+            const hashtags = decodeURIComponent(this.getAttribute('data-hashtags') || '');
+            
+            switch(action) {
+                case 'save':
+                    saveGeneratedContent(platform, content, hashtags);
+                    break;
+                case 'publish':
+                    publishNow(platform, content, hashtags);
+                    break;
+                case 'schedule':
+                    scheduleGeneratedContent(platform, content, hashtags);
+                    break;
+                case 'edit':
+                    editGeneratedContent(platform, content, hashtags);
+                    break;
+                case 'copy':
+                    const fullContentToCopy = hashtags ? `${content}\n\n${hashtags}` : content;
+                    copyToClipboard(fullContentToCopy);
+                    break;
+            }
+        });
+    });
 }
 
 // Validation Management
