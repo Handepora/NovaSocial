@@ -3372,6 +3372,16 @@ async function loadPromptSettingsModal() {
     }
 }
 
+// Setup modal event listener
+document.addEventListener('DOMContentLoaded', function() {
+    const promptModal = document.getElementById('promptConfigModal');
+    if (promptModal) {
+        promptModal.addEventListener('show.bs.modal', function() {
+            loadPromptSettingsModal();
+        });
+    }
+});
+
 // Setup prompt modal event listener when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     const promptModal = document.getElementById('promptConfigModal');
