@@ -1,45 +1,52 @@
-/* Layout fixes for deployment - Load after Bootstrap */
+/* CRITICAL LAYOUT FIXES FOR DEPLOYMENT */
 
-/* Force sidebar positioning with maximum specificity */
-html body .container-fluid .row .sidebar,
-html body .container-fluid .row nav.sidebar,
-html body .container-fluid .row .col-md-3.sidebar,
-html body .container-fluid .row .col-lg-2.sidebar,
-html body .container-fluid .row nav.col-md-3.sidebar,
-html body .container-fluid .row nav.col-lg-2.sidebar {
+/* Completely override sidebar with absolute specificity */
+body .container-fluid .row .col-md-3.col-lg-2.sidebar,
+body .container-fluid .row nav.col-md-3.col-lg-2.sidebar,
+body .container-fluid .row .sidebar,
+body .container-fluid .row nav.sidebar,
+.sidebar,
+nav.sidebar,
+.col-md-3.sidebar,
+.col-lg-2.sidebar,
+nav.col-md-3.sidebar,
+nav.col-lg-2.sidebar {
     position: fixed !important;
     top: 0 !important;
     bottom: 0 !important;
     left: 0 !important;
-    z-index: 1000 !important;
+    z-index: 9999 !important;
     padding: 0 !important;
-    width: 250px !important;
-    min-width: 250px !important;
-    max-width: 250px !important;
+    margin: 0 !important;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
     height: 100vh !important;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2) !important;
     background-color: var(--secondary-bg) !important;
-    border-right: 1px solid var(--border-color) !important;
+    border-right: 2px solid var(--border-color) !important;
     overflow: hidden !important;
     flex: none !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    transform: none !important;
 }
 
-/* Force main content positioning */
-html body .container-fluid .row main,
-html body .container-fluid .row main.col-md-9,
-html body .container-fluid .row main.ms-sm-auto,
-html body .container-fluid .row main.col-lg-10,
-html body .container-fluid .row main.col-md-9.ms-sm-auto.col-lg-10 {
-    margin-left: 250px !important;
-    padding: 1rem !important;
-    width: calc(100% - 250px) !important;
-    max-width: calc(100% - 250px) !important;
+/* Force main content positioning with updated sidebar width */
+body .container-fluid .row main.col-md-9.ms-sm-auto.col-lg-10,
+body .container-fluid .row main,
+main.col-md-9.ms-sm-auto.col-lg-10,
+main.col-md-9,
+main.ms-sm-auto,
+main.col-lg-10,
+main {
+    margin-left: 280px !important;
+    padding: 1.5rem !important;
+    width: calc(100% - 280px) !important;
+    max-width: calc(100% - 280px) !important;
     flex: none !important;
     background-color: var(--bg-color) !important;
     min-height: 100vh !important;
     position: relative !important;
+    box-sizing: border-box !important;
 }
 
 /* Container and row fixes */
