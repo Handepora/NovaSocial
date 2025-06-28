@@ -45,7 +45,10 @@
             z-index: 10 !important;
         }
         
-        #dashboard-view,
+        .view {
+            display: none !important;
+        }
+        
         .view.active {
             display: block !important;
             visibility: visible !important;
@@ -2260,15 +2263,66 @@
                 }
             });
             
-            // Force all dashboard content to be visible
-            const dashboardElements = document.querySelectorAll('#dashboard-view, .view, .dashboard-card, .card, .row');
-            dashboardElements.forEach(element => {
-                if (element) {
-                    element.style.display = 'block !important';
-                    element.style.visibility = 'visible !important';
-                    element.style.opacity = '1 !important';
+            // Setup proper view switching
+            const setupViewSwitching = () => {
+                // Hide all views first
+                document.querySelectorAll('.view').forEach(view => {
+                    view.style.display = 'none';
+                    view.classList.remove('active');
+                });
+                
+                // Show only the active view
+                const activeView = document.querySelector('.view.active') || document.getElementById('dashboard-view');
+                if (activeView) {
+                    activeView.style.display = 'block';
+                    activeView.classList.add('active');
                 }
-            });
+            };
+            
+            // Call on load
+            setupViewSwitching();
+            
+            // Override showView function to ensure proper switching
+            window.showView = function(viewName) {
+                // Hide all views
+                document.querySelectorAll('.view').forEach(view => {
+                    view.style.display = 'none';
+                    view.classList.remove('active');
+                });
+                
+                // Show the selected view
+                const targetView = document.getElementById(viewName + '-view');
+                if (targetView) {
+                    targetView.style.display = 'block';
+                    targetView.classList.add('active');
+                    
+                    // Update navigation
+                    updateSidebarActive(viewName);
+                    
+                    // Load view-specific data
+                    switch(viewName) {
+                        case 'dashboard':
+                            if (typeof loadDashboardData === 'function') loadDashboardData();
+                            break;
+                        case 'calendario':
+                            if (typeof loadCalendarData === 'function') loadCalendarData();
+                            if (typeof loadUpcomingPosts === 'function') loadUpcomingPosts();
+                            break;
+                        case 'validacion':
+                            if (typeof loadValidationData === 'function') loadValidationData();
+                            break;
+                        case 'analiticas':
+                            if (typeof loadAnalyticsData === 'function') loadAnalyticsData();
+                            break;
+                        case 'configuracion':
+                            if (typeof loadConfigurationData === 'function') loadConfigurationData();
+                            break;
+                        case 'monitoreo':
+                            if (typeof loadMonitoringData === 'function') loadMonitoringData();
+                            break;
+                    }
+                }
+            };
             
             // Ensure container elements are properly displayed
             const containers = document.querySelectorAll('.container-fluid, .row, .col-md-6, .col-md-9');
