@@ -956,8 +956,9 @@ function initializeCharts() {
 function initializeTheme() {
     // Get saved theme preference or default to dark
     const savedTheme = localStorage.getItem('dashboard-theme') || 'dark';
-    const themeToggle = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeText = document.getElementById('theme-text');
     
     // Apply saved theme
     setTheme(savedTheme);
@@ -974,17 +975,24 @@ function initializeTheme() {
 }
 
 function setTheme(theme) {
-    const themeIcon = document.getElementById('themeIcon');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeText = document.getElementById('theme-text');
     
     if (theme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
         if (themeIcon) {
             themeIcon.className = 'fas fa-sun';
         }
+        if (themeText) {
+            themeText.textContent = 'Modo Oscuro';
+        }
     } else {
         document.documentElement.setAttribute('data-theme', 'dark');
         if (themeIcon) {
             themeIcon.className = 'fas fa-moon';
+        }
+        if (themeText) {
+            themeText.textContent = 'Modo Claro';
         }
     }
     
