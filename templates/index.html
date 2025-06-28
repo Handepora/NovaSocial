@@ -133,57 +133,62 @@
                 </div>
 
                 <!-- Navigation - Growing Section -->
-                <div style="flex: 1; overflow-y: auto; padding: 0 1rem; background: #1a202c; min-height: 300px;">
-                    <ul class="nav flex-column" style="list-style: none; padding: 0; margin: 0;">
-                        <li class="nav-item" style="margin-bottom: 0.5rem;">
-                            <a class="nav-link active" href="#dashboard" data-view="dashboard" style="color: #e2e8f0 !important; padding: 0.75rem 0; display: block; text-decoration: none; border-radius: 0.375rem; background: rgba(255, 107, 71, 0.1);">
-                                <i class="fas fa-home me-2" style="color: #ff6b47;"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item" style="margin-bottom: 0.5rem;">
-                            <a class="nav-link" href="#calendario" data-view="calendario" style="color: #a0aec0 !important; padding: 0.75rem 0; display: block; text-decoration: none; border-radius: 0.375rem;">
-                                <i class="fas fa-calendar me-2"></i>
-                                Calendario
-                            </a>
-                        </li>
-                        <li class="nav-item" style="margin-bottom: 0.5rem;">
-                            <a class="nav-link" href="#crear-contenido" data-view="crear-contenido" style="color: #a0aec0 !important; padding: 0.75rem 0; display: block; text-decoration: none; border-radius: 0.375rem;">
-                                <i class="fas fa-plus me-2"></i>
-                                Crear Contenido
-                            </a>
-                        </li>
-                        <li class="nav-item" style="margin-bottom: 0.5rem;">
-                            <a class="nav-link" href="#adaptar-contenido" data-view="adaptar-contenido" style="color: #a0aec0 !important; padding: 0.75rem 0; display: block; text-decoration: none; border-radius: 0.375rem;">
-                                <i class="fas fa-magic me-2"></i>
-                                Adaptar Contenido
-                            </a>
-                        </li>
-                        <li class="nav-item" style="margin-bottom: 0.5rem;">
-                            <a class="nav-link" href="#monitoreo" data-view="monitoreo" style="color: #a0aec0 !important; padding: 0.75rem 0; display: block; text-decoration: none; border-radius: 0.375rem;">
-                                <i class="fas fa-eye me-2"></i>
-                                Monitoreo de Redes
-                            </a>
-                        </li>
-                        <li class="nav-item" style="margin-bottom: 0.5rem;">
-                            <a class="nav-link" href="#validacion" data-view="validacion" style="color: #a0aec0 !important; padding: 0.75rem 0; display: block; text-decoration: none; border-radius: 0.375rem;">
-                                <i class="fas fa-check-circle me-2"></i>
-                                Validación
-                            </a>
-                        </li>
-                        <li class="nav-item" style="margin-bottom: 0.5rem;">
-                            <a class="nav-link" href="#analiticas" data-view="analiticas" style="color: #a0aec0 !important; padding: 0.75rem 0; display: block; text-decoration: none; border-radius: 0.375rem;">
-                                <i class="fas fa-chart-bar me-2"></i>
-                                Analíticas
-                            </a>
-                        </li>
-                        <li class="nav-item" style="margin-bottom: 0.5rem;">
-                            <a class="nav-link" href="#configuracion" data-view="configuracion" style="color: #a0aec0 !important; padding: 0.75rem 0; display: block; text-decoration: none; border-radius: 0.375rem;">
-                                <i class="fas fa-cog me-2"></i>
-                                Configuración
-                            </a>
-                        </li>
-                    </ul>
+                <div style="flex: 1; padding: 1rem; background: #1a202c; min-height: 400px;">
+                    <div style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; background: rgba(255, 107, 71, 0.1); border-left: 3px solid #ff6b47;">
+                        <a href="#dashboard" data-view="dashboard" style="color: #e2e8f0; text-decoration: none; display: flex; align-items: center;">
+                            <i class="fas fa-home" style="color: #ff6b47; margin-right: 0.5rem; width: 16px;"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <a href="#calendario" data-view="calendario" style="color: #a0aec0; text-decoration: none; display: flex; align-items: center;">
+                            <i class="fas fa-calendar" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                            <span>Calendario</span>
+                        </a>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <a href="#crear-contenido" data-view="crear-contenido" style="color: #a0aec0; text-decoration: none; display: flex; align-items: center;">
+                            <i class="fas fa-plus" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                            <span>Crear Contenido</span>
+                        </a>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <a href="#adaptar-contenido" data-view="adaptar-contenido" style="color: #a0aec0; text-decoration: none; display: flex; align-items: center;">
+                            <i class="fas fa-magic" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                            <span>Adaptar Contenido</span>
+                        </a>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <a href="#monitoreo" data-view="monitoreo" style="color: #a0aec0; text-decoration: none; display: flex; align-items: center;">
+                            <i class="fas fa-eye" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                            <span>Monitoreo de Redes</span>
+                        </a>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <a href="#validacion" data-view="validacion" style="color: #a0aec0; text-decoration: none; display: flex; align-items: center;">
+                            <i class="fas fa-check-circle" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                            <span>Validación</span>
+                        </a>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <a href="#analiticas" data-view="analiticas" style="color: #a0aec0; text-decoration: none; display: flex; align-items: center;">
+                            <i class="fas fa-chart-bar" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                            <span>Analíticas</span>
+                        </a>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <a href="#configuracion" data-view="configuracion" style="color: #a0aec0; text-decoration: none; display: flex; align-items: center;">
+                            <i class="fas fa-cog" style="color: #a0aec0; margin-right: 0.5rem; width: 16px;"></i>
+                            <span>Configuración</span>
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Theme Toggle - Bottom Section -->
