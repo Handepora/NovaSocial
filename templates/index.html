@@ -40,23 +40,37 @@
             padding-top: 0 !important;
             margin-top: 0 !important;
             min-height: 100vh !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
+        
+        /* Make sidebar scroll with content */
+        nav.sidebar {
             position: absolute !important;
             top: 0 !important;
             left: 0 !important;
-            z-index: 10 !important;
+            width: 260px !important;
+            min-height: 100vh !important;
+            z-index: 1000 !important;
+            background: var(--sidebar-bg) !important;
+            border-right: 1px solid var(--border-color) !important;
         }
         
         /* Fix body scroll and layout */
         body, html {
             overflow-x: hidden !important;
-            height: 100% !important;
+            overflow-y: auto !important;
         }
         
         /* Container adjustments */
         .container-fluid {
             padding: 0 !important;
             margin: 0 !important;
-            height: 100vh !important;
+        }
+        
+        /* Remove any extra elements that might cause the color block */
+        .row::after, .row::before {
+            display: none !important;
         }
         
         .view {
@@ -319,7 +333,7 @@
             </nav>
             
             <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 dashboard-entrance" style="margin-left: 260px !important; display: block !important; visibility: visible !important; position: absolute !important; top: 0 !important; left: 0 !important; padding-top: 0 !important;">
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 dashboard-entrance" style="margin-left: 260px !important; display: block !important; visibility: visible !important; padding-top: 0 !important;">
                 <!-- Dashboard View -->
                 <div id="dashboard-view" class="view active" style="display: block !important; visibility: visible !important;">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
