@@ -1,24 +1,22 @@
 /* Deployment-specific fixes for sidebar and layout issues */
 
-/* Force sidebar to full height with flexbox layout */
+/* Force sidebar to full height with maximum specificity */
+nav.col-md-3.col-lg-2.d-md-block.sidebar.sidebar-entrance,
 .sidebar,
-nav.sidebar,
-.col-md-3.sidebar,
-.col-lg-2.sidebar,
-nav.col-md-3.sidebar,
-nav.col-lg-2.sidebar {
+nav.sidebar {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
+    bottom: 0 !important;
     height: 100vh !important;
     min-height: 100vh !important;
     max-height: 100vh !important;
     width: 280px !important;
-    background: var(--secondary-bg) !important;
-    border-right: 2px solid var(--border-color) !important;
-    z-index: 9999 !important;
+    background: #1a202c !important; /* Force dark sidebar */
+    border-right: 2px solid #2d3748 !important;
+    z-index: 10000 !important;
     overflow-y: auto !important;
-    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3) !important;
     display: flex !important;
     flex-direction: column !important;
     flex: none !important;
@@ -26,29 +24,47 @@ nav.col-lg-2.sidebar {
     padding: 0 !important;
 }
 
-/* Ensure sidebar flexbox layout works properly */
+/* Force sidebar content to fill full height */
+nav.col-md-3.col-lg-2.d-md-block.sidebar.sidebar-entrance > div,
+nav.col-md-3.col-lg-2.d-md-block.sidebar.sidebar-entrance .position-sticky,
 .sidebar > div,
-.sidebar .position-sticky,
-.sidebar .d-flex.flex-column {
-    height: 100% !important;
+.sidebar .position-sticky {
+    height: 100vh !important;
     min-height: 100vh !important;
     display: flex !important;
     flex-direction: column !important;
+    padding: 0 !important;
 }
 
-/* Fix navigation area to grow and fill space */
+/* Fix navigation area to leave space for theme toggle */
+nav.col-md-3.col-lg-2.d-md-block.sidebar.sidebar-entrance .nav.flex-column,
 .sidebar .nav.flex-column {
     flex-grow: 1 !important;
-    margin-bottom: 0 !important;
+    margin-bottom: 80px !important; /* Space for theme toggle */
+    padding-bottom: 1rem !important;
 }
 
-/* Force theme toggle to bottom with proper styling */
+/* Fix user info section */
+nav.col-md-3.col-lg-2.d-md-block.sidebar.sidebar-entrance .user-info,
+.sidebar .user-info {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Force theme toggle to absolute bottom */
+nav.col-md-3.col-lg-2.d-md-block.sidebar.sidebar-entrance .mt-auto,
+nav.col-md-3.col-lg-2.d-md-block.sidebar.sidebar-entrance .sidebar-footer,
 .sidebar .mt-auto,
 .sidebar .sidebar-footer {
-    margin-top: auto !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
     padding: 1rem !important;
-    border-top: 1px solid var(--border-color) !important;
-    background: var(--secondary-bg) !important;
+    border-top: 1px solid #2d3748 !important;
+    background: #1a202c !important;
+    margin-top: 0 !important;
 }
 
 /* Hide duplicate theme toggle button */
@@ -67,14 +83,16 @@ nav.col-lg-2.sidebar {
     font-size: 0.9rem !important;
 }
 
-/* Fix configuration section styling to match overall design */
+/* Fix configuration section styling with maximum specificity */
 #configuracion-view .card,
-.configuration-view .card {
-    background: var(--secondary-bg) !important;
-    border: 1px solid var(--border-color) !important;
+.configuration-view .card,
+div[id="configuracion-view"] .card {
+    background: #2d3748 !important; /* Force consistent dark background */
+    border: 1px solid #4a5568 !important;
     margin-bottom: 1.5rem !important;
     border-radius: 0.5rem !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+    color: #e2e8f0 !important;
 }
 
 #configuracion-view .card-header,

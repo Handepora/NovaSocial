@@ -1866,17 +1866,150 @@
             }
         }
         
+        // Force sidebar structure fix
+        function fixSidebarStructure() {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                // Force sidebar positioning
+                sidebar.style.position = 'fixed';
+                sidebar.style.top = '0';
+                sidebar.style.left = '0';
+                sidebar.style.bottom = '0';
+                sidebar.style.height = '100vh';
+                sidebar.style.width = '280px';
+                sidebar.style.background = '#1a202c';
+                sidebar.style.borderRight = '2px solid #2d3748';
+                sidebar.style.zIndex = '10000';
+                sidebar.style.display = 'flex';
+                sidebar.style.flexDirection = 'column';
+                
+                // Fix sidebar content
+                const sidebarContent = sidebar.querySelector('.position-sticky') || sidebar.querySelector('div');
+                if (sidebarContent) {
+                    sidebarContent.style.height = '100%';
+                    sidebarContent.style.display = 'flex';
+                    sidebarContent.style.flexDirection = 'column';
+                    sidebarContent.style.padding = '0';
+                }
+                
+                // Fix navigation
+                const nav = sidebar.querySelector('.nav');
+                if (nav) {
+                    nav.style.flexGrow = '1';
+                    nav.style.marginBottom = '80px';
+                    nav.style.paddingLeft = '1rem';
+                    nav.style.paddingRight = '1rem';
+                }
+                
+                // Fix theme toggle
+                const themeToggle = sidebar.querySelector('.mt-auto, .sidebar-footer');
+                if (themeToggle) {
+                    themeToggle.style.position = 'absolute';
+                    themeToggle.style.bottom = '0';
+                    themeToggle.style.left = '0';
+                    themeToggle.style.right = '0';
+                    themeToggle.style.width = '100%';
+                    themeToggle.style.padding = '1rem';
+                    themeToggle.style.borderTop = '1px solid #2d3748';
+                    themeToggle.style.background = '#1a202c';
+                }
+                
+                // Fix user info
+                const userInfo = sidebar.querySelector('.user-info');
+                if (userInfo) {
+                    userInfo.style.padding = '1rem';
+                    userInfo.style.marginBottom = '1rem';
+                }
+            }
+            
+            // Force main content positioning
+            forceSidebarLayout();
+            
+            // Fix configuration section components
+            fixConfigurationComponents();
+        }
+        
+        // Fix configuration section styling issues
+        function fixConfigurationComponents() {
+            const configView = document.getElementById('configuracion-view');
+            if (configView) {
+                // Fix all cards in configuration
+                const cards = configView.querySelectorAll('.card');
+                cards.forEach(card => {
+                    card.style.background = '#2d3748';
+                    card.style.border = '1px solid #4a5568';
+                    card.style.borderRadius = '0.5rem';
+                    card.style.color = '#e2e8f0';
+                    card.style.marginBottom = '1.5rem';
+                });
+                
+                // Fix card headers
+                const cardHeaders = configView.querySelectorAll('.card-header');
+                cardHeaders.forEach(header => {
+                    header.style.background = '#1a202c';
+                    header.style.borderBottom = '1px solid #4a5568';
+                    header.style.color = '#e2e8f0';
+                });
+                
+                // Fix card bodies
+                const cardBodies = configView.querySelectorAll('.card-body');
+                cardBodies.forEach(body => {
+                    body.style.background = '#2d3748';
+                    body.style.color = '#e2e8f0';
+                });
+                
+                // Fix tabs
+                const navTabs = configView.querySelectorAll('.nav-tabs');
+                navTabs.forEach(tabs => {
+                    tabs.style.background = '#1a202c';
+                    tabs.style.borderRadius = '0.5rem';
+                    tabs.style.padding = '0.25rem';
+                    tabs.style.borderBottom = '1px solid #4a5568';
+                });
+                
+                // Fix tab links
+                const tabLinks = configView.querySelectorAll('.nav-tabs .nav-link');
+                tabLinks.forEach(link => {
+                    link.style.border = 'none';
+                    link.style.borderRadius = '0.375rem';
+                    if (link.classList.contains('active')) {
+                        link.style.background = '#ff6b47';
+                        link.style.color = 'white';
+                    } else {
+                        link.style.background = 'transparent';
+                        link.style.color = '#a0aec0';
+                    }
+                });
+                
+                // Fix form elements
+                const formControls = configView.querySelectorAll('.form-control, .form-select');
+                formControls.forEach(control => {
+                    control.style.background = '#1a202c';
+                    control.style.border = '1px solid #4a5568';
+                    control.style.color = '#e2e8f0';
+                    control.style.borderRadius = '0.375rem';
+                });
+            }
+        }
+        
         // Apply layout fixes
         document.addEventListener('DOMContentLoaded', function() {
-            forceSidebarLayout();
-            setTimeout(forceSidebarLayout, 100);
-            setTimeout(forceSidebarLayout, 500);
-            setTimeout(forceSidebarLayout, 1000);
+            fixSidebarStructure();
+            setTimeout(fixSidebarStructure, 100);
+            setTimeout(fixSidebarStructure, 500);
+            setTimeout(fixSidebarStructure, 1000);
+            
+            // Also fix configuration when switching views
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-view="configuracion"]')) {
+                    setTimeout(fixConfigurationComponents, 100);
+                }
+            });
         });
         
         // Apply on window events
-        window.addEventListener('resize', forceSidebarLayout);
-        window.addEventListener('load', forceSidebarLayout);
+        window.addEventListener('resize', fixSidebarStructure);
+        window.addEventListener('load', fixSidebarStructure);
     </script>
 </body>
 </html>
