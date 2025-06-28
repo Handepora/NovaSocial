@@ -64,7 +64,7 @@
             flex: 1 !important;
             overflow-y: auto !important;
             max-height: 100vh !important;
-            padding: 20px !important;
+            padding: 0 !important;
         }
         
         /* Force navigation elements visibility */
@@ -2194,14 +2194,15 @@
             
             // Create content wrapper
             const contentWrapper = document.createElement('div');
-            contentWrapper.style.cssText = 'flex: 1; overflow-y: auto; max-height: 100vh;';
+            contentWrapper.style.cssText = 'flex: 1; overflow-y: auto; max-height: 100vh; padding: 0;';
             
             // Move existing main content into content wrapper
             const mainContent = document.querySelector('main');
             if (mainContent) {
                 mainContent.style.marginLeft = '0';
                 mainContent.style.transition = 'none';
-                mainContent.style.padding = '20px';
+                mainContent.style.padding = '0';
+                mainContent.style.width = '100%';
                 contentWrapper.appendChild(mainContent);
             }
             
