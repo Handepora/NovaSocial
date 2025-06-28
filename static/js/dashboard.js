@@ -280,7 +280,7 @@ function generateCalendarHTML(year, month) {
         const todayClass = isToday ? ' today' : '';
         
         html += `
-            <div class="calendar-day${todayClass}" data-date="${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}">
+            <div class="calendar-day${todayClass}" data-date="${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}" onclick="openCalendarDayModal('${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}')">
                 <span class="calendar-day-number">${date}</span>
                 <div class="day-events"></div>
             </div>
@@ -558,8 +558,15 @@ async function rejectPost(postId) {
         // Move to rejected column
         postCard.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => {
+            // Clear the default message if it exists
+            const defaultMessage = rejectedContainer.querySelector('.text-center.text-muted');
+            if (defaultMessage) {
+                defaultMessage.remove();
+            }
+            
             rejectedContainer.appendChild(postCard);
             postCard.style.animation = 'slideIn 0.3s ease';
+            postCard.style.marginBottom = '1rem'; // Add proper spacing between rejected posts
         }, 300);
         
         showSuccessMessage('Post rechazado');
@@ -2750,6 +2757,138 @@ function enhanceCardAnimations() {
 }
 
 // Initialize enhanced animations when DOM loads
+// Calendar Day Modal Functions
+function openCalendarDayModal(selectedDate) {
+    // Set the selected date in the modal
+    document.getElementById('calendarPostDate').value = selectedDate;
+    
+    // Set default time to 10:00 AM
+    document.getElementById('calendarPostTime').value = '10:00';
+    
+    // Clear form fields
+    document.getElementById('calendarPostTitle').value = '';
+    document.getElementById('calendarPostContent').value = '';
+    document.getElementById('calendarPostPlatform').value = '';
+    
+    // Set modal title with selected date
+    const date = new Date(selectedDate);
+    const formattedDate = date.toLocaleDateString('es-ES', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+    document.getElementById('calendarDayModalLabel').textContent = `Crear Publicación - ${formattedDate}`;
+    
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('calendarDayModal'));
+    modal.show();
+}
+
+async function publishNowFromCalendar() {
+    const title = document.getElementById('calendarPostTitle').value.trim();
+    const content = document.getElementById('calendarPostContent').value.trim();
+    const platform = document.getElementById('calendarPostPlatform').value;
+    
+    if (!title || !content || !platform) {
+        showErrorMessage('Por favor, completa todos los campos obligatorios');
+        return;
+    }
+    
+    try {
+        setButtonLoading(document.querySelector('[onclick="publishNowFromCalendar()"]'), true);
+        
+        const response = await fetchData('/api/publish-now', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: title,
+                content: content,
+                platform: platform
+            })
+        });
+        
+        if (response.success) {
+            showSuccessMessage('¡Publicación enviada exitosamente!');
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('calendarDayModal'));
+            modal.hide();
+            
+            // Refresh monitoring data if on monitoring view
+            if (document.getElementById('monitoreo-view').classList.contains('active')) {
+                await loadMonitoringData();
+            }
+        } else {
+            showErrorMessage(response.error || 'Error al publicar el contenido');
+        }
+    } catch (error) {
+        console.error('Error publishing now:', error);
+        showErrorMessage('Error al conectar con el servidor');
+    } finally {
+        setButtonLoading(document.querySelector('[onclick="publishNowFromCalendar()"]'), false);
+    }
+}
+
+async function scheduleFromCalendar() {
+    const title = document.getElementById('calendarPostTitle').value.trim();
+    const content = document.getElementById('calendarPostContent').value.trim();
+    const platform = document.getElementById('calendarPostPlatform').value;
+    const date = document.getElementById('calendarPostDate').value;
+    const time = document.getElementById('calendarPostTime').value;
+    const timezone = document.getElementById('calendarPostTimezone').value;
+    
+    if (!title || !content || !platform || !date || !time) {
+        showErrorMessage('Por favor, completa todos los campos obligatorios');
+        return;
+    }
+    
+    try {
+        setButtonLoading(document.querySelector('[onclick="scheduleFromCalendar()"]'), true);
+        
+        const scheduledDateTime = `${date}T${time}:00`;
+        
+        const response = await fetchData('/api/schedule-post', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: title,
+                content: content,
+                platform: platform,
+                scheduled_date: scheduledDateTime,
+                timezone: timezone
+            })
+        });
+        
+        if (response.success) {
+            showSuccessMessage('¡Publicación programada exitosamente!');
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('calendarDayModal'));
+            modal.hide();
+            
+            // Refresh calendar data
+            await loadCalendarData();
+            
+            // Refresh upcoming posts if on calendario view
+            if (document.getElementById('calendario-view').classList.contains('active')) {
+                await loadUpcomingPosts();
+            }
+        } else {
+            showErrorMessage(response.error || 'Error al programar la publicación');
+        }
+    } catch (error) {
+        console.error('Error scheduling post:', error);
+        showErrorMessage('Error al conectar con el servidor');
+    } finally {
+        setButtonLoading(document.querySelector('[onclick="scheduleFromCalendar()"]'), false);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     enhanceCardAnimations();
     

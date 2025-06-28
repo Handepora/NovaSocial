@@ -1232,6 +1232,17 @@ body {
 .calendar-day:hover {
     background-color: var(--hover-bg);
     border-color: var(--accent-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-day.clickable {
+    cursor: pointer;
+}
+
+.calendar-day.clickable:hover .calendar-day-number {
+    color: var(--accent-color);
+    font-weight: bold;
 }
 
 .calendar-day.other-month {

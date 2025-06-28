@@ -128,102 +128,11 @@ def initialize_ai_providers():
 # Initialize AI providers on startup
 initialize_ai_providers()
 
-SOCIAL_ACCOUNTS = [
-    {
-        "id": 1,
-        "platform": "linkedin",
-        "account_name": "@mi-empresa",
-        "display_name": "Mi Empresa - LinkedIn",
-        "status": "connected",
-        "auto_posting": True,
-        "is_default": True,
-        "connected_date": "2025-06-20T10:00:00",
-        "has_api": True,
-        "encrypted_credentials": None
-    },
-    {
-        "id": 2,
-        "platform": "twitter",
-        "account_name": "@mi_empresa",
-        "display_name": "Mi Empresa - Twitter",
-        "status": "connected",
-        "auto_posting": True,
-        "is_default": True,
-        "connected_date": "2025-06-21T14:30:00",
-        "has_api": True,
-        "encrypted_credentials": None
-    },
-    {
-        "id": 3,
-        "platform": "instagram",
-        "account_name": "@mi.empresa",
-        "display_name": "Mi Empresa - Instagram",
-        "status": "pending",
-        "auto_posting": False,
-        "is_default": False,
-        "connected_date": "2025-06-27T09:00:00",
-        "has_api": False,
-        "encrypted_credentials": None
-    }
-]
+SOCIAL_ACCOUNTS = []
 
-SCHEDULED_POSTS = [
-    {
-        "id": 1,
-        "title": "Anuncio de nuevo producto innovador",
-        "content": "¡Estamos emocionados de presentar nuestro último producto que revolucionará la industria!",
-        "platform": "linkedin",
-        "scheduled_date": "2025-06-27T10:00:00",
-        "status": "scheduled",
-        "engagement": 245,
-        "reach": 1250,
-        "created_at": "2025-06-27T08:00:00",
-        "timezone": "UTC"
-    },
-    {
-        "id": 2,
-        "title": "Tips para mejorar productividad",
-        "content": "5 consejos que cambiarán tu forma de trabajar #ProductividadTips",
-        "platform": "twitter",
-        "scheduled_date": "2025-06-27T14:30:00",
-        "status": "scheduled",
-        "engagement": 189,
-        "reach": 890,
-        "created_at": "2025-06-27T09:15:00",
-        "timezone": "UTC"
-    },
-    {
-        "id": 3,
-        "title": "Behind the scenes de nuestro equipo",
-        "content": "Conoce a las personas increíbles que hacen posible nuestros proyectos",
-        "platform": "instagram",
-        "scheduled_date": "2025-06-27T18:00:00",
-        "status": "scheduled",
-        "engagement": 312,
-        "reach": 1580,
-        "created_at": "2025-06-27T10:30:00",
-        "timezone": "UTC"
-    }
-]
+SCHEDULED_POSTS = []
 
-MOCK_PENDING_POSTS = [
-    {
-        "id": 4,
-        "title": "Reflexiones sobre el futuro del trabajo remoto",
-        "content": "El trabajo remoto ha cambiado nuestras vidas. Aquí mis reflexiones sobre hacia dónde nos dirigimos.",
-        "platform": "linkedin",
-        "status": "pending",
-        "created_date": "2025-06-26T15:30:00"
-    },
-    {
-        "id": 5,
-        "title": "Celebrando nuestros logros del trimestre",
-        "content": "¡Increíbles resultados este trimestre! Gracias a todo el equipo por su dedicación.",
-        "platform": "twitter",
-        "status": "pending",
-        "created_date": "2025-06-26T16:45:00"
-    }
-]
+MOCK_PENDING_POSTS = []
 
 MOCK_ANALYTICS = {
     "followers_growth": [
