@@ -3255,15 +3255,15 @@ async function saveSystemPromptModal() {
     }
     
     try {
-        const response = await fetchData('/api/update-system-prompt', {
+        const response = await fetchData('/api/prompt-settings/system', {
             method: 'POST',
             body: JSON.stringify({ system_prompt: systemPrompt })
         });
         
-        if (response.status === 'success') {
+        if (response.success || response.status === 'success') {
             showSuccessMessage('Prompt del sistema guardado correctamente');
         } else {
-            showErrorMessage(response.error || 'Error al guardar el prompt del sistema');
+            showErrorMessage(response.error || response.message || 'Error al guardar el prompt del sistema');
         }
     } catch (error) {
         console.error('Error saving system prompt:', error);
@@ -3280,15 +3280,15 @@ async function savePlatformPromptsModal() {
     };
     
     try {
-        const response = await fetchData('/api/update-platform-prompts', {
+        const response = await fetchData('/api/prompt-settings/platforms', {
             method: 'POST',
             body: JSON.stringify({ platform_prompts: platformPrompts })
         });
         
-        if (response.status === 'success') {
+        if (response.success || response.status === 'success') {
             showSuccessMessage('Prompts de plataformas guardados correctamente');
         } else {
-            showErrorMessage(response.error || 'Error al guardar los prompts de plataformas');
+            showErrorMessage(response.error || response.message || 'Error al guardar los prompts de plataformas');
         }
     } catch (error) {
         console.error('Error saving platform prompts:', error);
@@ -3305,15 +3305,15 @@ async function saveTonePromptsModal() {
     };
     
     try {
-        const response = await fetchData('/api/update-tone-prompts', {
+        const response = await fetchData('/api/prompt-settings/tones', {
             method: 'POST',
             body: JSON.stringify({ tone_prompts: tonePrompts })
         });
         
-        if (response.status === 'success') {
+        if (response.success || response.status === 'success') {
             showSuccessMessage('Prompts de tonos guardados correctamente');
         } else {
-            showErrorMessage(response.error || 'Error al guardar los prompts de tonos');
+            showErrorMessage(response.error || response.message || 'Error al guardar los prompts de tonos');
         }
     } catch (error) {
         console.error('Error saving tone prompts:', error);
@@ -3327,16 +3327,16 @@ async function resetPromptsToDefaultModal() {
     }
     
     try {
-        const response = await fetchData('/api/reset-prompts-to-default', {
+        const response = await fetchData('/api/prompt-settings/reset', {
             method: 'POST'
         });
         
-        if (response.status === 'success') {
+        if (response.success || response.status === 'success') {
             showSuccessMessage('Prompts restablecidos a valores por defecto');
             // Reload the prompt settings in the modal
             await loadPromptSettingsModal();
         } else {
-            showErrorMessage(response.error || 'Error al restablecer los prompts');
+            showErrorMessage(response.error || response.message || 'Error al restablecer los prompts');
         }
     } catch (error) {
         console.error('Error resetting prompts:', error);
@@ -3346,9 +3346,9 @@ async function resetPromptsToDefaultModal() {
 
 async function loadPromptSettingsModal() {
     try {
-        const response = await fetchData('/api/get-prompt-settings');
+        const response = await fetchData('/api/prompt-settings');
         
-        if (response.status === 'success') {
+        if (response.success || response.status === 'success') {
             const settings = response.settings;
             
             // Populate modal fields
