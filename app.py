@@ -187,7 +187,6 @@ def logout():
             return redirect(url_for('login'))
 
 @app.route('/')
-@login_required
 def index():
     """Main dashboard page"""
     return render_template('index.html')

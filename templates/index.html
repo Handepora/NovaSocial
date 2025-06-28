@@ -2019,122 +2019,169 @@
             }
         }
         
-        // Create complete sidebar from scratch
-        function createSidebarFromScratch() {
-            // Remove existing sidebar
-            const existingSidebar = document.querySelector('.sidebar');
-            if (existingSidebar) {
-                existingSidebar.remove();
-            }
-            
-            // Create new sidebar
-            const sidebar = document.createElement('div');
-            sidebar.className = 'sidebar';
-            sidebar.style.cssText = 'position: fixed; top: 0; left: 0; width: 280px; height: 100vh; background: #1a202c; border-right: 2px solid #2d3748; z-index: 10000; display: flex; flex-direction: column; font-family: Inter, sans-serif;';
-            
-            // Header section
-            const header = document.createElement('div');
-            header.style.cssText = 'padding: 1.5rem 1rem; border-bottom: 1px solid #2d3748; flex-shrink: 0;';
-            header.innerHTML = `
-                <div style="display: flex; align-items: center; justify-content: between;">
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #ff6b47, #ff8e68); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 0.75rem;">
-                            <span style="color: white; font-weight: bold; font-size: 1.2rem;">N</span>
+        // Force sidebar visibility with pure text
+        function createVisibleSidebar() {
+            // Create sidebar container with maximum visibility priority
+            const sidebarHTML = `
+                <div id="nova-nav" style="
+                    position: fixed !important; 
+                    top: 0 !important; 
+                    left: 0 !important; 
+                    width: 280px !important; 
+                    height: 100vh !important; 
+                    background: #1a202c !important; 
+                    z-index: 999999 !important;
+                    border-right: 2px solid #2d3748 !important;
+                    font-family: Arial, sans-serif !important;
+                    display: block !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                ">
+                    <!-- Header -->
+                    <div style="padding: 20px; border-bottom: 1px solid #2d3748; color: white;">
+                        <h3 style="margin: 0; color: #ff6b47;">Nova</h3>
+                        <p style="margin: 5px 0 0 0; color: #a0aec0; font-size: 14px;">Admin Dashboard</p>
+                    </div>
+                    
+                    <!-- Navigation Links -->
+                    <div style="padding: 20px 10px;">
+                        <div onclick="showView('dashboard')" style="
+                            padding: 12px; 
+                            margin: 5px 0; 
+                            background: rgba(255, 107, 71, 0.1); 
+                            border-left: 3px solid #ff6b47;
+                            color: #e2e8f0; 
+                            cursor: pointer;
+                            border-radius: 5px;
+                        ">
+                            📊 Dashboard
                         </div>
-                        <div>
-                            <div style="color: #e2e8f0; font-weight: 600; font-size: 1.1rem;">Nova</div>
-                            <div style="color: #a0aec0; font-size: 0.85rem;">Admin</div>
+                        
+                        <div onclick="showView('calendario')" style="
+                            padding: 12px; 
+                            margin: 5px 0; 
+                            color: #a0aec0; 
+                            cursor: pointer;
+                            border-radius: 5px;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            📅 Calendario
                         </div>
+                        
+                        <div onclick="showView('crear-contenido')" style="
+                            padding: 12px; 
+                            margin: 5px 0; 
+                            color: #a0aec0; 
+                            cursor: pointer;
+                            border-radius: 5px;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            ➕ Crear Contenido
+                        </div>
+                        
+                        <div onclick="showView('adaptar-contenido')" style="
+                            padding: 12px; 
+                            margin: 5px 0; 
+                            color: #a0aec0; 
+                            cursor: pointer;
+                            border-radius: 5px;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            🔄 Adaptar Contenido
+                        </div>
+                        
+                        <div onclick="showView('monitoreo')" style="
+                            padding: 12px; 
+                            margin: 5px 0; 
+                            color: #a0aec0; 
+                            cursor: pointer;
+                            border-radius: 5px;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            👁️ Monitoreo de Redes
+                        </div>
+                        
+                        <div onclick="showView('validacion')" style="
+                            padding: 12px; 
+                            margin: 5px 0; 
+                            color: #a0aec0; 
+                            cursor: pointer;
+                            border-radius: 5px;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            ✅ Validación
+                        </div>
+                        
+                        <div onclick="showView('analiticas')" style="
+                            padding: 12px; 
+                            margin: 5px 0; 
+                            color: #a0aec0; 
+                            cursor: pointer;
+                            border-radius: 5px;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            📈 Analíticas
+                        </div>
+                        
+                        <div onclick="showView('configuracion')" style="
+                            padding: 12px; 
+                            margin: 5px 0; 
+                            color: #a0aec0; 
+                            cursor: pointer;
+                            border-radius: 5px;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            ⚙️ Configuración
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div style="position: absolute; bottom: 0; width: 100%; padding: 20px; border-top: 1px solid #2d3748;">
+                        <button onclick="toggleTheme()" style="
+                            width: 100%; 
+                            background: #2d3748; 
+                            border: 1px solid #4a5568; 
+                            color: #a0aec0; 
+                            padding: 10px; 
+                            border-radius: 5px; 
+                            cursor: pointer;
+                            margin-bottom: 10px;
+                        ">
+                            🌙 Tema Oscuro
+                        </button>
+                        <a href="/logout" style="
+                            width: 100%; 
+                            background: #dc3545; 
+                            color: white; 
+                            padding: 10px; 
+                            border-radius: 5px; 
+                            text-decoration: none; 
+                            display: block; 
+                            text-align: center;
+                        ">
+                            🚪 Cerrar Sesión
+                        </a>
                     </div>
                 </div>
             `;
             
-            // Navigation section
-            const nav = document.createElement('div');
-            nav.style.cssText = 'flex: 1; padding: 1rem; overflow-y: auto;';
+            // Insert at very beginning of body with highest priority
+            document.body.insertAdjacentHTML('afterbegin', sidebarHTML);
             
-            const navItems = [
-                { id: 'dashboard', icon: 'fas fa-home', text: 'Dashboard', active: true },
-                { id: 'calendario', icon: 'fas fa-calendar', text: 'Calendario' },
-                { id: 'crear-contenido', icon: 'fas fa-plus', text: 'Crear Contenido' },
-                { id: 'adaptar-contenido', icon: 'fas fa-magic', text: 'Adaptar Contenido' },
-                { id: 'monitoreo', icon: 'fas fa-eye', text: 'Monitoreo de Redes' },
-                { id: 'validacion', icon: 'fas fa-check-circle', text: 'Validación' },
-                { id: 'analiticas', icon: 'fas fa-chart-bar', text: 'Analíticas' },
-                { id: 'configuracion', icon: 'fas fa-cog', text: 'Configuración' }
-            ];
-            
-            navItems.forEach(item => {
-                const navItem = document.createElement('div');
-                const isActive = item.active;
-                
-                navItem.style.cssText = `
-                    margin-bottom: 0.5rem; 
-                    padding: 0.75rem; 
-                    border-radius: 0.375rem; 
-                    cursor: pointer;
-                    transition: background 0.3s;
-                    ${isActive ? 'background: rgba(255, 107, 71, 0.1); border-left: 3px solid #ff6b47;' : ''}
-                `;
-                
-                navItem.innerHTML = `
-                    <a href="#${item.id}" data-view="${item.id}" style="color: ${isActive ? '#e2e8f0' : '#a0aec0'}; text-decoration: none; display: flex; align-items: center;">
-                        <i class="${item.icon}" style="color: ${isActive ? '#ff6b47' : '#a0aec0'}; margin-right: 0.5rem; width: 16px;"></i>
-                        <span>${item.text}</span>
-                    </a>
-                `;
-                
-                // Add hover effect
-                if (!isActive) {
-                    navItem.addEventListener('mouseenter', () => {
-                        navItem.style.background = 'rgba(255,255,255,0.05)';
-                    });
-                    navItem.addEventListener('mouseleave', () => {
-                        navItem.style.background = 'transparent';
-                    });
-                }
-                
-                nav.appendChild(navItem);
-            });
-            
-            // Footer section
-            const footer = document.createElement('div');
-            footer.style.cssText = 'padding: 1rem; border-top: 1px solid #2d3748; flex-shrink: 0;';
-            footer.innerHTML = `
-                <button id="theme-toggle" style="width: 100%; background: #2d3748; border: 1px solid #4a5568; color: #a0aec0; padding: 0.5rem; border-radius: 0.375rem; margin-bottom: 0.5rem; cursor: pointer;">
-                    <i class="fas fa-moon" style="margin-right: 0.5rem;"></i>
-                    <span>Tema Oscuro</span>
-                </button>
-                <a href="/logout" style="width: 100%; background: #2d3748; border: 1px solid #4a5568; color: #a0aec0; padding: 0.5rem; border-radius: 0.375rem; text-decoration: none; display: block; text-align: center;">
-                    <i class="fas fa-sign-out-alt" style="margin-right: 0.5rem;"></i>
-                    <span>Cerrar Sesión</span>
-                </a>
-            `;
-            
-            // Assemble sidebar
-            sidebar.appendChild(header);
-            sidebar.appendChild(nav);
-            sidebar.appendChild(footer);
-            
-            // Insert sidebar at beginning of body
-            document.body.insertBefore(sidebar, document.body.firstChild);
-            
-            // Ensure main content is properly positioned
+            // Adjust main content
             const mainContent = document.querySelector('main');
             if (mainContent) {
                 mainContent.style.marginLeft = '280px';
+                mainContent.style.transition = 'margin-left 0.3s';
             }
         }
         
         // Apply layout fixes
         document.addEventListener('DOMContentLoaded', function() {
-            // Create sidebar from scratch to ensure visibility
-            createSidebarFromScratch();
+            // Create visible sidebar with maximum priority
+            createVisibleSidebar();
             
             // Initialize navigation after creating sidebar
             setTimeout(() => {
-                initializeNavigation();
-                setupEventListeners();
+                if (typeof initializeNavigation === 'function') {
+                    initializeNavigation();
+                }
+                if (typeof setupEventListeners === 'function') {
+                    setupEventListeners();
+                }
             }, 100);
             
             // Fix configuration when switching views
