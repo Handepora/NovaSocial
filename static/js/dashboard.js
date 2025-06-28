@@ -374,6 +374,14 @@ function setupEventListeners() {
             switchCalendarView(view, e.target);
         }
     });
+    
+    // Apply light mode fixes on page load if needed
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    if (currentTheme === 'light') {
+        setTimeout(() => {
+            fixLightModeBackgrounds();
+        }, 500);
+    }
 }
 
 // Quick content generation with defaults
@@ -1197,6 +1205,56 @@ function fixLightModeBackgrounds() {
                     if (brightness < 128) { // Dark color
                         div.style.backgroundColor = '#ffffff';
                     }
+                }
+            }
+        });
+        
+        // Force fix specific problematic containers in configuration
+        const socialAccountsList = document.getElementById('social-accounts-list');
+        const aiProvidersList = document.getElementById('ai-providers-list');
+        const accountStatsContainer = document.getElementById('account-stats-summary');
+        
+        [socialAccountsList, aiProvidersList, accountStatsContainer].forEach(container => {
+            if (container) {
+                container.style.backgroundColor = '#f7fafc';
+                container.style.color = '#718096';
+                container.style.border = '2px dashed #e2e8f0';
+                container.style.borderRadius = '0.5rem';
+                container.style.padding = '2rem';
+                container.style.textAlign = 'center';
+                container.style.minHeight = '200px';
+                container.style.display = 'flex';
+                container.style.alignItems = 'center';
+                container.style.justifyContent = 'center';
+                
+                // Add content if empty
+                if (container.innerHTML.trim() === '' || container.children.length === 0) {
+                    let placeholderText = '';
+                    if (container.id === 'social-accounts-list') {
+                        placeholderText = `
+                            <div>
+                                <i class="fas fa-share-alt fa-2x text-muted mb-3"></i>
+                                <p class="text-muted">No hay cuentas configuradas</p>
+                                <p class="text-muted small">Agrega tu primera cuenta de red social para empezar a publicar</p>
+                            </div>
+                        `;
+                    } else if (container.id === 'ai-providers-list') {
+                        placeholderText = `
+                            <div>
+                                <i class="fas fa-robot fa-2x text-muted mb-3"></i>
+                                <p class="text-muted">Configurando proveedores de IA...</p>
+                            </div>
+                        `;
+                    } else if (container.id === 'account-stats-summary') {
+                        placeholderText = `
+                            <div>
+                                <i class="fas fa-chart-bar fa-2x text-muted mb-3"></i>
+                                <p class="text-muted">Estadísticas de cuentas</p>
+                                <p class="text-muted small">Conecta cuentas para ver estadísticas</p>
+                            </div>
+                        `;
+                    }
+                    container.innerHTML = placeholderText;
                 }
             }
         });

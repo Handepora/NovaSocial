@@ -2165,6 +2165,36 @@
         gap: 1px;
     }
     
+    /* Force light theme fixes for specific problematic elements */
+    [data-theme="light"] #social-accounts-list,
+    [data-theme="light"] #ai-providers-list,
+    [data-theme="light"] #account-stats-summary {
+        background-color: #f7fafc !important;
+        color: #718096 !important;
+        padding: 2rem !important;
+        border-radius: 0.5rem !important;
+        border: 2px dashed #e2e8f0 !important;
+        text-align: center !important;
+        min-height: 200px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    [data-theme="light"] #social-accounts-list:empty::before {
+        content: "No hay cuentas configuradas\AAgrega tu primera cuenta de red social para empezar a publicar";
+        white-space: pre-line;
+        color: #718096 !important;
+        font-style: italic;
+    }
+    
+    [data-theme="light"] #account-stats-summary:empty::before {
+        content: "Estadísticas de cuentas\AConecta cuentas para ver estadísticas";
+        white-space: pre-line;
+        color: #718096 !important;
+        font-style: italic;
+    }
+    
     .time-slot {
         display: flex;
         align-items: center;
