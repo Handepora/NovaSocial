@@ -267,6 +267,28 @@ def generate_content():
                 # Special processing for Twitter
                 if platform == 'twitter':
                     main_content, hashtags_found = process_twitter_content(content)
+                elif platform == 'web':
+                    # For web content, extract hashtags from the end
+                    lines = content.split('\n')
+                    hashtag_lines = []
+                    content_lines = []
+                    
+                    for line in lines:
+                        if line.strip().startswith('#') or '**#' in line:
+                            hashtag_lines.append(line.strip())
+                        else:
+                            content_lines.append(line)
+                    
+                    main_content = '\n'.join(content_lines).strip()
+                    
+                    # Extract hashtags from hashtag lines
+                    hashtags_found = []
+                    for line in hashtag_lines:
+                        hashtags = re.findall(r'#\w+', line)
+                        hashtags_found.extend(hashtags)
+                    
+                    # Remove duplicates while preserving order
+                    hashtags_found = list(dict.fromkeys(hashtags_found))
                 else:
                     # Extract hashtags from content if present
                     if '#' in content:
