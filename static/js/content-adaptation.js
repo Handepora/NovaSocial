@@ -8,16 +8,18 @@ function updateCharCount() {
 }
 
 async function adaptContent() {
-    const originalContent = document.getElementById('original-content').value.trim();
-    const style = document.getElementById('adaptation-style').value;
-    const tone = document.getElementById('adaptation-tone').value;
-    const provider = document.getElementById('adaptation-provider').value;
-    const focus = document.getElementById('adaptation-focus').value;
+    const originalContent = document.getElementById('original-content')?.value?.trim();
+    const style = document.getElementById('adaptation-style')?.value;
+    const tone = document.getElementById('adaptation-tone')?.value;
+    const provider = document.getElementById('adaptation-provider')?.value;
+    const focus = 'general'; // Default focus since field doesn't exist in HTML
     
     // Get selected platforms
-    const platforms = Array.from(document.querySelectorAll('#content-adaptation-form input[type="checkbox"]:checked')).map(cb => cb.value);
+    const platforms = Array.from(document.querySelectorAll('input[type="checkbox"][id^="adapt-"]:checked')).map(cb => cb.value);
     
-    if (!originalContent) {
+    console.log('Adaptation form values:', { originalContent: originalContent?.length, style, tone, provider, focus, platforms });
+    
+    if (!originalContent || originalContent === '') {
         showErrorMessage('Por favor pega el contenido que quieres adaptar');
         return;
     }
