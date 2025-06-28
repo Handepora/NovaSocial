@@ -77,6 +77,13 @@ async function adaptContent() {
     }
 }
 
+// Helper function to escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 function displayAdaptedContent(adaptedContent, platforms) {
     const resultContainer = document.getElementById('adapted-content-results');
     
@@ -95,6 +102,11 @@ function displayAdaptedContent(adaptedContent, platforms) {
     platforms.forEach((platform, index) => {
         const content = adaptedContent[platform];
         if (content) {
+            // Escape HTML content to prevent XSS
+            const safeContentHtml = content.content ? escapeHtml(content.content).replace(/\n/g, '<br>') : '';
+            const safeHashtagsHtml = content.hashtags ? escapeHtml(content.hashtags.join(' ')) : '';
+            
+            // Escape for JavaScript string contexts
             const safeContent = content.content ? content.content.replace(/`/g, '\\`').replace(/'/g, "\\'") : '';
             const safeHashtags = content.hashtags ? content.hashtags.join(' ').replace(/'/g, "\\'") : '';
             
@@ -111,13 +123,13 @@ function displayAdaptedContent(adaptedContent, platforms) {
                         <div class="card-body">
                             <div class="adapted-text mb-3">
                                 <div class="content-preview p-3 bg-light rounded">
-                                    ${content.content ? content.content.replace(/\n/g, '<br>') : ''}
+                                    ${safeContentHtml}
                                 </div>
                             </div>
                             ${content.hashtags && content.hashtags.length > 0 ? `
                                 <div class="hashtags mb-3">
                                     <strong>Hashtags:</strong> 
-                                    <span class="text-primary">${content.hashtags.join(' ')}</span>
+                                    <span class="text-primary">${safeHashtagsHtml}</span>
                                 </div>
                             ` : ''}
                             <div class="d-flex gap-2">
