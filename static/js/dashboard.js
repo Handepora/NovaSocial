@@ -1144,7 +1144,10 @@ function setTheme(theme) {
     
     // Force fix for persistent dark backgrounds in light mode
     if (theme === 'light') {
+        // Apply fixes immediately and with delays to catch all elements
         fixLightModeBackgrounds();
+        setTimeout(() => fixLightModeBackgrounds(), 300);
+        setTimeout(() => fixLightModeBackgrounds(), 600);
     }
 }
 

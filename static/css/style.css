@@ -1501,6 +1501,70 @@ body {
     background-color: #6c757d !important;
 }
 
+/* Force AI provider cards to be white in light mode */
+[data-theme="light"] .col-md-4 {
+    background-color: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+}
+
+[data-theme="light"] .col-md-4 .d-flex {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+}
+
+[data-theme="light"] .col-md-4 h6 {
+    color: #212529 !important;
+}
+
+[data-theme="light"] .col-md-4 .text-muted {
+    color: #6c757d !important;
+}
+
+[data-theme="light"] .col-md-4 small {
+    color: #6c757d !important;
+}
+
+/* Force specific elements in configuration section */
+[data-theme="light"] #configuracion .card-body {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+}
+
+[data-theme="light"] #configuracion .card-body * {
+    color: #212529 !important;
+}
+
+[data-theme="light"] #configuracion .card-body .text-muted {
+    color: #6c757d !important;
+}
+
+[data-theme="light"] #configuracion .row .col-md-4,
+[data-theme="light"] #configuracion .row .col-md-6 {
+    background-color: transparent !important;
+}
+
+/* Fix provider cards specifically */
+[data-theme="light"] .provider-card {
+    background-color: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    color: #212529 !important;
+    border-radius: 8px !important;
+    padding: 1rem !important;
+}
+
+[data-theme="light"] .provider-card .provider-icon {
+    background-color: #ffffff !important;
+}
+
+[data-theme="light"] .provider-card .provider-info h6 {
+    color: #212529 !important;
+}
+
+[data-theme="light"] .provider-card .provider-info .text-muted {
+    color: #6c757d !important;
+}
+
 /* Real-time scheduling styles */
 .upcoming-post-item {
     cursor: pointer;
