@@ -1437,6 +1437,70 @@ body {
     background-color: rgba(255, 107, 71, 0.075);
 }
 
+/* Fix orange notification buttons text readability in light mode */
+[data-theme="light"] .alert-warning {
+    background-color: #fff3cd !important;
+    border-color: #ffeaa7 !important;
+    color: #856404 !important;
+}
+
+[data-theme="light"] .btn-warning {
+    background-color: #fd7e14 !important;
+    border-color: #fd7e14 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="light"] .btn-warning:hover {
+    background-color: #e85a0c !important;
+    border-color: #dc5200 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .btn-warning:focus, 
+[data-theme="light"] .btn-warning:active {
+    background-color: #dc5200 !important;
+    border-color: #dc5200 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.2rem rgba(253, 126, 20, 0.25) !important;
+}
+
+/* Fix AI providers section contrast */
+[data-theme="light"] .ai-provider-card {
+    background-color: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    color: #212529 !important;
+}
+
+[data-theme="light"] .ai-provider-card .card-body {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+}
+
+[data-theme="light"] .ai-provider-card h6 {
+    color: #212529 !important;
+}
+
+[data-theme="light"] .ai-provider-card .text-muted {
+    color: #6c757d !important;
+}
+
+[data-theme="light"] .ai-provider-card .badge {
+    color: #ffffff !important;
+    background-color: #28a745 !important;
+}
+
+[data-theme="light"] .ai-provider-card .badge.bg-warning {
+    color: #212529 !important;
+    background-color: #ffc107 !important;
+}
+
+[data-theme="light"] .ai-provider-card .badge.bg-secondary {
+    color: #ffffff !important;
+    background-color: #6c757d !important;
+}
+
 /* Real-time scheduling styles */
 .upcoming-post-item {
     cursor: pointer;

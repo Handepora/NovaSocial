@@ -1288,23 +1288,48 @@ function fixLightModeBackgrounds() {
                 });
             });
             
-            // Find prompt configuration card using a different method
+            // Find prompt configuration card and AI providers card
             const h6Elements = document.querySelectorAll('.card .card-header h6');
             h6Elements.forEach(h6 => {
-                if (h6.textContent && h6.textContent.includes('Configuración de Prompts')) {
+                if (h6.textContent && (h6.textContent.includes('Configuración de Prompts') || h6.textContent.includes('Proveedores de IA'))) {
                     const card = h6.closest('.card');
                     if (card) {
                         const cardBody = card.querySelector('.card-body');
                         if (cardBody) {
                             cardBody.style.backgroundColor = '#ffffff';
-                            const allChildren = cardBody.querySelectorAll('*');
-                            allChildren.forEach(child => {
-                                if (child.style.backgroundColor && 
-                                    (child.style.backgroundColor.includes('#1') || 
-                                     child.style.backgroundColor.includes('#2') || 
-                                     child.style.backgroundColor.includes('#3'))) {
-                                    child.style.backgroundColor = '#ffffff';
-                                }
+                            cardBody.style.color = '#212529';
+                            
+                            // Fix AI provider cards specifically
+                            const providerCards = cardBody.querySelectorAll('.ai-provider-card, .col-md-4, .d-flex');
+                            providerCards.forEach(providerCard => {
+                                providerCard.style.backgroundColor = '#ffffff';
+                                providerCard.style.color = '#212529';
+                                providerCard.style.border = '1px solid #e9ecef';
+                                
+                                // Fix text elements inside provider cards
+                                const textElements = providerCard.querySelectorAll('h6, .text-muted, p, span');
+                                textElements.forEach(textEl => {
+                                    if (textEl.classList.contains('text-muted')) {
+                                        textEl.style.color = '#6c757d';
+                                    } else {
+                                        textEl.style.color = '#212529';
+                                    }
+                                });
+                                
+                                // Fix badges
+                                const badges = providerCard.querySelectorAll('.badge');
+                                badges.forEach(badge => {
+                                    if (badge.classList.contains('bg-success')) {
+                                        badge.style.backgroundColor = '#28a745';
+                                        badge.style.color = '#ffffff';
+                                    } else if (badge.classList.contains('bg-warning')) {
+                                        badge.style.backgroundColor = '#ffc107';
+                                        badge.style.color = '#212529';
+                                    } else {
+                                        badge.style.backgroundColor = '#6c757d';
+                                        badge.style.color = '#ffffff';
+                                    }
+                                });
                             });
                         }
                     }
