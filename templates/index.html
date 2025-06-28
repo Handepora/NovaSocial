@@ -2210,7 +2210,7 @@
             
             // Create content wrapper
             const contentWrapper = document.createElement('div');
-            contentWrapper.style.cssText = 'flex: 1; overflow-y: auto; max-height: 100vh; padding: 0; margin: 0; border: none;';
+            contentWrapper.style.cssText = 'flex: 1; overflow-y: auto; max-height: 100vh; padding: 0; margin: 0; border: none; margin-left: -5px;';
             
             // Move existing main content into content wrapper
             const mainContent = document.querySelector('main');
@@ -2220,7 +2220,7 @@
                 mainContent.style.margin = '0';
                 mainContent.style.transition = 'none';
                 mainContent.style.padding = '20px';
-                mainContent.style.paddingLeft = '20px';
+                mainContent.style.paddingLeft = '15px';
                 mainContent.style.width = '100%';
                 mainContent.style.border = 'none';
                 contentWrapper.appendChild(mainContent);
