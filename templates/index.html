@@ -2039,8 +2039,15 @@
                 ">
                     <!-- Header -->
                     <div style="padding: 20px; border-bottom: 1px solid #2d3748; color: white;">
-                        <h3 style="margin: 0; color: #ff6b47;">Nova</h3>
-                        <p style="margin: 5px 0 0 0; color: #a0aec0; font-size: 14px;">Admin Dashboard</p>
+                        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #ff6b47, #ff8e68); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 0.75rem;">
+                                <span style="color: white; font-weight: bold; font-size: 1.2rem;">N</span>
+                            </div>
+                            <div>
+                                <div style="color: #e2e8f0; font-weight: 600; font-size: 1.1rem;">Nova</div>
+                                <div style="color: #a0aec0; font-size: 0.85rem;">Admin</div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Navigation Links -->
@@ -2130,7 +2137,7 @@
                     
                     <!-- Footer -->
                     <div style="position: absolute; bottom: 0; width: 100%; padding: 20px; border-top: 1px solid #2d3748;">
-                        <button onclick="toggleTheme()" style="
+                        <button id="nova-theme-toggle" onclick="toggleNovaTheme()" style="
                             width: 100%; 
                             background: #2d3748; 
                             border: 1px solid #4a5568; 
@@ -2169,10 +2176,85 @@
             }
         }
         
+        // Theme toggle functionality
+        function toggleNovaTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const themeButton = document.getElementById('nova-theme-toggle');
+            
+            // Apply theme
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update button text and icon
+            if (newTheme === 'light') {
+                themeButton.innerHTML = '☀️ Tema Claro';
+                document.body.style.background = '#f8f9fa';
+                document.body.style.color = '#212529';
+            } else {
+                themeButton.innerHTML = '🌙 Tema Oscuro';
+                document.body.style.background = '#1a202c';
+                document.body.style.color = '#e2e8f0';
+            }
+            
+            // Update main content theme
+            const mainContent = document.querySelector('main');
+            if (mainContent) {
+                if (newTheme === 'light') {
+                    mainContent.style.background = '#ffffff';
+                    mainContent.style.color = '#212529';
+                } else {
+                    mainContent.style.background = '#2d3748';
+                    mainContent.style.color = '#e2e8f0';
+                }
+            }
+            
+            // Update cards and components theme
+            updateComponentsTheme(newTheme);
+        }
+        
+        // Update theme for all components
+        function updateComponentsTheme(theme) {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                if (theme === 'light') {
+                    card.style.background = '#ffffff';
+                    card.style.border = '1px solid #dee2e6';
+                    card.style.color = '#212529';
+                } else {
+                    card.style.background = '#2d3748';
+                    card.style.border = '1px solid #4a5568';
+                    card.style.color = '#e2e8f0';
+                }
+            });
+        }
+        
+        // Initialize theme on load
+        function initializeNovaTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const themeButton = document.getElementById('nova-theme-toggle');
+            if (themeButton) {
+                if (savedTheme === 'light') {
+                    themeButton.innerHTML = '☀️ Tema Claro';
+                } else {
+                    themeButton.innerHTML = '🌙 Tema Oscuro';
+                }
+            }
+            
+            updateComponentsTheme(savedTheme);
+        }
+        
         // Apply layout fixes
         document.addEventListener('DOMContentLoaded', function() {
             // Create visible sidebar with maximum priority
             createVisibleSidebar();
+            
+            // Initialize theme after sidebar is created
+            setTimeout(() => {
+                initializeNovaTheme();
+            }, 50);
             
             // Initialize navigation after creating sidebar
             setTimeout(() => {
