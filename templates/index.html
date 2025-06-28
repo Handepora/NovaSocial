@@ -2019,49 +2019,123 @@
             }
         }
         
-        // Force navigation visibility
-        function forceNavigationVisibility() {
-            const sidebar = document.querySelector('.sidebar');
-            if (!sidebar) return;
-            
-            // Create navigation if it doesn't exist or isn't visible
-            const navSection = sidebar.querySelector('div[style*="flex: 1"]');
-            if (!navSection) return;
-            
-            // Force visibility with JavaScript
-            navSection.style.cssText = 'flex: 1; padding: 1rem; background: #1a202c; min-height: 400px; visibility: visible !important; opacity: 1 !important; display: block !important;';
-            
-            const navItems = navSection.children;
-            for (let i = 0; i < navItems.length; i++) {
-                const item = navItems[i];
-                if (item) {
-                    item.style.cssText = 'margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s; visibility: visible !important; opacity: 1 !important; display: block !important;';
-                    
-                    const link = item.querySelector('a');
-                    if (link) {
-                        link.style.cssText = 'color: #a0aec0; text-decoration: none; display: flex !important; align-items: center; visibility: visible !important; opacity: 1 !important;';
-                    }
-                }
+        // Create complete sidebar from scratch
+        function createSidebarFromScratch() {
+            // Remove existing sidebar
+            const existingSidebar = document.querySelector('.sidebar');
+            if (existingSidebar) {
+                existingSidebar.remove();
             }
             
-            // Special styling for first item (Dashboard)
-            if (navItems[0]) {
-                navItems[0].style.cssText = 'margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; background: rgba(255, 107, 71, 0.1); border-left: 3px solid #ff6b47; visibility: visible !important; opacity: 1 !important; display: block !important;';
-                const firstLink = navItems[0].querySelector('a');
-                if (firstLink) {
-                    firstLink.style.cssText = 'color: #e2e8f0; text-decoration: none; display: flex !important; align-items: center; visibility: visible !important; opacity: 1 !important;';
+            // Create new sidebar
+            const sidebar = document.createElement('div');
+            sidebar.className = 'sidebar';
+            sidebar.style.cssText = 'position: fixed; top: 0; left: 0; width: 280px; height: 100vh; background: #1a202c; border-right: 2px solid #2d3748; z-index: 10000; display: flex; flex-direction: column; font-family: Inter, sans-serif;';
+            
+            // Header section
+            const header = document.createElement('div');
+            header.style.cssText = 'padding: 1.5rem 1rem; border-bottom: 1px solid #2d3748; flex-shrink: 0;';
+            header.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: between;">
+                    <div style="display: flex; align-items: center;">
+                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #ff6b47, #ff8e68); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 0.75rem;">
+                            <span style="color: white; font-weight: bold; font-size: 1.2rem;">N</span>
+                        </div>
+                        <div>
+                            <div style="color: #e2e8f0; font-weight: 600; font-size: 1.1rem;">Nova</div>
+                            <div style="color: #a0aec0; font-size: 0.85rem;">Admin</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Navigation section
+            const nav = document.createElement('div');
+            nav.style.cssText = 'flex: 1; padding: 1rem; overflow-y: auto;';
+            
+            const navItems = [
+                { id: 'dashboard', icon: 'fas fa-home', text: 'Dashboard', active: true },
+                { id: 'calendario', icon: 'fas fa-calendar', text: 'Calendario' },
+                { id: 'crear-contenido', icon: 'fas fa-plus', text: 'Crear Contenido' },
+                { id: 'adaptar-contenido', icon: 'fas fa-magic', text: 'Adaptar Contenido' },
+                { id: 'monitoreo', icon: 'fas fa-eye', text: 'Monitoreo de Redes' },
+                { id: 'validacion', icon: 'fas fa-check-circle', text: 'Validación' },
+                { id: 'analiticas', icon: 'fas fa-chart-bar', text: 'Analíticas' },
+                { id: 'configuracion', icon: 'fas fa-cog', text: 'Configuración' }
+            ];
+            
+            navItems.forEach(item => {
+                const navItem = document.createElement('div');
+                const isActive = item.active;
+                
+                navItem.style.cssText = `
+                    margin-bottom: 0.5rem; 
+                    padding: 0.75rem; 
+                    border-radius: 0.375rem; 
+                    cursor: pointer;
+                    transition: background 0.3s;
+                    ${isActive ? 'background: rgba(255, 107, 71, 0.1); border-left: 3px solid #ff6b47;' : ''}
+                `;
+                
+                navItem.innerHTML = `
+                    <a href="#${item.id}" data-view="${item.id}" style="color: ${isActive ? '#e2e8f0' : '#a0aec0'}; text-decoration: none; display: flex; align-items: center;">
+                        <i class="${item.icon}" style="color: ${isActive ? '#ff6b47' : '#a0aec0'}; margin-right: 0.5rem; width: 16px;"></i>
+                        <span>${item.text}</span>
+                    </a>
+                `;
+                
+                // Add hover effect
+                if (!isActive) {
+                    navItem.addEventListener('mouseenter', () => {
+                        navItem.style.background = 'rgba(255,255,255,0.05)';
+                    });
+                    navItem.addEventListener('mouseleave', () => {
+                        navItem.style.background = 'transparent';
+                    });
                 }
+                
+                nav.appendChild(navItem);
+            });
+            
+            // Footer section
+            const footer = document.createElement('div');
+            footer.style.cssText = 'padding: 1rem; border-top: 1px solid #2d3748; flex-shrink: 0;';
+            footer.innerHTML = `
+                <button id="theme-toggle" style="width: 100%; background: #2d3748; border: 1px solid #4a5568; color: #a0aec0; padding: 0.5rem; border-radius: 0.375rem; margin-bottom: 0.5rem; cursor: pointer;">
+                    <i class="fas fa-moon" style="margin-right: 0.5rem;"></i>
+                    <span>Tema Oscuro</span>
+                </button>
+                <a href="/logout" style="width: 100%; background: #2d3748; border: 1px solid #4a5568; color: #a0aec0; padding: 0.5rem; border-radius: 0.375rem; text-decoration: none; display: block; text-align: center;">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 0.5rem;"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            `;
+            
+            // Assemble sidebar
+            sidebar.appendChild(header);
+            sidebar.appendChild(nav);
+            sidebar.appendChild(footer);
+            
+            // Insert sidebar at beginning of body
+            document.body.insertBefore(sidebar, document.body.firstChild);
+            
+            // Ensure main content is properly positioned
+            const mainContent = document.querySelector('main');
+            if (mainContent) {
+                mainContent.style.marginLeft = '280px';
             }
         }
         
         // Apply layout fixes
         document.addEventListener('DOMContentLoaded', function() {
-            forceSidebarLayout();
-            forceNavigationVisibility();
-            setTimeout(forceSidebarLayout, 100);
-            setTimeout(forceNavigationVisibility, 200);
-            setTimeout(forceNavigationVisibility, 500);
-            setTimeout(forceNavigationVisibility, 1000);
+            // Create sidebar from scratch to ensure visibility
+            createSidebarFromScratch();
+            
+            // Initialize navigation after creating sidebar
+            setTimeout(() => {
+                initializeNavigation();
+                setupEventListeners();
+            }, 100);
             
             // Fix configuration when switching views
             document.addEventListener('click', function(e) {
