@@ -28,13 +28,25 @@
                 <div class="position-sticky pt-3">
                     <!-- Nova Logo and Info -->
                     <div class="user-info mb-4">
-                        <div class="d-flex align-items-center">
-                            <div class="me-3">
-                                <img src="{{ url_for('static', filename='nova-logo.png') }}" alt="Nova Logo" style="height: 40px; width: 40px; border-radius: 8px;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <img src="{{ url_for('static', filename='nova-logo.png') }}" alt="Nova Logo" style="height: 40px; width: 40px; border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Nova</h6>
+                                    <small class="text-muted">Admin</small>
+                                </div>
                             </div>
-                            <div>
-                                <h6 class="mb-0">Nova</h6>
-                                <small class="text-muted">AI Dashboard</small>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                    </a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>

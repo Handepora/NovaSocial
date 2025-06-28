@@ -1,8 +1,9 @@
 import os
 import logging
 import re
-from flask import Flask, render_template, jsonify, request, session
+from flask import Flask, render_template, jsonify, request, session, redirect, url_for, flash
 from flask_cors import CORS
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from datetime import datetime, timedelta
 import json
 import uuid
@@ -50,8 +51,30 @@ def process_twitter_content(content):
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
 
+# Configure Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Por favor inicia sesión para acceder a esta página.'
+
 # Enable CORS for API endpoints
 CORS(app)
+
+# Simple User class for authentication
+class User(UserMixin):
+    def __init__(self, id, username):
+        self.id = id
+        self.username = username
+
+# Simple user storage (for now just Admin)
+users = {'Admin': User(1, 'Admin')}
+
+@login_manager.user_loader
+def load_user(user_id):
+    for user in users.values():
+        if str(user.id) == str(user_id):
+            return user
+    return None
 
 # In-memory storage for social media accounts, AI providers, and scheduled posts
 AI_PROVIDERS = [
@@ -218,17 +241,49 @@ MOCK_ANALYTICS = {
     "weekly_interactions": [120, 135, 158, 142, 167, 189, 201]
 }
 
+# Authentication routes
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Login page"""
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        # Simple authentication - Admin/Admin
+        if username == 'Admin' and password == 'Admin':
+            user = users.get(username)
+            if user:
+                login_user(user)
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('index'))
+        
+        flash('Usuario o contraseña incorrectos')
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    """Logout user"""
+    logout_user()
+    flash('Has cerrado sesión correctamente')
+    return redirect(url_for('login'))
+
 @app.route('/')
+@login_required
 def index():
     """Main dashboard page"""
     return render_template('index.html')
 
 @app.route('/api/posts')
+@login_required
+@login_required
 def get_posts():
     """Get all scheduled posts"""
     return jsonify(SCHEDULED_POSTS)
 
 @app.route('/api/posts/today')
+@login_required
 def get_today_posts():
     """Get posts scheduled for today"""
     today = datetime.now().date()
@@ -239,16 +294,19 @@ def get_today_posts():
     return jsonify(today_posts)
 
 @app.route('/api/posts/pending')
+@login_required
 def get_pending_posts():
     """Get posts pending approval"""
     return jsonify(MOCK_PENDING_POSTS)
 
 @app.route('/api/analytics')
+@login_required
 def get_analytics():
     """Get analytics data"""
     return jsonify(MOCK_ANALYTICS)
 
 @app.route('/api/generate-content', methods=['POST'])
+@login_required
 def generate_content():
     """Generate content using AI providers"""
     try:
@@ -334,6 +392,7 @@ def generate_content():
         }), 500
 
 @app.route('/api/ai-providers/status', methods=['GET'])
+@login_required
 def get_ai_providers_status():
     """Get current status of all AI providers"""
     return jsonify({
@@ -366,6 +425,7 @@ DEFAULT_PROMPTS = {
 PROMPT_SETTINGS = DEFAULT_PROMPTS.copy()
 
 @app.route('/api/prompt-settings', methods=['GET'])
+@login_required
 def get_prompt_settings():
     """Get current prompt settings"""
     return jsonify({
@@ -374,6 +434,7 @@ def get_prompt_settings():
     })
 
 @app.route('/api/prompt-settings/system', methods=['POST'])
+@login_required
 def update_system_prompt():
     """Update system prompt"""
     try:
@@ -402,6 +463,7 @@ def update_system_prompt():
         }), 500
 
 @app.route('/api/prompt-settings/platforms', methods=['POST'])
+@login_required
 def update_platform_prompts():
     """Update platform-specific prompts"""
     try:
@@ -439,6 +501,7 @@ def update_platform_prompts():
         }), 500
 
 @app.route('/api/prompt-settings/tones', methods=['POST'])
+@login_required
 def update_tone_prompts():
     """Update tone-specific prompts"""
     try:
@@ -476,6 +539,7 @@ def update_tone_prompts():
         }), 500
 
 @app.route('/api/prompt-settings/reset', methods=['POST'])
+@login_required
 def reset_prompts_to_default():
     """Reset all prompts to default values"""
     try:
@@ -497,6 +561,7 @@ def reset_prompts_to_default():
         }), 500
 
 @app.route('/api/adapt-content', methods=['POST'])
+@login_required
 def adapt_content():
     """Adapt existing content for different social media platforms"""
     try:
@@ -674,12 +739,14 @@ Genera ÚNICAMENTE el contenido adaptado listo para publicar.
     return prompt
 
 @app.route('/api/posts/approve/<int:post_id>', methods=['POST'])
+@login_required
 def approve_post(post_id):
     """Approve a pending post"""
     # In a real app, this would update the database
     return jsonify({"status": "approved", "post_id": post_id})
 
 @app.route('/api/posts/reject/<int:post_id>', methods=['POST'])
+@login_required
 def reject_post(post_id):
     """Reject a pending post"""
     # In a real app, this would update the database
@@ -687,6 +754,7 @@ def reject_post(post_id):
 
 # Real-time scheduling endpoints
 @app.route('/api/posts/schedule', methods=['POST'])
+@login_required
 def schedule_post():
     """Schedule a new post"""
     try:
@@ -724,6 +792,7 @@ def schedule_post():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/posts/<int:post_id>', methods=['PUT'])
+@login_required
 def update_scheduled_post(post_id):
     """Update a scheduled post"""
     try:
@@ -757,6 +826,7 @@ def update_scheduled_post(post_id):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
+@login_required
 def delete_scheduled_post(post_id):
     """Delete a scheduled post"""
     try:
@@ -776,6 +846,7 @@ def delete_scheduled_post(post_id):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/posts/calendar/<int:year>/<int:month>')
+@login_required
 def get_calendar_posts(year, month):
     """Get posts for a specific month for calendar view"""
     try:
@@ -808,6 +879,7 @@ def get_calendar_posts(year, month):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/posts/upcoming')
+@login_required
 def get_upcoming_posts():
     """Get posts scheduled for the next 7 days"""
     try:
@@ -830,11 +902,13 @@ def get_upcoming_posts():
 
 # Social Media Account Management Endpoints
 @app.route('/api/accounts')
+@login_required
 def get_accounts():
     """Get all social media accounts"""
     return jsonify(SOCIAL_ACCOUNTS)
 
 @app.route('/api/accounts', methods=['POST'])
+@login_required
 def add_account():
     """Add a new social media account"""
     try:
@@ -897,6 +971,7 @@ def add_account():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/accounts/<int:account_id>', methods=['PUT'])
+@login_required
 def update_account(account_id):
     """Update a social media account"""
     try:
@@ -938,6 +1013,7 @@ def update_account(account_id):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/accounts/<int:account_id>', methods=['DELETE'])
+@login_required
 def delete_account(account_id):
     """Delete a social media account"""
     try:
@@ -957,6 +1033,7 @@ def delete_account(account_id):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/accounts/verify-credentials', methods=['POST'])
+@login_required
 def verify_credentials():
     """Verify API credentials and get account information"""
     try:
@@ -1108,6 +1185,7 @@ def simulate_api_profile_fetch(platform, api_key, api_secret):
     return None
 
 @app.route('/api/accounts/<int:account_id>/test', methods=['POST'])
+@login_required
 def test_account_connection(account_id):
     """Test connection to a social media account"""
     try:
@@ -1146,6 +1224,7 @@ def test_account_connection(account_id):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/accounts/stats')
+@login_required
 def get_accounts_stats():
     """Get account statistics"""
     try:
@@ -1165,6 +1244,7 @@ def get_accounts_stats():
 
 # AI Provider Management Endpoints
 @app.route('/api/ai-providers')
+@login_required
 def get_ai_providers():
     """Get all AI providers"""
     # Check environment variables and update status
@@ -1176,6 +1256,7 @@ def get_ai_providers():
     return jsonify(AI_PROVIDERS)
 
 @app.route('/api/ai-providers/<provider_name>', methods=['PUT'])
+@login_required
 def update_ai_provider(provider_name):
     """Update AI provider credentials"""
     try:
@@ -1232,6 +1313,7 @@ def update_ai_provider(provider_name):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/ai-providers/<provider_name>/test', methods=['POST'])
+@login_required
 def test_ai_provider(provider_name):
     """Test AI provider connection"""
     try:
@@ -1282,6 +1364,7 @@ def test_ai_provider(provider_name):
         }), 500
 
 @app.route('/api/ai-providers/<provider_name>', methods=['DELETE'])
+@login_required
 def disconnect_ai_provider(provider_name):
     """Disconnect AI provider by removing API key"""
     try:
@@ -1320,6 +1403,7 @@ def disconnect_ai_provider(provider_name):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/publish-now', methods=['POST'])
+@login_required
 def publish_now():
     """Publish content immediately to social media platform"""
     try:
@@ -1371,6 +1455,7 @@ def publish_now():
         }), 500
 
 @app.route('/api/monitoring-data', methods=['GET'])
+@login_required
 def get_monitoring_data():
     """Get social media monitoring data"""
     try:
