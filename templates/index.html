@@ -503,7 +503,7 @@
                                     <label for="quick-topic" class="form-label">Tema del post</label>
                                     <input type="text" class="form-control" id="quick-topic" placeholder="Ej: Nuevo producto, tips, noticias...">
                                 </div>
-                                <button type="button" class="btn btn-primary" onclick="generateContent()">
+                                <button type="button" class="btn btn-primary" onclick="generateQuickContent()">
                                     <i class="fas fa-magic me-2"></i>Generar Borrador
                                 </button>
                             </div>
@@ -2156,6 +2156,100 @@
     #promptConfigModal textarea {
         resize: vertical;
         min-height: 80px;
+    }
+    
+    /* Calendar View Styles */
+    .day-view .time-slots {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+    
+    .time-slot {
+        display: flex;
+        align-items: center;
+        min-height: 60px;
+        border: 1px solid var(--border-color);
+        background-color: var(--primary-bg);
+    }
+    
+    .time-label {
+        width: 80px;
+        padding: 0.5rem;
+        font-weight: 600;
+        background-color: var(--secondary-bg);
+        border-right: 1px solid var(--border-color);
+    }
+    
+    .time-content {
+        flex: 1;
+        padding: 0.5rem;
+    }
+    
+    .week-view {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .week-header {
+        display: grid;
+        grid-template-columns: 80px repeat(7, 1fr);
+        border-bottom: 2px solid var(--border-color);
+    }
+    
+    .week-day-header {
+        padding: 1rem;
+        text-align: center;
+        border-right: 1px solid var(--border-color);
+        background-color: var(--secondary-bg);
+    }
+    
+    .day-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+    
+    .day-number {
+        font-size: 1.25rem;
+        margin-top: 0.25rem;
+    }
+    
+    .week-grid {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .week-time-row {
+        display: grid;
+        grid-template-columns: 80px repeat(7, 1fr);
+        min-height: 60px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .week-time-label {
+        padding: 0.5rem;
+        font-weight: 600;
+        background-color: var(--secondary-bg);
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+    }
+    
+    .week-time-cell {
+        padding: 0.25rem;
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-week-schedule {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    
+    .week-time-cell:hover .btn-week-schedule {
+        opacity: 1;
     }
     </style>
 

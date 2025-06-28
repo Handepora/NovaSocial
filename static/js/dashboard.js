@@ -366,6 +366,71 @@ function setupEventListeners() {
             }
         });
     });
+    
+    // Calendar view buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('[data-calendar-view]')) {
+            const view = e.target.getAttribute('data-calendar-view');
+            switchCalendarView(view, e.target);
+        }
+    });
+}
+
+// Quick content generation with defaults
+async function generateQuickContent() {
+    const topic = document.getElementById('quick-topic')?.value?.trim();
+    
+    if (!topic || topic === '') {
+        showErrorMessage('Por favor completa el tema');
+        return;
+    }
+    
+    // Use default values for quick generation
+    const platforms = ['linkedin', 'twitter']; // Default platforms
+    const provider = 'perplexity'; // Default provider
+    
+    const resultContainer = document.getElementById('generated-content');
+    if (resultContainer) {
+        resultContainer.innerHTML = '<div class="text-center"><div class="spinner"></div><p class="mt-2">Generando contenido...</p></div>';
+    }
+    
+    try {
+        const response = await fetchData('/api/generate-content', {
+            method: 'POST',
+            body: JSON.stringify({ 
+                topic: topic, 
+                platforms: platforms,
+                provider: provider
+            })
+        });
+        
+        if (response && response.status === 'success') {
+            const transformedContent = {};
+            platforms.forEach(platform => {
+                transformedContent[platform] = {
+                    content: response.content[platform] || '',
+                    hashtags: response.hashtags[platform] || []
+                };
+            });
+            
+            // Switch to content creation view and display results
+            showView('crear-contenido');
+            displayGeneratedContent(transformedContent, platforms);
+            showSuccessMessage('Contenido generado exitosamente');
+        } else if (response && response.status === 'error') {
+            if (response.requires_setup) {
+                showErrorMessage(`${response.error}. Configura las API keys en la sección de Configuración.`);
+            } else {
+                showErrorMessage(response.error || 'Error al generar contenido');
+            }
+        } else {
+            showErrorMessage('Error al generar contenido');
+        }
+        
+    } catch (error) {
+        console.error('Error generating quick content:', error);
+        showErrorMessage('Error al generar contenido: ' + (error.message || 'Error desconocido'));
+    }
 }
 
 async function generateContent() {
@@ -1341,6 +1406,159 @@ function displayUpcomingPosts(posts) {
             </div>
         `;
     }).join('');
+}
+
+// Switch calendar view (day/week/month)
+function switchCalendarView(view, button) {
+    // Update active button
+    const viewButtons = document.querySelectorAll('[data-calendar-view]');
+    viewButtons.forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    
+    // Store current view
+    window.currentCalendarView = view;
+    
+    // Update calendar display based on view
+    const calendarContainer = document.getElementById('calendar-container');
+    const calendarTitle = document.getElementById('calendar-title');
+    
+    if (!calendarContainer || !calendarTitle) return;
+    
+    switch(view) {
+        case 'day':
+            renderDayView();
+            break;
+        case 'week':
+            renderWeekView();
+            break;
+        case 'month':
+        default:
+            renderMonthView();
+            break;
+    }
+}
+
+// Render day view
+function renderDayView() {
+    const today = new Date();
+    const calendarTitle = document.getElementById('calendar-title');
+    const calendarContainer = document.getElementById('calendar-container');
+    
+    if (calendarTitle) {
+        calendarTitle.textContent = `${today.toLocaleDateString('es-ES', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        })}`;
+    }
+    
+    if (calendarContainer) {
+        calendarContainer.innerHTML = `
+            <div class="day-view">
+                <div class="time-slots">
+                    ${generateTimeSlots()}
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Render week view  
+function renderWeekView() {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+    
+    const calendarTitle = document.getElementById('calendar-title');
+    const calendarContainer = document.getElementById('calendar-container');
+    
+    if (calendarTitle) {
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        calendarTitle.textContent = `Semana del ${startOfWeek.getDate()} al ${endOfWeek.getDate()} de ${startOfWeek.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}`;
+    }
+    
+    if (calendarContainer) {
+        calendarContainer.innerHTML = `
+            <div class="week-view">
+                <div class="week-header">
+                    ${generateWeekDays(startOfWeek)}
+                </div>
+                <div class="week-grid">
+                    ${generateWeekGrid(startOfWeek)}
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Render month view (existing functionality)
+function renderMonthView() {
+    loadCalendarData();
+}
+
+// Generate time slots for day view
+function generateTimeSlots() {
+    let slots = '';
+    for (let hour = 6; hour <= 23; hour++) {
+        const timeStr = `${hour.toString().padStart(2, '0')}:00`;
+        slots += `
+            <div class="time-slot" data-time="${timeStr}">
+                <div class="time-label">${timeStr}</div>
+                <div class="time-content">
+                    <button class="btn btn-sm btn-outline-primary w-100" onclick="openScheduleModal('${timeStr}')">
+                        <i class="fas fa-plus"></i> Programar
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    return slots;
+}
+
+// Generate week days header
+function generateWeekDays(startDate) {
+    const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    let header = '';
+    
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        header += `
+            <div class="week-day-header">
+                <div class="day-name">${days[i]}</div>
+                <div class="day-number">${date.getDate()}</div>
+            </div>
+        `;
+    }
+    return header;
+}
+
+// Generate week grid
+function generateWeekGrid(startDate) {
+    let grid = '';
+    for (let hour = 6; hour <= 23; hour++) {
+        const timeStr = `${hour.toString().padStart(2, '0')}:00`;
+        grid += `<div class="week-time-row">`;
+        grid += `<div class="week-time-label">${timeStr}</div>`;
+        
+        for (let day = 0; day < 7; day++) {
+            const date = new Date(startDate);
+            date.setDate(startDate.getDate() + day);
+            const dateStr = date.toISOString().split('T')[0];
+            
+            grid += `
+                <div class="week-time-cell" data-date="${dateStr}" data-time="${timeStr}">
+                    <button class="btn btn-sm btn-outline-primary btn-week-schedule" onclick="openScheduleModal('${timeStr}', '${dateStr}')">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            `;
+        }
+        grid += `</div>`;
+    }
+    return grid;
 }
 
 // Navigate calendar months
