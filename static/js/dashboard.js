@@ -1361,6 +1361,13 @@ function getPlatformIcon(platform) {
 
 // Content-to-Scheduling Integration Functions
 function scheduleGeneratedContent(platform, content, hashtags) {
+    const scheduleBtn = event.target;
+    const originalText = scheduleBtn.innerHTML;
+    
+    // Show immediate feedback
+    scheduleBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Preparando...';
+    scheduleBtn.disabled = true;
+    
     // Create a title from the first part of the content
     const title = content.length > 50 ? content.substring(0, 50) + '...' : content;
     const fullContent = `${content}\n\n${hashtags}`;
@@ -1378,11 +1385,24 @@ function scheduleGeneratedContent(platform, content, hashtags) {
     document.getElementById('postTime').value = '10:00';
     document.getElementById('postTimezone').value = 'Europe/Madrid';
     
+    // Show success feedback
+    scheduleBtn.innerHTML = '<i class="fas fa-check me-1"></i>Listo';
+    scheduleBtn.classList.remove('btn-primary');
+    scheduleBtn.classList.add('btn-outline-success');
+    
     // Show the scheduling modal
     const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
     modal.show();
     
-    showSuccessMessage('Contenido listo para programar');
+    showSuccessMessage('✓ Contenido preparado para programar');
+    
+    // Reset button after modal opens
+    setTimeout(() => {
+        scheduleBtn.innerHTML = originalText;
+        scheduleBtn.classList.remove('btn-outline-success');
+        scheduleBtn.classList.add('btn-primary');
+        scheduleBtn.disabled = false;
+    }, 2000);
 }
 
 function editGeneratedContent(platform, content, hashtags) {
@@ -1456,14 +1476,41 @@ function saveEditedContent(platform) {
 }
 
 function copyToClipboard(content) {
+    const copyBtn = event.target;
+    const originalText = copyBtn.innerHTML;
+    
+    // Set loading state
+    copyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Copiando...';
+    copyBtn.disabled = true;
+    
     navigator.clipboard.writeText(content).then(() => {
-        showSuccessMessage('Contenido copiado al portapapeles');
+        // Success feedback
+        copyBtn.innerHTML = '<i class="fas fa-check me-1"></i>Copiado';
+        copyBtn.classList.remove('btn-outline-warning');
+        copyBtn.classList.add('btn-outline-success');
+        
+        showSuccessMessage('✓ Contenido copiado al portapapeles');
+        
+        // Reset button after 2 seconds
+        setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+            copyBtn.classList.remove('btn-outline-success');
+            copyBtn.classList.add('btn-outline-warning');
+            copyBtn.disabled = false;
+        }, 2000);
     }).catch(err => {
         showErrorMessage('Error al copiar contenido');
+        copyBtn.innerHTML = originalText;
+        copyBtn.disabled = false;
     });
 }
 
 async function saveGeneratedContent(platform, content, hashtags) {
+    // Find the save button and add loading state
+    const saveBtn = event.target;
+    const originalText = saveBtn.innerHTML;
+    setButtonLoading(saveBtn, true);
+    
     try {
         const response = await fetch('/api/save-draft', {
             method: 'POST',
@@ -1481,13 +1528,27 @@ async function saveGeneratedContent(platform, content, hashtags) {
         const result = await response.json();
         
         if (result.success) {
-            showSuccessMessage(`Contenido guardado como borrador para ${platform.charAt(0).toUpperCase() + platform.slice(1)}`);
+            // Success feedback with animation
+            saveBtn.innerHTML = '<i class="fas fa-check me-1"></i>Guardado';
+            saveBtn.classList.remove('btn-info');
+            saveBtn.classList.add('btn-success');
+            
+            showSuccessMessage(`✓ Contenido guardado como borrador para ${platform.charAt(0).toUpperCase() + platform.slice(1)}`);
+            
+            // Reset button after 3 seconds
+            setTimeout(() => {
+                saveBtn.innerHTML = originalText;
+                saveBtn.classList.remove('btn-success');
+                saveBtn.classList.add('btn-info');
+            }, 3000);
         } else {
             showErrorMessage('Error al guardar el contenido: ' + result.error);
+            setButtonLoading(saveBtn, false);
         }
     } catch (error) {
         console.error('Error saving content:', error);
         showErrorMessage('Error al guardar el contenido');
+        setButtonLoading(saveBtn, false);
     }
 }
 

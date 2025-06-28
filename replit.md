@@ -212,6 +212,15 @@ The application is configured for deployment on Replit with the following setup:
   - Implemented comprehensive post creation workflow from calendar interface
   - Enhanced calendar styling with hover effects and clear visual feedback
   - Configured Perplexity AI integration with proper API key authentication
+- June 28, 2025. Added comprehensive button feedback system with visual states:
+  - Implemented "Guardar" button in content generation results area
+  - Created backend endpoints for saving, retrieving, and deleting drafts
+  - Added draft management system with calendar integration for selecting saved content
+  - Enhanced all action buttons (Guardar, Publicar Ahora, Programar, Copiar) with loading states
+  - Implemented visual feedback with spinner animations, success states, and auto-reset
+  - Added CSS animations for button states including success pulse and error shake
+  - Fixed content processing for Web/Blog platform to properly extract and display content
+  - Integrated draft selection functionality in calendar modal for easy content reuse
 
 ## User Preferences
 

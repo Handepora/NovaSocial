@@ -1,9 +1,16 @@
 // Publish Now functionality
 async function publishNow(platform, content, hashtags) {
+    // Find the publish button and add loading state
+    const publishBtn = event.target;
+    const originalText = publishBtn.innerHTML;
+    
+    // Set loading state
+    publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Publicando...';
+    publishBtn.disabled = true;
+    publishBtn.classList.add('btn-loading');
+    
     try {
         const fullContent = hashtags ? `${content} ${hashtags}` : content;
-        
-        showSuccessMessage('Iniciando publicación inmediata...');
         
         const response = await fetch('/api/publish-now', {
             method: 'POST',
@@ -20,18 +27,40 @@ async function publishNow(platform, content, hashtags) {
         const data = await response.json();
 
         if (data.status === 'success') {
-            showSuccessMessage(`Contenido publicado exitosamente en ${platform.charAt(0).toUpperCase() + platform.slice(1)}`);
+            // Success feedback with animation
+            publishBtn.innerHTML = '<i class="fas fa-check me-1"></i>Publicado';
+            publishBtn.classList.remove('btn-success', 'btn-loading');
+            publishBtn.classList.add('btn-outline-success');
+            
+            showSuccessMessage(`✓ Contenido publicado exitosamente en ${platform.charAt(0).toUpperCase() + platform.slice(1)}`);
+            
             // Refresh monitoring view if it's active
             const monitoreoView = document.getElementById('monitoreo-view');
             if (monitoreoView && monitoreoView.style.display !== 'none') {
                 loadMonitoringData();
             }
+            
+            // Reset button after 3 seconds
+            setTimeout(() => {
+                publishBtn.innerHTML = originalText;
+                publishBtn.classList.remove('btn-outline-success');
+                publishBtn.classList.add('btn-success');
+                publishBtn.disabled = false;
+            }, 3000);
         } else {
             showErrorMessage(`Error al publicar en ${platform}: ${data.message || 'Error desconocido'}`);
+            // Reset button on error
+            publishBtn.innerHTML = originalText;
+            publishBtn.classList.remove('btn-loading');
+            publishBtn.disabled = false;
         }
     } catch (error) {
         console.error('Error publishing content:', error);
         showErrorMessage('Error al publicar contenido. Por favor, intenta de nuevo.');
+        // Reset button on error
+        publishBtn.innerHTML = originalText;
+        publishBtn.classList.remove('btn-loading');
+        publishBtn.disabled = false;
     }
 }
 
