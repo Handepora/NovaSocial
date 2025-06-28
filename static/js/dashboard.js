@@ -39,43 +39,100 @@ function initializeNavigation() {
 }
 
 function showView(viewName) {
-    // Hide all views
-    document.querySelectorAll('.view').forEach(view => {
-        view.classList.remove('active');
-    });
-    
-    // Show selected view
+    const currentActiveView = document.querySelector('.view.active');
     const targetView = document.getElementById(viewName + '-view');
-    if (targetView) {
+    
+    if (!targetView || currentView === viewName) return;
+    
+    // Add transition class to body for smooth overall transition
+    document.body.classList.add('view-transitioning');
+    
+    // Fade out current view
+    if (currentActiveView) {
+        currentActiveView.style.opacity = '0';
+        currentActiveView.style.transform = 'translateY(-20px)';
+        
+        setTimeout(() => {
+            currentActiveView.classList.remove('active');
+            currentActiveView.style.opacity = '';
+            currentActiveView.style.transform = '';
+        }, 200);
+    }
+    
+    // Fade in new view with delay
+    setTimeout(() => {
         targetView.classList.add('active');
         currentView = viewName;
         
         // Update sidebar navigation active state
         updateSidebarActive(viewName);
         
+        // Trigger content animations
+        triggerContentAnimations(targetView);
+        
         // Load view-specific data
-        switch(viewName) {
-            case 'dashboard':
-                loadDashboardData();
-                break;
-            case 'calendario':
-                loadCalendarData();
-                loadUpcomingPosts();
-                break;
-            case 'validacion':
-                loadValidationData();
-                break;
-            case 'analiticas':
-                loadAnalyticsData();
-                break;
-            case 'configuracion':
-                loadConfigurationData();
-                break;
-            case 'monitoreo':
-                loadMonitoringData();
-                break;
-        }
-    }
+        setTimeout(() => {
+            switch(viewName) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'calendario':
+                    loadCalendarData();
+                    loadUpcomingPosts();
+                    break;
+                case 'validacion':
+                    loadValidationData();
+                    break;
+                case 'analiticas':
+                    loadAnalyticsData();
+                    break;
+                case 'configuracion':
+                    loadConfigurationData();
+                    break;
+                case 'monitoreo':
+                    loadMonitoringData();
+                    break;
+            }
+        }, 100);
+        
+        // Remove transition class
+        setTimeout(() => {
+            document.body.classList.remove('view-transitioning');
+        }, 400);
+    }, currentActiveView ? 200 : 0);
+}
+
+// Trigger staggered animations for content elements
+function triggerContentAnimations(container) {
+    // Reset animations for all elements
+    const animatedElements = container.querySelectorAll('.dashboard-card, .content-section, .table tbody tr, .form-group');
+    
+    animatedElements.forEach((element, index) => {
+        element.style.animation = 'none';
+        element.offsetHeight; // Trigger reflow
+        
+        // Add appropriate animation class with staggered delay
+        setTimeout(() => {
+            if (element.classList.contains('dashboard-card')) {
+                element.style.animation = `fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s both`;
+            } else if (element.classList.contains('content-section')) {
+                const animationType = index % 2 === 0 ? 'fadeInLeft' : 'fadeInRight';
+                element.style.animation = `${animationType} 0.4s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s both`;
+            } else {
+                element.style.animation = `fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.05}s both`;
+            }
+        }, 50);
+    });
+    
+    // Animate charts with special handling
+    const charts = container.querySelectorAll('.chart-container, canvas');
+    charts.forEach((chart, index) => {
+        chart.style.animation = 'none';
+        chart.offsetHeight;
+        setTimeout(() => {
+            chart.style.animation = `fadeInScale 0.6s cubic-bezier(0.4, 0, 0.2, 1) ${0.3 + index * 0.1}s both`;
+        }, 100);
+    });
 }
 
 function updateSidebarActive(viewName) {
@@ -2405,4 +2462,101 @@ async function resetPromptsToDefault() {
         showErrorMessage("Error al restaurar: " + error.message);
     }
 }
+
+// ===== ENHANCED ANIMATION UTILITIES =====
+
+// Enhanced animation utilities
+function addLoadingAnimation(element) {
+    element.classList.add('loading-content');
+    element.style.pointerEvents = 'none';
+}
+
+function removeLoadingAnimation(element) {
+    element.classList.remove('loading-content');
+    element.style.pointerEvents = '';
+}
+
+// Smooth scroll to top when changing views
+function smoothScrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Enhanced notification system with animations
+function createAnimatedNotification(message, type = 'success') {
+    const alertContainer = document.createElement('div');
+    alertContainer.className = 'position-fixed top-0 end-0 p-3';
+    alertContainer.style.zIndex = '9999';
+    
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.style.animation = 'fadeInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+    
+    const icon = type === 'success' ? 'check-circle' : 'exclamation-triangle';
+    alert.innerHTML = `
+        <i class="fas fa-${icon} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    alertContainer.appendChild(alert);
+    document.body.appendChild(alertContainer);
+    
+    // Auto-remove with animation
+    const duration = type === 'success' ? 4000 : 5000;
+    setTimeout(() => {
+        alert.style.animation = 'fadeOutRight 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        setTimeout(() => {
+            if (alertContainer.parentNode) {
+                alertContainer.parentNode.removeChild(alertContainer);
+            }
+        }, 400);
+    }, duration);
+}
+
+// Button loading state animations
+function setButtonLoading(button, isLoading = true) {
+    if (isLoading) {
+        button.dataset.originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Cargando...';
+        button.disabled = true;
+        button.style.transform = 'scale(0.98)';
+    } else {
+        button.innerHTML = button.dataset.originalText || button.innerHTML;
+        button.disabled = false;
+        button.style.transform = '';
+        delete button.dataset.originalText;
+    }
+}
+
+// Card hover effect enhancement
+function enhanceCardAnimations() {
+    const cards = document.querySelectorAll('.card, .account-card, .dashboard-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+            card.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = '';
+            card.style.boxShadow = '';
+        });
+    });
+}
+
+// Initialize enhanced animations when DOM loads
+document.addEventListener('DOMContentLoaded', function() {
+    enhanceCardAnimations();
+    
+    // Add smooth scrolling to navigation
+    document.querySelectorAll('.nav-link[data-view]').forEach(link => {
+        link.addEventListener('click', () => {
+            smoothScrollToTop();
+        });
+    });
+});
 
