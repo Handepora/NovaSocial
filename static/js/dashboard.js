@@ -3381,22 +3381,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         promptModal.addEventListener('shown.bs.modal', function() {
-            // Initialize Bootstrap tabs manually
+            // Manual tab switching without Bootstrap Tab API
             const tabButtons = promptModal.querySelectorAll('[data-bs-toggle="tab"]');
+            const tabPanes = promptModal.querySelectorAll('.tab-pane');
+            
+            function switchTab(targetId, activeButton) {
+                // Hide all tab panes
+                tabPanes.forEach(pane => {
+                    pane.classList.remove('show', 'active');
+                });
+                
+                // Remove active class from all buttons
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.setAttribute('aria-selected', 'false');
+                });
+                
+                // Show target tab pane
+                const targetPane = promptModal.querySelector(targetId);
+                if (targetPane) {
+                    targetPane.classList.add('show', 'active');
+                }
+                
+                // Activate clicked button
+                activeButton.classList.add('active');
+                activeButton.setAttribute('aria-selected', 'true');
+            }
+            
+            // Add click listeners to each tab button
             tabButtons.forEach(button => {
-                const tab = new bootstrap.Tab(button);
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
-                    tab.show();
+                    const target = this.getAttribute('data-bs-target');
+                    switchTab(target, this);
                 });
             });
-            
-            // Ensure first tab is active
-            const firstTab = promptModal.querySelector('#system-tab');
-            if (firstTab) {
-                const tab = new bootstrap.Tab(firstTab);
-                tab.show();
-            }
         });
     }
 });
