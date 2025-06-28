@@ -39,13 +39,46 @@
             width: 280px !important;
             height: 100vh !important;
             z-index: 9999 !important;
-            background-color: var(--secondary-bg) !important;
-            border-right: 2px solid var(--border-color) !important;
+            background-color: #1a202c !important;
+            border-right: 2px solid #2d3748 !important;
             box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2) !important;
             overflow-y: auto !important;
             flex: none !important;
             margin: 0 !important;
             padding: 0 !important;
+        }
+        
+        /* Force navigation elements visibility */
+        .sidebar div[style*="flex: 1"] {
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: block !important;
+            background: #1a202c !important;
+        }
+        
+        .sidebar div[style*="flex: 1"] > div {
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: block !important;
+            margin-bottom: 1rem !important;
+            padding: 0.75rem !important;
+        }
+        
+        .sidebar div[style*="flex: 1"] > div > a {
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: flex !important;
+            color: #a0aec0 !important;
+            text-decoration: none !important;
+        }
+        
+        .sidebar div[style*="flex: 1"] > div:first-child {
+            background: rgba(255, 107, 71, 0.1) !important;
+            border-left: 3px solid #ff6b47 !important;
+        }
+        
+        .sidebar div[style*="flex: 1"] > div:first-child > a {
+            color: #e2e8f0 !important;
         }
         
         /* Force main content positioning */
@@ -1986,10 +2019,49 @@
             }
         }
         
+        // Force navigation visibility
+        function forceNavigationVisibility() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            
+            // Create navigation if it doesn't exist or isn't visible
+            const navSection = sidebar.querySelector('div[style*="flex: 1"]');
+            if (!navSection) return;
+            
+            // Force visibility with JavaScript
+            navSection.style.cssText = 'flex: 1; padding: 1rem; background: #1a202c; min-height: 400px; visibility: visible !important; opacity: 1 !important; display: block !important;';
+            
+            const navItems = navSection.children;
+            for (let i = 0; i < navItems.length; i++) {
+                const item = navItems[i];
+                if (item) {
+                    item.style.cssText = 'margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.3s; visibility: visible !important; opacity: 1 !important; display: block !important;';
+                    
+                    const link = item.querySelector('a');
+                    if (link) {
+                        link.style.cssText = 'color: #a0aec0; text-decoration: none; display: flex !important; align-items: center; visibility: visible !important; opacity: 1 !important;';
+                    }
+                }
+            }
+            
+            // Special styling for first item (Dashboard)
+            if (navItems[0]) {
+                navItems[0].style.cssText = 'margin-bottom: 1rem; padding: 0.75rem; border-radius: 0.375rem; background: rgba(255, 107, 71, 0.1); border-left: 3px solid #ff6b47; visibility: visible !important; opacity: 1 !important; display: block !important;';
+                const firstLink = navItems[0].querySelector('a');
+                if (firstLink) {
+                    firstLink.style.cssText = 'color: #e2e8f0; text-decoration: none; display: flex !important; align-items: center; visibility: visible !important; opacity: 1 !important;';
+                }
+            }
+        }
+        
         // Apply layout fixes
         document.addEventListener('DOMContentLoaded', function() {
             forceSidebarLayout();
+            forceNavigationVisibility();
             setTimeout(forceSidebarLayout, 100);
+            setTimeout(forceNavigationVisibility, 200);
+            setTimeout(forceNavigationVisibility, 500);
+            setTimeout(forceNavigationVisibility, 1000);
             
             // Fix configuration when switching views
             document.addEventListener('click', function(e) {
