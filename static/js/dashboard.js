@@ -1707,14 +1707,27 @@ async function testApiCredentials() {
         
         console.log('Verifying credentials for:', platform);
         
+        // Prepare credentials object
+        const credentials = {
+            platform: platform,
+            api_key: apiKey,
+            api_secret: apiSecret
+        };
+        
+        // Add Twitter-specific credentials if platform is Twitter
+        if (platform === 'twitter') {
+            credentials.bearer_token = document.getElementById('bearerToken').value;
+            credentials.access_token = document.getElementById('accessToken').value;
+            credentials.access_token_secret = document.getElementById('accessTokenSecret').value;
+        } else {
+            // For other platforms, use the generic access token field
+            credentials.access_token = document.getElementById('accessToken').value;
+        }
+        
         // Call the new verification endpoint
         const response = await fetchData('/api/accounts/verify-credentials', {
             method: 'POST',
-            body: JSON.stringify({
-                platform: platform,
-                api_key: apiKey,
-                api_secret: apiSecret
-            })
+            body: JSON.stringify(credentials)
         });
         
         console.log('Verification response:', response);
@@ -1864,6 +1877,12 @@ async function handleAddAccount(withAPI) {
             formData.api_secret = document.getElementById('apiSecret').value;
             formData.access_token = document.getElementById('accessToken').value;
             formData.webhook_url = document.getElementById('webhookUrl').value;
+            
+            // Add Twitter-specific credentials
+            if (formData.platform === 'twitter') {
+                formData.bearer_token = document.getElementById('bearerToken').value;
+                formData.access_token_secret = document.getElementById('accessTokenSecret').value;
+            }
         }
         
         // Validate required fields

@@ -1129,15 +1129,41 @@
                                     </div>
                                 </div>
                                 
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="bearerToken" class="form-label">Bearer Token</label>
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" id="bearerToken" placeholder="AAAA...">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('bearerToken')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                            <div class="form-text">Requerido para Twitter API v2</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="accessToken" class="form-label">Access Token</label>
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" id="accessToken" placeholder="Access Token">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('accessToken')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="mb-3">
-                                    <label for="accessToken" class="form-label">Access Token (opcional)</label>
+                                    <label for="accessTokenSecret" class="form-label">Access Token Secret</label>
                                     <div class="input-group">
-                                        <input type="password" class="form-control" id="accessToken" placeholder="Access Token si ya lo tienes">
-                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('accessToken')">
+                                        <input type="password" class="form-control" id="accessTokenSecret" placeholder="Access Token Secret">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('accessTokenSecret')">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </div>
-                                    <div class="form-text">Solo necesario si ya tienes un token válido</div>
+                                    <div class="form-text">Requerido para publicación en Twitter</div>
                                 </div>
                                 
                                 <div class="mb-3">

@@ -868,6 +868,12 @@ def add_account():
                 'access_token': data.get('access_token', ''),
                 'webhook_url': data.get('webhook_url', '')
             }
+            
+            # Add Twitter-specific credentials
+            if data.get('platform') == 'twitter':
+                credentials['bearer_token'] = data.get('bearer_token', '')
+                credentials['access_token_secret'] = data.get('access_token_secret', '')
+            
             new_account['encrypted_credentials'] = encryption_service.encrypt_credentials(credentials)
             new_account['status'] = 'connected'
         elif data.get('has_api'):
@@ -956,13 +962,51 @@ def verify_credentials():
     try:
         data = request.get_json()
         platform = data.get('platform')
-        api_key = data.get('api_key')
-        api_secret = data.get('api_secret')
+        api_key = data.get('api_key', '')
+        api_secret = data.get('api_secret', '')
+        bearer_token = data.get('bearer_token', '')
+        access_token = data.get('access_token', '')
+        access_token_secret = data.get('access_token_secret', '')
         
         if not platform or not api_key:
             return jsonify({"error": "Platform and API key are required"}), 400
         
-        # Simulate API calls to get account information
+        # Try real API connection for Twitter if we have proper credentials
+        if platform == 'twitter' and bearer_token and len(api_key) > 20:
+            try:
+                from twitter_api import TwitterAPI
+                
+                twitter_client = TwitterAPI(
+                    api_key=api_key,
+                    api_secret=api_secret,
+                    bearer_token=bearer_token,
+                    access_token=access_token,
+                    access_token_secret=access_token_secret
+                )
+                
+                result = twitter_client.test_connection()
+                
+                if result['status'] == 'success':
+                    return jsonify({
+                        "status": "success",
+                        "message": f"Conectado exitosamente a tu cuenta de {platform}",
+                        "profile": result['profile']
+                    })
+                else:
+                    return jsonify({
+                        "status": "error",
+                        "message": result['message']
+                    }), 400
+                    
+            except ImportError:
+                pass  # Fall back to simulation
+            except Exception as e:
+                return jsonify({
+                    "status": "error",
+                    "message": f"Error conectando con Twitter API: {str(e)}"
+                }), 500
+        
+        # Fall back to simulation for demo purposes
         profile_data = simulate_api_profile_fetch(platform, api_key, api_secret)
         
         if profile_data:
