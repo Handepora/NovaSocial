@@ -983,7 +983,28 @@ def verify_credentials():
 def simulate_api_profile_fetch(platform, api_key, api_secret):
     """Simulate fetching profile data from social media APIs"""
     
-    # Generate consistent profile data based on API key to avoid changing data
+    # Check if these look like real API credentials
+    real_api_patterns = [
+        len(api_key) > 20,  # Real API keys are usually longer
+        any(char.isdigit() for char in api_key),  # Usually contain numbers
+        any(char.isupper() for char in api_key),  # Usually contain uppercase
+        not api_key.lower().startswith(('test', 'demo', 'example'))  # Not test credentials
+    ]
+    
+    is_real_api = sum(real_api_patterns) >= 3
+    
+    if is_real_api:
+        # For real API credentials, show a message about connecting to real APIs
+        return {
+            'username': 'TU_CUENTA_REAL',
+            'display_name': 'Tu Cuenta Real (Requiere implementación de API real)',
+            'follower_count': 0,
+            'verified': False,
+            'profile_image': '',
+            'note': 'API_REAL_DETECTED'
+        }
+    
+    # Generate consistent profile data based on API key for demo purposes
     import hashlib
     
     # Create a consistent hash from the API key for stable results
@@ -1000,7 +1021,7 @@ def simulate_api_profile_fetch(platform, api_key, api_secret):
     elif 'test' in username_hint or 'demo' in username_hint:
         clean_username = f"@{username_hint.replace('_', '').replace('-', '')}"
     else:
-        clean_username = f"@usuario_{username_hint[:6]}"
+        clean_username = f"@demo_{username_hint[:6]}"
     
     sample_profiles = {
         'twitter': {

@@ -168,6 +168,9 @@ The application is configured for deployment on Replit with the following setup:
   - Enhanced user experience with visual verification status showing account details
   - Updated resetAccountForm to clear verification status when opening new account modals
   - Improved error handling and loading states for credential verification process
+  - Added detection system for real vs demo API credentials with appropriate messaging
+  - Implemented consistent profile data generation based on API key hash for stable results
+  - Created clear distinction between demo mode and real API integration requirements
 
 ## User Preferences
 

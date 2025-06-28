@@ -1722,48 +1722,39 @@ async function testApiCredentials() {
         if (response.status === 'success') {
             const profile = response.profile;
             
-            // Auto-fill account information from API response
-            const accountNameField = document.getElementById('accountName');
-            const displayNameField = document.getElementById('accountDisplayName');
-            
-            console.log('Account name field:', accountNameField);
-            console.log('Display name field:', displayNameField);
-            console.log('Profile data:', profile);
-            
-            // Direct field setting
-            const accountField = document.querySelector('input[id="accountName"]');
-            const displayField = document.querySelector('input[id="accountDisplayName"]');
-            
-            console.log('Direct - Account field:', accountField);
-            console.log('Direct - Display field:', displayField);
-            console.log('All forms:', document.querySelectorAll('form'));
-            console.log('All inputs:', document.querySelectorAll('input'));
-            
-            if (accountField && profile.username) {
-                accountField.value = profile.username;
-                console.log('Set account name directly to:', profile.username);
-            }
-            
-            if (displayField && profile.display_name) {
-                displayField.value = profile.display_name;
-                console.log('Set display name directly to:', profile.display_name);
-            }
-            
-            // Also try with timeout
-            setTimeout(() => {
-                const accountFieldRetry = document.querySelector('input[id="accountName"]');
-                const displayFieldRetry = document.querySelector('input[id="accountDisplayName"]');
+            // Check if real API credentials were detected
+            if (profile.note === 'API_REAL_DETECTED') {
+                showSuccessMessage('Credenciales reales detectadas. Para conectar con tu cuenta real, contacta al desarrollador para implementar la integración completa de APIs.');
                 
-                if (accountFieldRetry && profile.username) {
-                    accountFieldRetry.value = profile.username;
-                    console.log('Retry set account name to:', profile.username);
+                // Set placeholder values
+                const accountField = document.getElementById('accountName');
+                const displayField = document.getElementById('accountDisplayName');
+                
+                if (accountField) {
+                    accountField.value = 'tu-cuenta-real';
+                    accountField.placeholder = 'Se detectó API real - Implementación pendiente';
                 }
                 
-                if (displayFieldRetry && profile.display_name) {
-                    displayFieldRetry.value = profile.display_name;
-                    console.log('Retry set display name to:', profile.display_name);
+                if (displayField) {
+                    displayField.value = 'Tu Cuenta Real';
+                    displayField.placeholder = 'Nombre real de tu cuenta';
                 }
-            }, 300);
+                
+            } else {
+                // Handle demo/test credentials
+                const accountField = document.getElementById('accountName');
+                const displayField = document.getElementById('accountDisplayName');
+                
+                if (accountField && profile.username) {
+                    accountField.value = profile.username;
+                }
+                
+                if (displayField && profile.display_name) {
+                    displayField.value = profile.display_name;
+                }
+                
+                showSuccessMessage(`Credenciales de demo verificadas. Cuenta: ${profile.username} (${profile.follower_count.toLocaleString()} seguidores)`);
+            }
             
             // Mark credentials as verified to preserve form state
             credentialsVerified = true;
@@ -1776,9 +1767,6 @@ async function testApiCredentials() {
                 enableAPIToggle.dispatchEvent(new Event('change'));
             }
             
-            // Show success message with profile info
-            showSuccessMessage(`Credenciales verificadas. Cuenta: ${profile.username} (${profile.follower_count.toLocaleString()} seguidores)`);
-            
             // Show verification status
             const credentialsSection = document.querySelector('#apiCredentialsContent');
             let statusDiv = document.getElementById('verification-status');
@@ -1789,16 +1777,28 @@ async function testApiCredentials() {
                 credentialsSection.appendChild(statusDiv);
             }
             
-            statusDiv.innerHTML = `
-                <div class="alert alert-success mt-3">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <strong>Cuenta verificada:</strong> ${profile.display_name}<br>
-                    <small class="text-muted">
-                        <i class="fas fa-users me-1"></i>${profile.follower_count.toLocaleString()} seguidores
-                        ${profile.verified ? '<i class="fas fa-check-circle text-primary ms-2"></i>Verificada' : ''}
-                    </small>
-                </div>
-            `;
+            if (profile.note === 'API_REAL_DETECTED') {
+                statusDiv.innerHTML = `
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>API Real Detectada:</strong> ${profile.display_name}<br>
+                        <small class="text-muted">
+                            Para conectar con tu cuenta real, se requiere implementación completa de las APIs de ${platform}
+                        </small>
+                    </div>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="alert alert-success mt-3">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Demo verificado:</strong> ${profile.display_name}<br>
+                        <small class="text-muted">
+                            <i class="fas fa-users me-1"></i>${profile.follower_count.toLocaleString()} seguidores (datos de demostración)
+                            ${profile.verified ? '<i class="fas fa-check-circle text-primary ms-2"></i>Verificada' : ''}
+                        </small>
+                    </div>
+                `;
+            }
             
         } else {
             showErrorMessage(response.message || `Error al validar credenciales de ${platform}`);
