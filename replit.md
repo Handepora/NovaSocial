@@ -155,6 +155,12 @@ The application is configured for deployment on Replit with the following setup:
   - Implemented loading state animations for buttons and content areas
   - Added smooth scrolling to top when changing views
   - Included accessibility support for users who prefer reduced motion
+- June 28, 2025. Configured Madrid timezone as default for scheduling:
+  - Set Europe/Madrid as the default timezone selection in scheduling modal
+  - Updated setDefaultScheduleDateTime to calculate dates using Madrid timezone
+  - Modified scheduleGeneratedContent to use Madrid time for content scheduling
+  - Updated scheduleAdaptedContent to default to Madrid timezone
+  - All scheduling functions now default to Madrid time (CET/CEST) instead of UTC
 
 ## User Preferences
 

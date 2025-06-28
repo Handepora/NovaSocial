@@ -149,12 +149,31 @@ function scheduleAdaptedContent(platform, content, hashtags) {
     // Fill the scheduling modal with adapted content
     const postContent = document.getElementById('postContent');
     const postPlatform = document.getElementById('postPlatform');
+    const postTimezone = document.getElementById('postTimezone');
     
     if (postContent) {
         postContent.value = content + (hashtags ? '\n\n' + hashtags : '');
     }
     if (postPlatform) {
         postPlatform.value = platform;
+    }
+    if (postTimezone) {
+        postTimezone.value = 'Europe/Madrid';
+    }
+    
+    // Set Madrid time for scheduling
+    const now = new Date();
+    const madridTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Madrid"}));
+    const tomorrow = new Date(madridTime.getTime() + 24 * 60 * 60 * 1000);
+    
+    const postDate = document.getElementById('postDate');
+    const postTime = document.getElementById('postTime');
+    
+    if (postDate) {
+        postDate.value = tomorrow.toISOString().split('T')[0];
+    }
+    if (postTime) {
+        postTime.value = '10:00';
     }
     
     // Open scheduling modal

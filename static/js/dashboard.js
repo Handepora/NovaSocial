@@ -1011,11 +1011,14 @@ function setupSchedulingEventListeners() {
 
 // Set default date and time for scheduling
 function setDefaultScheduleDateTime() {
+    // Get current time in Madrid timezone
     const now = new Date();
-    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const madridTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Madrid"}));
+    const tomorrow = new Date(madridTime.getTime() + 24 * 60 * 60 * 1000);
     
     const dateInput = document.getElementById('postDate');
     const timeInput = document.getElementById('postTime');
+    const timezoneInput = document.getElementById('postTimezone');
     
     if (dateInput) {
         dateInput.value = tomorrow.toISOString().split('T')[0];
@@ -1023,6 +1026,11 @@ function setDefaultScheduleDateTime() {
     
     if (timeInput) {
         timeInput.value = '10:00';
+    }
+    
+    // Set Madrid as default timezone
+    if (timezoneInput) {
+        timezoneInput.value = 'Europe/Madrid';
     }
 }
 
@@ -1270,11 +1278,13 @@ function scheduleGeneratedContent(platform, content, hashtags) {
     document.getElementById('postContent').value = fullContent;
     document.getElementById('postPlatform').value = platform;
     
-    // Set default scheduling time (tomorrow at 10 AM)
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    // Set default scheduling time (tomorrow at 10 AM Madrid time)
+    const now = new Date();
+    const madridTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Madrid"}));
+    const tomorrow = new Date(madridTime.getTime() + 24 * 60 * 60 * 1000);
     document.getElementById('postDate').value = tomorrow.toISOString().split('T')[0];
     document.getElementById('postTime').value = '10:00';
+    document.getElementById('postTimezone').value = 'Europe/Madrid';
     
     // Show the scheduling modal
     const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
