@@ -2140,11 +2140,16 @@
         
         // Setup navigation functionality
         function setupSidebarNavigation() {
+            console.log('Setting up sidebar navigation...');
             const navLinks = document.querySelectorAll('[data-view]');
-            navLinks.forEach(link => {
+            console.log('Found navigation links:', navLinks.length);
+            
+            navLinks.forEach((link, index) => {
+                console.log('Setting up link', index, ':', link.getAttribute('data-view'));
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const view = this.getAttribute('data-view');
+                    console.log('Clicked on view:', view);
                     if (view) {
                         showView(view);
                         updateSidebarActive(view);
