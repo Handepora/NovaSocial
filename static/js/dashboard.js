@@ -1095,60 +1095,13 @@ function initializeCharts() {
     }
 }
 
-// Theme Management
+// Theme Management - Dark mode only
 function initializeTheme() {
-    // Get saved theme preference or default to dark
-    const savedTheme = localStorage.getItem('dashboard-theme') || 'dark';
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    const themeText = document.getElementById('theme-text');
+    // Force dark theme always
+    document.documentElement.setAttribute('data-theme', 'dark');
     
-    // Apply saved theme
-    setTheme(savedTheme);
-    
-    // Set up theme toggle event listener
-    if (themeToggle) {
-        themeToggle.addEventListener('click', function() {
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            setTheme(newTheme);
-            localStorage.setItem('dashboard-theme', newTheme);
-        });
-    }
-}
-
-function setTheme(theme) {
-    const themeIcon = document.getElementById('theme-icon');
-    const themeText = document.getElementById('theme-text');
-    
-    if (theme === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-        if (themeIcon) {
-            themeIcon.className = 'fas fa-sun';
-        }
-        if (themeText) {
-            themeText.textContent = 'Modo Oscuro';
-        }
-    } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        if (themeIcon) {
-            themeIcon.className = 'fas fa-moon';
-        }
-        if (themeText) {
-            themeText.textContent = 'Modo Claro';
-        }
-    }
-    
-    // Update charts with new theme colors
-    updateChartsTheme(theme);
-    
-    // Force fix for persistent dark backgrounds in light mode
-    if (theme === 'light') {
-        // Apply fixes immediately and with delays to catch all elements
-        fixLightModeBackgrounds();
-        setTimeout(() => fixLightModeBackgrounds(), 300);
-        setTimeout(() => fixLightModeBackgrounds(), 600);
-    }
+    // Update charts with dark theme
+    updateChartsTheme('dark');
 }
 
 // Function to force fix dark backgrounds in light mode
@@ -1266,98 +1219,6 @@ function fixLightModeBackgrounds() {
                         `;
                     }
                     container.innerHTML = placeholderText;
-                }
-            }
-        });
-        
-        // Only apply card body fixes in light theme
-        if (currentTheme === 'light') {
-            // Force fix specific card body areas that remain dark
-            const cardBodies = document.querySelectorAll('.card-body');
-            cardBodies.forEach(cardBody => {
-                cardBody.style.backgroundColor = '#ffffff';
-                
-                // Fix any flex containers inside card bodies
-                const flexContainers = cardBody.querySelectorAll('.d-flex');
-                flexContainers.forEach(flex => {
-                    flex.style.backgroundColor = '#ffffff';
-                });
-                
-                // Fix text-center divs
-                const textCenters = cardBody.querySelectorAll('.text-center');
-                textCenters.forEach(center => {
-                    center.style.backgroundColor = 'transparent';
-                    center.style.color = '#718096';
-                });
-            });
-            
-            // Find prompt configuration card and AI providers card
-            const h6Elements = document.querySelectorAll('.card .card-header h6');
-            h6Elements.forEach(h6 => {
-                if (h6.textContent && (h6.textContent.includes('Configuración de Prompts') || h6.textContent.includes('Proveedores de IA'))) {
-                    const card = h6.closest('.card');
-                    if (card) {
-                        const cardBody = card.querySelector('.card-body');
-                        if (cardBody) {
-                            cardBody.style.backgroundColor = '#ffffff';
-                            cardBody.style.color = '#212529';
-                            
-                            // Fix AI provider cards specifically
-                            const providerCards = cardBody.querySelectorAll('.ai-provider-card, .col-md-4, .d-flex');
-                            providerCards.forEach(providerCard => {
-                                providerCard.style.backgroundColor = '#ffffff';
-                                providerCard.style.color = '#212529';
-                                providerCard.style.border = '1px solid #e9ecef';
-                                
-                                // Fix text elements inside provider cards
-                                const textElements = providerCard.querySelectorAll('h6, .text-muted, p, span');
-                                textElements.forEach(textEl => {
-                                    if (textEl.classList.contains('text-muted')) {
-                                        textEl.style.color = '#6c757d';
-                                    } else {
-                                        textEl.style.color = '#212529';
-                                    }
-                                });
-                                
-                                // Fix badges
-                                const badges = providerCard.querySelectorAll('.badge');
-                                badges.forEach(badge => {
-                                    if (badge.classList.contains('bg-success')) {
-                                        badge.style.backgroundColor = '#28a745';
-                                        badge.style.color = '#ffffff';
-                                    } else if (badge.classList.contains('bg-warning')) {
-                                        badge.style.backgroundColor = '#ffc107';
-                                        badge.style.color = '#212529';
-                                    } else {
-                                        badge.style.backgroundColor = '#6c757d';
-                                        badge.style.color = '#ffffff';
-                                    }
-                                });
-                            });
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Final aggressive pass - any element with dark background in light mode only
-        const allElements = document.querySelectorAll('*');
-        allElements.forEach(element => {
-            const computedStyle = window.getComputedStyle(element);
-            const bgColor = computedStyle.backgroundColor;
-            
-            if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent') {
-                // Parse RGB values
-                const rgbMatch = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-                if (rgbMatch) {
-                    const r = parseInt(rgbMatch[1]);
-                    const g = parseInt(rgbMatch[2]);
-                    const b = parseInt(rgbMatch[3]);
-                    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-                    
-                    if (brightness < 100) { // Very dark backgrounds
-                        element.style.backgroundColor = '#ffffff';
-                    }
                 }
             }
         });

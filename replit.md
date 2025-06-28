@@ -254,6 +254,12 @@ The application is configured for deployment on Replit with the following setup:
   - Fixed light theme contrast issues with comprehensive CSS overrides for all components
   - Added JavaScript-based background correction for persistent dark elements in light mode
   - Improved visual feedback for content generation with spinner, success states, and error handling
+- June 28, 2025. Simplified theme system to dark mode only:
+  - Removed light theme toggle button and all related functionality
+  - Eliminated light theme CSS rules and JavaScript corrections
+  - Streamlined theme management to force dark mode always
+  - Cleaned up sidebar footer to show only Nova copyright
+  - Simplified user interface by removing theme complexity
 
 ## User Preferences
 
