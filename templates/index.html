@@ -2038,10 +2038,10 @@
                     opacity: 1 !important;
                 ">
                     <!-- Header -->
-                    <div style="padding: 20px; border-bottom: 1px solid #2d3748; color: white;">
+                    <div id="sidebar-header" style="padding: 20px; border-bottom: 1px solid #2d3748; color: white;">
                         <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #ff6b47, #ff8e68); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 0.75rem;">
-                                <span style="color: white; font-weight: bold; font-size: 1.2rem;">N</span>
+                            <div style="width: 40px; height: 40px; margin-right: 0.75rem; border-radius: 8px; overflow: hidden; background: white; display: flex; align-items: center; justify-content: center;">
+                                <img src="/static/nova-logo.png" alt="Nova Logo" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
                             <div>
                                 <div style="color: #e2e8f0; font-weight: 600; font-size: 1.1rem;">Nova</div>
@@ -2181,10 +2181,86 @@
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             const themeButton = document.getElementById('nova-theme-toggle');
+            const sidebar = document.getElementById('nova-nav');
             
             // Apply theme
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
+            
+            // Update sidebar theme
+            if (sidebar) {
+                if (newTheme === 'light') {
+                    sidebar.style.background = '#ffffff';
+                    sidebar.style.borderRight = '2px solid #dee2e6';
+                    
+                    // Update header
+                    const header = sidebar.querySelector('#sidebar-header');
+                    if (header) {
+                        header.style.borderBottom = '1px solid #dee2e6';
+                        header.style.color = '#212529';
+                        const title = header.querySelector('div > div');
+                        if (title) title.style.color = '#212529';
+                        const subtitle = header.querySelector('div > div:last-child');
+                        if (subtitle) subtitle.style.color = '#6c757d';
+                    }
+                    
+                    // Update navigation items
+                    const navItems = sidebar.querySelectorAll('div[onclick]');
+                    navItems.forEach((item, index) => {
+                        if (index === 0) {
+                            // Active item
+                            item.style.background = 'rgba(255, 107, 71, 0.1)';
+                            item.style.color = '#212529';
+                        } else {
+                            item.style.color = '#6c757d';
+                        }
+                    });
+                    
+                    // Update footer
+                    const footer = sidebar.querySelector('div[style*="position: absolute"]');
+                    if (footer) {
+                        footer.style.borderTop = '1px solid #dee2e6';
+                        themeButton.style.background = '#f8f9fa';
+                        themeButton.style.border = '1px solid #dee2e6';
+                        themeButton.style.color = '#212529';
+                    }
+                } else {
+                    sidebar.style.background = '#1a202c';
+                    sidebar.style.borderRight = '2px solid #2d3748';
+                    
+                    // Update header
+                    const header = sidebar.querySelector('#sidebar-header');
+                    if (header) {
+                        header.style.borderBottom = '1px solid #2d3748';
+                        header.style.color = 'white';
+                        const title = header.querySelector('div > div');
+                        if (title) title.style.color = '#e2e8f0';
+                        const subtitle = header.querySelector('div > div:last-child');
+                        if (subtitle) subtitle.style.color = '#a0aec0';
+                    }
+                    
+                    // Update navigation items
+                    const navItems = sidebar.querySelectorAll('div[onclick]');
+                    navItems.forEach((item, index) => {
+                        if (index === 0) {
+                            // Active item
+                            item.style.background = 'rgba(255, 107, 71, 0.1)';
+                            item.style.color = '#e2e8f0';
+                        } else {
+                            item.style.color = '#a0aec0';
+                        }
+                    });
+                    
+                    // Update footer
+                    const footer = sidebar.querySelector('div[style*="position: absolute"]');
+                    if (footer) {
+                        footer.style.borderTop = '1px solid #2d3748';
+                        themeButton.style.background = '#2d3748';
+                        themeButton.style.border = '1px solid #4a5568';
+                        themeButton.style.color = '#a0aec0';
+                    }
+                }
+            }
             
             // Update button text and icon
             if (newTheme === 'light') {
@@ -2235,11 +2311,49 @@
             document.documentElement.setAttribute('data-theme', savedTheme);
             
             const themeButton = document.getElementById('nova-theme-toggle');
+            const sidebar = document.getElementById('nova-nav');
+            
             if (themeButton) {
                 if (savedTheme === 'light') {
                     themeButton.innerHTML = '☀️ Tema Claro';
+                    
+                    // Apply light theme to sidebar
+                    if (sidebar) {
+                        sidebar.style.background = '#ffffff';
+                        sidebar.style.borderRight = '2px solid #dee2e6';
+                        
+                        const header = sidebar.querySelector('#sidebar-header');
+                        if (header) {
+                            header.style.borderBottom = '1px solid #dee2e6';
+                            header.style.color = '#212529';
+                        }
+                        
+                        const navItems = sidebar.querySelectorAll('div[onclick]');
+                        navItems.forEach((item, index) => {
+                            if (index === 0) {
+                                item.style.color = '#212529';
+                            } else {
+                                item.style.color = '#6c757d';
+                            }
+                        });
+                        
+                        const footer = sidebar.querySelector('div[style*="position: absolute"]');
+                        if (footer) {
+                            footer.style.borderTop = '1px solid #dee2e6';
+                            themeButton.style.background = '#f8f9fa';
+                            themeButton.style.border = '1px solid #dee2e6';
+                            themeButton.style.color = '#212529';
+                        }
+                    }
+                    
+                    document.body.style.background = '#f8f9fa';
+                    document.body.style.color = '#212529';
                 } else {
                     themeButton.innerHTML = '🌙 Tema Oscuro';
+                    
+                    // Keep dark theme (default)
+                    document.body.style.background = '#1a202c';
+                    document.body.style.color = '#e2e8f0';
                 }
             }
             
