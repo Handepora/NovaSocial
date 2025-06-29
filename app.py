@@ -84,7 +84,7 @@ AI_PROVIDERS = [
         "display_name": "OpenAI GPT-4o",
         "encrypted_api_key": None,
         "status": "disconnected",
-        "is_default": True,
+        "is_default": False,
         "model": "gpt-4o",
         "last_tested": None
     },
@@ -104,7 +104,7 @@ AI_PROVIDERS = [
         "display_name": "Perplexity Sonar",
         "encrypted_api_key": None,
         "status": "disconnected",
-        "is_default": False,
+        "is_default": True,
         "model": "llama-3.1-sonar-small-128k-online",
         "last_tested": None
     }

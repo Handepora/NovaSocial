@@ -9,4 +9,4 @@ PyYAML # Often used for configuration files (though not directly seen, it's comm
 cryptography # Likely used in encryption.py for secure operations
 oauthlib # Potentially for Twitter API authentication (OAuth)
 requests-oauthlib # Potentially for Twitter API authentication (OAuth)
-pip install Flask-CORS
+Flask-CORS

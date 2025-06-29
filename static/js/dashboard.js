@@ -60,22 +60,81 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Navigation Management
-function initializeNavigation() {
-    safeDOM.queryAll('.nav-link[data-view]', (navLinks) => {
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const view = this.getAttribute('data-view');
-                if (view) {
-                    showView(view);
-                    
-                    // Update active state
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-                }
-            });
+// Listener para los enlaces de la barra lateral (sidebar)
+document.addEventListener('DOMContentLoaded', function () {
+    const sidebarLinks = document.querySelectorAll('.sidebar .nav-link[data-view]');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const view = this.getAttribute('data-view');
+            navigateTo(view);
         });
     });
+});
+
+/**
+ * NAVEGA A UNA VISTA Y ACTUALIZA EL SOMBREADO
+ * Esta es la nueva función principal para cambiar de vista.
+ * @param {string} viewName - El nombre de la vista a mostrar (ej. 'validacion').
+ */
+function navigateTo(viewName) {
+    // 1. Oculta todas las vistas y muestra la correcta
+    const views = document.querySelectorAll('.view');
+    views.forEach(v => {
+        v.classList.remove('active');
+        // Usamos display: none para asegurarnos de que se ocultan.
+        if (v.id !== viewName + '-view') {
+            v.style.display = 'none';
+        }
+    });
+
+    const targetView = document.getElementById(viewName + '-view');
+    if (targetView) {
+        targetView.classList.add('active');
+        targetView.style.display = 'block'; // Aseguramos que se muestra.
+    }
+
+    // 2. Actualiza el sombreado en la barra lateral
+    const navLinks = document.querySelectorAll('.sidebar .nav-link[data-view]');
+    navLinks.forEach(link => {
+        const linkView = link.getAttribute('data-view');
+
+        // Resetea el estado de todos los enlaces
+        link.classList.remove('active');
+        link.classList.remove('text-white');
+        link.classList.add('text-light');
+
+        // Aplica el estado activo solo al enlace correcto
+        if (linkView === viewName) {
+            link.classList.add('active');
+            link.classList.remove('text-light');
+            link.classList.add('text-white');
+        }
+    });
+
+    // 3. Carga los datos específicos de la vista (si es necesario)
+    // Esto lo mantenemos de la función showView original.
+    switch (viewName) {
+        case 'dashboard':
+            if (typeof loadDashboardData === 'function') loadDashboardData();
+            break;
+        case 'calendario':
+            if (typeof loadCalendarData === 'function') loadCalendarData();
+            if (typeof loadUpcomingPosts === 'function') loadUpcomingPosts();
+            break;
+        case 'validacion':
+            if (typeof loadValidationData === 'function') loadValidationData();
+            break;
+        case 'analiticas':
+            if (typeof loadAnalyticsData === 'function') loadAnalyticsData();
+            break;
+        case 'configuracion':
+            if (typeof loadConfigurationData === 'function') loadConfigurationData();
+            break;
+        case 'monitoreo':
+            if (typeof loadMonitoringData === 'function') loadMonitoringData();
+            break;
+    }
 }
 
 function showView(viewName) {
@@ -93,8 +152,6 @@ function showView(viewName) {
         targetView.classList.add('active');
         currentView = viewName;
         
-        // Update sidebar navigation active state
-        updateSidebarActive(viewName);
         
         // Load view-specific data immediately
         switch(viewName) {
@@ -136,19 +193,6 @@ function resetCardAnimations() {
         card.offsetHeight; // Trigger reflow
         card.style.animation = '';
     });
-}
-
-function updateSidebarActive(viewName) {
-    // Remove active class from all nav links
-    document.querySelectorAll('.nav-link[data-view]').forEach(link => {
-        link.classList.remove('active');
-    });
-    
-    // Add active class to the current view's nav link
-    const activeLink = document.querySelector(`.nav-link[data-view="${viewName}"]`);
-    if (activeLink) {
-        activeLink.classList.add('active');
-    }
 }
 
 // Dashboard Data Loading
